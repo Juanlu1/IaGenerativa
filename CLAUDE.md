@@ -50,7 +50,7 @@ deploy).
 <!-- Sección mantenida por /collect-memory. Actualizar al cerrar cada sesión. -->
 
 - **Milestone 1** (trackear desde el principio): HECHO.
-- **Milestone 2**: PENDIENTE.
+- **Milestone 2** (ordenar): HECHO. Archivos muertos y duplicados eliminados (`index_v2_FINAL.js`, `server_OLD.js`, `links_backup_marzo.json`, `public/estilos_viejos.css`, `test.js`), `public/logo (1).png` renombrado a `logo.png`, dependencias sin uso fuera de `package.json` (`lodash`, `moment`, `axios`), `links.json` sacado del tracking por ser store de datos, `README.md` con guía rápida y tabla de qué hace cada archivo vivo, `.gitignore` cubriendo `node_modules`, `notas.txt`, `links.json`, `.env` y `.DS_Store`. Script `npm test` cableado a `node --test`.
 - **Milestone 3**: HECHO. Se aplicaron correcciones en `server.js` (validación de URL, deduplicación por URL exacta, reintento ante colisiones de código, persistencia robusta de `links.json`, incremento y persistencia de `clicks`, servir estáticos relativo a `__dirname`, usar PORT desde env). Tests locales: 14 passed, 2 fallos (ver abajo).
 - **Milestone 4**: PENDIENTE (endpoint de estadísticas `/api/links/:codigo/stats` no implementado; 2 tests fallaron por esto).
 - **Milestone 5**: PENDIENTE (migración a Postgres / persistencia durable no realizada).
@@ -68,6 +68,9 @@ deploy).
 - Se decidió servir archivos estáticos relativo a `__dirname` y manejar `links.json` ausente o corrupto devolviendo un store vacío, además de crear el directorio si hace falta al escribir. Motivo: robustez de arranque y compatibilidad con entornos donde el cwd no es la raíz del repo (SPEC §8).
 - Se decidió no implementar en esta sesión el endpoint de estadísticas (`/api/links/:codigo/stats`) por petición del usuario; queda para Milestone 4.
 - Se instaló Node/npm en el entorno temporal para ejecutar los tests locales y validar los cambios; se generó un commit con el trailer Co-authored-by solicitado por el usuario.
+- Se decidió eliminar `axios` en lugar de dejarlo en `devDependencies`: su único consumidor era `test.js` (borrado en la limpieza del Milestone 2) y la batería nueva usa `supertest`. Motivo: el criterio del Milestone 2 pide que no queden dependencias que nadie usa.
+- Se decidió cablear `npm test` a `node --test` en vez de documentar el comando suelto en el README. Motivo: quien clona el repo prueba `npm test` antes que cualquier otra cosa.
+- Se decidió sumar `.env` y `.DS_Store` al `.gitignore` antes del Milestone 5. Motivo: los secretos de producción van a vivir en variables de entorno y no pueden filtrarse por un `.env` commiteado por descuido.
 
 <!-- Fin sección Decisiones tomadas -->
 
