@@ -74,7 +74,12 @@ button:hover { background: #b5161f; }
 
 .numero { font-size: 1.4rem; font-weight: 700; color: #1f1e1e; }
 
+/* la URL de destino es larga: sin esto desborda la tarjeta */
+.numero.texto { font-size: 0.85rem; font-weight: 600; word-break: break-all; }
+
 .etiqueta { font-size: 0.8rem; color: #6b6560; }
+
+.error { margin-top: 20px; color: #da1b2e; font-size: 0.95rem; }
 
 .pie { margin-top: 28px; font-size: 0.9rem; }
 

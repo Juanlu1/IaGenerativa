@@ -16,14 +16,59 @@
       <button type="submit">Buscar</button>
     </form>
 
-    <!-- maqueta: datos de mentira, falta conectar con el server -->
-    <div class="stats">
-      <div class="stat"><span class="numero">123</span><span class="etiqueta">clicks</span></div>
-      <div class="stat"><span class="numero">-</span><span class="etiqueta">URL original</span></div>
-      <div class="stat"><span class="numero">-</span><span class="etiqueta">creado el</span></div>
+    <p id="error" class="error oculto"></p>
+
+    <div id="stats" class="stats oculto">
+      <div class="stat"><span class="numero" id="clicks">-</span><span class="etiqueta">clicks</span></div>
+      <div class="stat"><span class="numero texto" id="url">-</span><span class="etiqueta">URL original</span></div>
+      <div class="stat"><span class="numero texto" id="creado">-</span><span class="etiqueta">creado el</span></div>
     </div>
 
     <p class="pie"><a href="index.html">Volver a acortar</a></p>
   </main>
+
+  <script>
+    const form = document.getElementById('form-stats');
+    const stats = document.getElementById('stats');
+    const error = document.getElementById('error');
+
+    function mostrarError(mensaje) {
+      error.textContent = mensaje;
+      error.classList.remove('oculto');
+      stats.classList.add('oculto');
+    }
+
+    function formatearFecha(iso) {
+      const fecha = new Date(iso);
+      if (isNaN(fecha)) return iso || '-';
+      return fecha.toLocaleDateString('es-AR', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const codigo = document.getElementById('codigo').value.trim();
+      if (!codigo) return;
+
+      try {
+        const res = await fetch('/api/links/' + encodeURIComponent(codigo) + '/stats');
+        const data = await res.json();
+
+        if (!res.ok) {
+          mostrarError(data.error || 'No se pudieron leer las estadisticas');
+          return;
+        }
+
+        document.getElementById('clicks').textContent = data.clicks;
+        document.getElementById('url').textContent = data.url;
+        document.getElementById('creado').textContent = formatearFecha(data.creado);
+        error.classList.add('oculto');
+        stats.classList.remove('oculto');
+      } catch (err) {
+        mostrarError('No se pudo contactar al servidor');
+      }
+    });
+  </script>
 </body>
 </html>
