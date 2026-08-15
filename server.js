@@ -80,6 +80,20 @@ app.post('/api/links', (req, res) => {
   res.json({ codigo: codigo, corta: '/' + codigo });
 });
 
+// estadisticas de un link: consultar no es visitar, no toca clicks
+app.get('/api/links/:codigo/stats', (req, res) => {
+  const links = leerLinks();
+  const link = links.find((l) => l.codigo === req.params.codigo);
+  if (!link) {
+    return res.status(404).json({ error: 'No existe ese link' });
+  }
+  return res.json({
+    clicks: link.clicks || 0,
+    url: link.url,
+    creado: link.creado
+  });
+});
+
 // redirigir al destino
 app.get('/:codigo', (req, res) => {
   const links = leerLinks();
