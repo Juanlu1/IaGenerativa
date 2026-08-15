@@ -58,7 +58,9 @@ button:hover { background: #b5161f; }
   word-break: break-all;
 }
 
-.oculto { display: none; }
+/* utilitaria: tiene que ganarle al display de la regla que oculta (.stats es
+   flex y empata en especificidad, asi que sin !important gana la que va ultima) */
+.oculto { display: none !important; }
 
 .stats { display: flex; gap: 12px; margin-top: 24px; }
 
