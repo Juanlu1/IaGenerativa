@@ -40,7 +40,7 @@ del repo).
 | `test/` | Batería de tests derivada de `SPEC.md` (ver tabla abajo). |
 | `mission.md` | Consigna original de la misión. Se queda en el repo por decisión del equipo. |
 | `notas.txt` | Notas del desarrollador anterior; tiene una credencial, por eso está en `.gitignore` y nunca se commitea. |
-| `CLAUDE.md` / `AGENTS.md` | Contrato vivo para el agente de código: reglas, estado del proyecto, decisiones. |
+| `CLAUDE.md` / `AGENTS.md`/ `.github/copilot-instructions.md` | Contrato vivo para el agente de código: reglas, estado del proyecto, decisiones. |
 
 ## Tests → feature → milestone
 
