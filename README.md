@@ -19,7 +19,7 @@ La app escucha en `http://localhost:3000`. Abrí esa URL para acortar un link;
 ## Cómo correr los tests
 
 ```bash
-node --test
+npm test
 ```
 
 Los tests corren contra un `links.json` temporal (no tocan el archivo real
@@ -41,6 +41,9 @@ del repo).
 | `mission.md` | Consigna original de la misión. Se queda en el repo por decisión del equipo. |
 | `notas.txt` | Notas del desarrollador anterior; tiene una credencial, por eso está en `.gitignore` y nunca se commitea. |
 | `CLAUDE.md` / `AGENTS.md`/ `.github/copilot-instructions.md` | Contrato vivo para el agente de código: reglas, estado del proyecto, decisiones. |
+| `.claude/skills/collect-memory/SKILL.md` | Skill `/collect-memory`: actualiza el contrato del agente al cerrar cada sesión. |
+| `package.json` / `package-lock.json` | Dependencias (`express` en runtime, `supertest` para tests) y scripts `start` / `test`. |
+| `.gitignore` | Qué no viaja al remoto: `node_modules`, el store `links.json`, `notas.txt` (credencial), `.env`, `.DS_Store`. |
 
 ## Tests → feature → milestone
 

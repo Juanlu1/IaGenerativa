@@ -1,3 +1,5 @@
 node_modules
 notas.txt
 links.json
+.env
+.DS_Store
