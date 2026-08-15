@@ -25,6 +25,15 @@ npm test
 Los tests corren contra un `links.json` temporal (no tocan el archivo real
 del repo).
 
+
+## Produccion (Milestone 5)
+
+La aplicacion esta desplegada en Railway y usa PostgreSQL persistente para produccion.
+
+- URL publica: https://corta-production-41e3.up.railway.app
+- DATABASE_URL se configura mediante una variable de entorno de Railway.
+- No se guardan secretos en el codigo ni en el repositorio.
+- Se verifico manualmente que los links y sus clicks sobreviven a un redeploy.
 ## Qué hace cada archivo vivo
 
 | Archivo | Qué hace |

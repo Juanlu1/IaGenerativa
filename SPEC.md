@@ -81,6 +81,13 @@ Invariante que los tests deben proteger:
 - Credenciales de la base: en variables de entorno. Nunca en el codigo, en
   notas.txt, ni en ningun archivo commiteado.
 
+## Estado verificado de produccion
+
+- Produccion usa PostgreSQL persistente provisto por Railway.
+- Los links y sus clicks sobreviven a un redeploy; esto se verifico manualmente con un link real antes y despues del redeploy.
+- La conexion se configura mediante la variable de entorno DATABASE_URL.
+- La URL publica de produccion es https://corta-production-41e3.up.railway.app.
+- No se guardan secretos en el codigo ni en ningun archivo commiteado.
 ## 8. Requisitos de ejecucion (para produccion)
 
 No son comportamiento de usuario, pero son parte del contrato de que la app corre
