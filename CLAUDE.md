@@ -51,8 +51,8 @@ deploy).
 
 - **Milestone 1** (trackear desde el principio): HECHO.
 - **Milestone 2** (ordenar): HECHO. Archivos muertos y duplicados eliminados (`index_v2_FINAL.js`, `server_OLD.js`, `links_backup_marzo.json`, `public/estilos_viejos.css`, `test.js`), `public/logo (1).png` renombrado a `logo.png`, dependencias sin uso fuera de `package.json` (`lodash`, `moment`, `axios`), `links.json` sacado del tracking por ser store de datos, `README.md` con guía rápida y tabla de qué hace cada archivo vivo, `.gitignore` cubriendo `node_modules`, `notas.txt`, `links.json`, `.env` y `.DS_Store`. Script `npm test` cableado a `node --test`.
-- **Milestone 3**: HECHO. Se aplicaron correcciones en `server.js` (validación de URL, deduplicación por URL exacta, reintento ante colisiones de código, persistencia robusta de `links.json`, incremento y persistencia de `clicks`, servir estáticos relativo a `__dirname`, usar PORT desde env). Tests locales: 14 passed, 2 fallos (ver abajo).
-- **Milestone 4**: PENDIENTE (endpoint de estadísticas `/api/links/:codigo/stats` no implementado; 2 tests fallaron por esto).
+- **Milestone 3**: HECHO. Se aplicaron correcciones en `server.js` (validación de URL, deduplicación por URL exacta, reintento ante colisiones de código, persistencia robusta de `links.json`, incremento y persistencia de `clicks`, servir estáticos relativo a `__dirname`, usar PORT desde env).
+- **Milestone 4** (completar lo que falta): HECHO. Endpoint `GET /api/links/:codigo/stats` implementado (200 con `{clicks, url, creado}`, 404 con `{error}` para código inexistente, no toca `clicks`), y `public/stats.html` conectada: consulta el endpoint y pinta los datos reales, con mensaje de error para código inexistente o fallo de red. Suite completa: **16 passed, 0 failed**.
 - **Milestone 5**: PENDIENTE (migración a Postgres / persistencia durable no realizada).
 
 <!-- Fin sección Estado del proyecto -->
@@ -71,6 +71,9 @@ deploy).
 - Se decidió eliminar `axios` en lugar de dejarlo en `devDependencies`: su único consumidor era `test.js` (borrado en la limpieza del Milestone 2) y la batería nueva usa `supertest`. Motivo: el criterio del Milestone 2 pide que no queden dependencias que nadie usa.
 - Se decidió cablear `npm test` a `node --test` en vez de documentar el comando suelto en el README. Motivo: quien clona el repo prueba `npm test` antes que cualquier otra cosa.
 - Se decidió sumar `.env` y `.DS_Store` al `.gitignore` antes del Milestone 5. Motivo: los secretos de producción van a vivir en variables de entorno y no pueden filtrarse por un `.env` commiteado por descuido.
+- Se decidió que el endpoint de estadísticas devuelva `clicks: link.clicks || 0`. Motivo: un link viejo del store heredado puede no tener el campo `clicks`; reportar `undefined` rompería el JSON y la página.
+- Se decidió que `stats.html` arranque con el bloque de números oculto y lo muestre recién ante una consulta exitosa. Motivo: la maqueta original mostraba un `123` hardcodeado; dejar números visibles antes de consultar invita a leer datos que no corresponden a ningún link.
+- El frontend de `stats.html` no tiene tests automatizados: la batería cubre el endpoint, no el DOM. Motivo: testear el DOM pediría jsdom y una capa de test nueva para una página de 40 líneas. La verificación fue manual, punta a punta. Si la página crece, revisar esta decisión.
 
 <!-- Fin sección Decisiones tomadas -->
 

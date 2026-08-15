@@ -29,11 +29,11 @@ del repo).
 
 | Archivo | Qué hace |
 |---|---|
-| `server.js` | La app Express: endpoints de crear link y redirect, lee/escribe `links.json`. |
+| `server.js` | La app Express: endpoints de crear link, redirect y estadísticas; lee/escribe `links.json`. |
 | `utils.js` | `generarCodigo()`, usado por `server.js` para generar el código corto. |
 | `links.json` | Store de datos (array de links). No se trackea en git — ver `.gitignore`. |
 | `public/index.html` | Página principal: formulario para acortar una URL. |
-| `public/stats.html` | Página de estadísticas de un link (Milestone 4). |
+| `public/stats.html` | Página de estadísticas: consulta `GET /api/links/:codigo/stats` y muestra los datos reales. |
 | `public/estilos.css` | Estilos de ambas páginas. |
 | `public/logo.png` | Logo mostrado en `index.html`. |
 | `SPEC.md` | Contrato de comportamiento. Fuente de verdad para tests e implementación. |
