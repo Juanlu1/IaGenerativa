@@ -50,17 +50,31 @@ deploy).
 <!-- Sección mantenida por /collect-memory. Actualizar al cerrar cada sesión. -->
 
 - **Milestone 1** (trackear desde el principio): HECHO.
-- **Milestones 2–5** (ordenar, corregir bugs, completar stats, producción):
-  PENDIENTES.
+- **Milestone 2**: PENDIENTE.
+- **Milestone 3**: HECHO. Se aplicaron correcciones en `server.js` (validación de URL, deduplicación por URL exacta, reintento ante colisiones de código, persistencia robusta de `links.json`, incremento y persistencia de `clicks`, servir estáticos relativo a `__dirname`, usar PORT desde env). Tests locales: 14 passed, 2 fallos (ver abajo).
+- **Milestone 4**: PENDIENTE (endpoint de estadísticas `/api/links/:codigo/stats` no implementado; 2 tests fallaron por esto).
+- **Milestone 5**: PENDIENTE (migración a Postgres / persistencia durable no realizada).
+
+<!-- Fin sección Estado del proyecto -->
 
 ## Decisiones tomadas
 
 <!-- Sección mantenida por /collect-memory. Formato por entrada: qué se decidió y por qué. -->
 
-- (todavía ninguna registrada)
+- Se decidió validar estrictamente la entrada `url` en POST /api/links: aceptar solo strings que parseen con `new URL()` y tengan esquema `http` o `https`. Motivo: evitar acortadores de esquemas peligrosos (ej. `javascript:`) y cumplir SPEC.md §3.
+- Se decidió deduplicar por URL exacta: si la URL enviada ya existe exactamente en el store, devolver el mismo `codigo` y no crear duplicados. Motivo: cumplir la invarianta de deduplicación de SPEC §3.
+- Se decidió implementar reintentos en la generación de `codigo` hasta encontrar uno no usado (límite 1000 intentos). Motivo: garantizar unicidad de códigos ante colisiones del generador (SPEC §3).
+- Se decidió incrementar y persistir `clicks` en el mismo request de redirect y usar `res.redirect(302, url)` para asegurar Location header. Motivo: cumplir SPEC §4 y la invariante de estadísticas (SPEC §6).
+- Se decidió servir archivos estáticos relativo a `__dirname` y manejar `links.json` ausente o corrupto devolviendo un store vacío, además de crear el directorio si hace falta al escribir. Motivo: robustez de arranque y compatibilidad con entornos donde el cwd no es la raíz del repo (SPEC §8).
+- Se decidió no implementar en esta sesión el endpoint de estadísticas (`/api/links/:codigo/stats`) por petición del usuario; queda para Milestone 4.
+- Se instaló Node/npm en el entorno temporal para ejecutar los tests locales y validar los cambios; se generó un commit con el trailer Co-authored-by solicitado por el usuario.
+
+<!-- Fin sección Decisiones tomadas -->
 
 ## Convenciones del equipo
 
 <!-- Sección mantenida por /collect-memory: formato de commits, naming, reglas y gustos del equipo. -->
 
-- (a definir)
+- Convención de commits para cambios de memoria de sesión: usar prefijo `docs(memory):` en el mensaje. Ejemplo: `docs(memory): actualizar CLAUDE.md con avances y decisiones de la sesión`.
+
+<!-- Fin sección Convenciones del equipo -->
