@@ -82,5 +82,6 @@ deploy).
 <!-- Sección mantenida por /collect-memory: formato de commits, naming, reglas y gustos del equipo. -->
 
 - Convención de commits para cambios de memoria de sesión: usar prefijo `docs(memory):` en el mensaje. Ejemplo: `docs(memory): actualizar CLAUDE.md con avances y decisiones de la sesión`.
+- **Los commits llevan únicamente el nombre de quien trabaja.** No se agrega el trailer `Co-Authored-By` de Claude ni de ninguna otra herramienta de IA, aunque el agente lo sugiera por defecto. Motivo: la autoría de la historia es del equipo.
 
 <!-- Fin sección Convenciones del equipo -->
