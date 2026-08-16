@@ -45,14 +45,42 @@ archivos tocaron y un resumen en lenguaje llano.
 
 ### Antes de configurarla
 
-Dos requisitos que no dan error obvio si faltan:
-
-- **Tener `claude` instalado y logueado** en esa máquina. Si no, la tarea muere
-  con `ERROR: no encuentro el ejecutable 'claude' en el PATH`.
 - **Tener `git config user.name` y `user.email` bien puestos.** El nombre de la
   subcarpeta del reporte sale de ahí: si están vacíos, tus reportes terminan en
   `reportes/root/` y tus commits quedan sin autor real (ya nos pasó una vez, en
   el commit `9a0eecb`).
+- **Tener tu agente instalado y logueado** (ver abajo: no hace falta que sea
+  Claude Code).
+
+### Cada uno con su agente
+
+La consigna pide que cada integrante use *su* agente, y en el equipo no todos
+usamos el mismo. La variable `AGENTE` elige cuál redacta el reporte:
+
+| `AGENTE=` | Qué usa | Estado |
+|---|---|---|
+| `auto` (default) | El primero que encuentre instalado; si no hay ninguno, cae a `git` | probado |
+| `claude` | Claude Code headless (`claude -p`) | probado |
+| `codex` | Codex CLI headless (`codex exec`) | ⚠️ **flags sin verificar** |
+| `git` | Sin agente: el reporte lo arma `git` | probado |
+
+Para cualquier otro agente, sin tocar el script:
+
+```bash
+AGENTE_CMD="mi-cli --flags" ./scripts/reporte-cambios.sh
+```
+
+El prompt le llega como único argumento posicional. En el plist se setea con un
+bloque `EnvironmentVariables`.
+
+⚠️ **El adaptador de Codex no está probado**: cuando se escribió esto, nadie del
+equipo tenía Codex instalado. El primero que lo use, confirmá los flags contra
+`codex exec --help` y corregí esa línea del script.
+
+El modo `git` es la red de seguridad: produce el mismo reporte de commits,
+autores y archivos, pero sin el resumen en prosa. Sirve si tu agente no anda o
+no querés gastar llamadas al modelo. Además, si el agente falla en el momento,
+el script cae solo a este modo antes que quedarse sin reportar.
 
 ### El script
 

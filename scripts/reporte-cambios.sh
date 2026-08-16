@@ -23,6 +23,9 @@
 #   COMMIT=0 ./scripts/reporte-cambios.sh     # solo deja el archivo, sin commitear
 #   FORCE_REPORTE=1 ./scripts/...             # genera el reporte aunque no haya
 #                                             # commits nuevos (util para demos)
+#   AGENTE=codex ./scripts/...                # usar Codex en vez de Claude Code
+#   AGENTE=git ./scripts/...                  # sin agente: reporte con git puro
+#   AGENTE_CMD="mi-cli --flag" ./scripts/...  # cualquier otro agente
 
 set -uo pipefail
 
@@ -31,7 +34,7 @@ set -uo pipefail
 REPO="${REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 cd "$REPO" || exit 1
 
-# cron arranca con un PATH minimo: git, node y claude no estan por defecto.
+# cron arranca con un PATH minimo: git, node y los agentes no estan por defecto.
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 for dir in "$HOME"/.nvm/versions/node/*/bin; do
   [ -d "$dir" ] && export PATH="$dir:$PATH"
@@ -39,11 +42,49 @@ done
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 
-CLAUDE="$(command -v claude || true)"
-if [ -z "$CLAUDE" ]; then
-  log "ERROR: no encuentro el ejecutable 'claude' en el PATH. Aborto."
-  exit 1
+# --- Que agente redacta el reporte -------------------------------------------
+#
+# La consigna pide que cada uno use SU agente, y en el equipo no todos usan el
+# mismo. AGENTE elige cual:
+#
+#   auto    (default) usa el primero que encuentre instalado; si no hay ninguno,
+#           cae a 'git'
+#   claude  Claude Code en modo headless
+#   codex   Codex CLI en modo headless
+#   git     sin agente: arma el reporte con git puro, deterministico
+#
+# Para cualquier otro agente, AGENTE_CMD="mi-cli --flags" y el script le pasa el
+# prompt como unico argumento posicional.
+
+AGENTE="${AGENTE:-auto}"
+
+if [ -n "${AGENTE_CMD:-}" ]; then
+  MODO="custom"
+elif [ "$AGENTE" != "auto" ]; then
+  MODO="$AGENTE"
+elif command -v claude >/dev/null 2>&1; then
+  MODO="claude"
+elif command -v codex >/dev/null 2>&1; then
+  MODO="codex"
+else
+  MODO="git"
 fi
+
+case "$MODO" in
+  claude|codex)
+    if ! command -v "$MODO" >/dev/null 2>&1; then
+      log "ERROR: pediste AGENTE=$MODO pero no encuentro '$MODO' en el PATH."
+      log "Instalalo, o usa AGENTE=git para un reporte sin agente."
+      exit 1
+    fi
+    ;;
+  git|custom) ;;
+  *)
+    log "ERROR: AGENTE='$MODO' no es valido (auto|claude|codex|git)."
+    exit 1
+    ;;
+esac
+log "Agente para el reporte: $MODO"
 
 AUTOR="$(git config user.name 2>/dev/null || echo "$USER")"
 SLUG="$(echo "$AUTOR" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-' | sed 's/-\{1,\}/-/g; s/^-//; s/-$//')"
@@ -124,14 +165,69 @@ Escribi en espaniol rioplatense. No inventes datos: todo sale de git.
 No modifiques ningun otro archivo. No hagas commit ni push: de eso me encargo yo."
 fi
 
-log "Pidiendole el reporte al agente..."
-"$CLAUDE" -p "$PROMPT" \
-  --permission-mode acceptEdits \
-  --allowedTools "Bash(git:*)" "Read" "Write" "Glob" "Grep" \
-  2>&1 | sed 's/^/  /'
+# Reporte sin agente: mismos datos, sin narrativa. Se usa como fallback para que
+# la tarea funcione en una maquina sin ningun CLI de agente instalado.
+reporte_con_git() {
+  {
+    if [ "$NUEVOS" -eq 0 ]; then
+      echo "# Reporte del ${FECHA}"
+      echo
+      echo "No hubo commits nuevos. HEAD sigue en \`$(git rev-parse --short HEAD)\` — $(git log -1 --format=%s)."
+      return
+    fi
+    echo "# Reporte del ${FECHA} — rango \`$(git rev-parse --short "$ANTES")..$(git rev-parse --short "$DESPUES")\`"
+    echo
+    echo "Entraron ${NUEVOS} commit(s) nuevos. Reporte generado en modo \`git\` (sin agente):"
+    echo "son los datos crudos de \`git log\`, sin resumen en prosa."
+    echo
+    echo "## Commits"
+    echo
+    # Lista y no tabla: un '|' en el mensaje de un commit romperia la tabla.
+    git log --reverse --format='- `%h` — **%an** — %ad — %s' --date=short "$RANGO"
+    echo
+    echo "## Archivos por commit"
+    for h in $(git rev-list --reverse "$RANGO"); do
+      echo
+      echo "### \`$(git rev-parse --short "$h")\` — $(git log -1 --format=%s "$h")"
+      echo
+      echo '```'
+      git show --stat --format= "$h" | sed '/^$/d'
+      echo '```'
+    done
+  } > "$DEST"
+}
+
+log "Generando el reporte (modo $MODO)..."
+case "$MODO" in
+  claude)
+    claude -p "$PROMPT" \
+      --permission-mode acceptEdits \
+      --allowedTools "Bash(git:*)" "Read" "Write" "Glob" "Grep" \
+      2>&1 | sed 's/^/  /'
+    ;;
+  codex)
+    # OJO: estos flags NO estan verificados. Nadie del equipo tenia Codex
+    # instalado cuando se escribio esto. El primero que lo use: confirmalos
+    # contra 'codex exec --help' y corregi esta linea si hace falta.
+    codex exec "$PROMPT" 2>&1 | sed 's/^/  /'
+    ;;
+  custom)
+    sh -c "$AGENTE_CMD \"\$1\"" sh "$PROMPT" 2>&1 | sed 's/^/  /'
+    ;;
+  git)
+    reporte_con_git
+    ;;
+esac
+
+# El agente puede decir que escribio el archivo sin haberlo escrito: se verifica
+# en disco en vez de creerle. Si fallo, se cae al modo git antes que no reportar.
+if [ ! -f "$DEST" ] && [ "$MODO" != "git" ]; then
+  log "AVISO: el agente ($MODO) no genero $DEST. Caigo al modo git."
+  reporte_con_git
+fi
 
 if [ ! -f "$DEST" ]; then
-  log "ERROR: el agente no genero $DEST."
+  log "ERROR: no se pudo generar $DEST."
   exit 1
 fi
 log "Reporte generado: $DEST"
