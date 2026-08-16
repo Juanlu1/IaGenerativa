@@ -14,14 +14,21 @@
 # guarda en reportes/<su-usuario>/<fecha>.md, asi dos personas que corren la
 # tarea el mismo dia no se pisan el archivo.
 #
+# Si no entraron commits nuevos no genera reporte ni commitea: el log alcanza
+# como evidencia de que la tarea corrio.
+#
 # Uso:
-#   ./scripts/reporte-cambios.sh          # actualiza, reporta y commitea local
-#   PUSH=1 ./scripts/reporte-cambios.sh   # ademas pushea el reporte al remote
-#   COMMIT=0 ./scripts/reporte-cambios.sh # solo deja el archivo, sin commitear
+#   ./scripts/reporte-cambios.sh              # actualiza, reporta y commitea local
+#   PUSH=1 ./scripts/reporte-cambios.sh       # ademas pushea el reporte al remote
+#   COMMIT=0 ./scripts/reporte-cambios.sh     # solo deja el archivo, sin commitear
+#   FORCE_REPORTE=1 ./scripts/...             # genera el reporte aunque no haya
+#                                             # commits nuevos (util para demos)
 
 set -uo pipefail
 
-REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Por defecto opera sobre el repo que contiene a este script. Se puede apuntar a
+# otro clon con REPO=/ruta/al/clon, que es como se testea sin tocar el repo real.
+REPO="${REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 cd "$REPO" || exit 1
 
 # cron arranca con un PATH minimo: git, node y claude no estan por defecto.
@@ -57,8 +64,10 @@ log "Actualizando desde origin..."
 git fetch origin --prune 2>&1 | sed 's/^/  /'
 
 if ! git merge --ff-only "origin/${RAMA}" 2>&1 | sed 's/^/  /'; then
-  log "ERROR: no se pudo hacer fast-forward (la rama local divergio del remote)."
-  log "Resolvelo a mano con 'git pull --rebase' y volve a correr la tarea."
+  log "ERROR: no se pudo hacer fast-forward a origin/${RAMA}."
+  log "Causas tipicas: la rama local divergio del remote (resolvelo con"
+  log "'git pull --rebase'), o hay archivos sin trackear que el merge pisaria"
+  log "(movelos o borralos). Mira el detalle de git arriba y volve a correr."
   exit 1
 fi
 
@@ -74,6 +83,17 @@ else
 fi
 
 # --- Paso 2: el agente redacta el reporte ------------------------------------
+
+# Sin commits nuevos no hay nada que reportar: la evidencia de que la tarea
+# corrio es este log (mas 'runs' en launchctl). Escribir igual un archivo
+# "sin cambios" y commitearlo dejaria un commit de ruido por dia y por
+# integrante: cuatro personas, ~120 commits vacios por mes tapando la historia
+# real. De paso, los dias sin actividad no invocan al modelo.
+if [ "$NUEVOS" -eq 0 ] && [ "${FORCE_REPORTE:-0}" != "1" ]; then
+  log "Nada que reportar. (Usa FORCE_REPORTE=1 si igual querés el archivo.)"
+  log "Listo."
+  exit 0
+fi
 
 mkdir -p "$(dirname "$DEST")"
 
@@ -118,7 +138,7 @@ log "Reporte generado: $DEST"
 
 # --- Paso 3: dejarlo registrado ----------------------------------------------
 
-if [ "${COMMIT:-1}" = "1" ]; then
+if [ "${COMMIT:-1}" = "1" ] && [ "$NUEVOS" -gt 0 ]; then
   git add "$DEST"
   if git diff --cached --quiet; then
     log "El reporte no cambio respecto del ultimo commit, no hay nada que commitear."
@@ -134,6 +154,8 @@ if [ "${COMMIT:-1}" = "1" ]; then
     log "Pusheando a origin/${RAMA}..."
     git push origin "$RAMA" 2>&1 | sed 's/^/  /'
   fi
+elif [ "$NUEVOS" -eq 0 ]; then
+  log "Reporte forzado sin commits nuevos: lo dejo sin commitear."
 fi
 
 log "Listo."

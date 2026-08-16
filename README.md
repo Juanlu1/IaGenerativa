@@ -47,10 +47,15 @@ El script es el mismo para todos — `scripts/reporte-cambios.sh` — y se puede
 correr a mano para probarlo:
 
 ```bash
-./scripts/reporte-cambios.sh            # actualiza, reporta y commitea local
-COMMIT=0 ./scripts/reporte-cambios.sh   # solo genera el archivo, sin commitear
-PUSH=1   ./scripts/reporte-cambios.sh   # además pushea el reporte al remote
+./scripts/reporte-cambios.sh               # actualiza, reporta y commitea local
+COMMIT=0 ./scripts/reporte-cambios.sh      # solo genera el archivo, sin commitear
+PUSH=1 ./scripts/reporte-cambios.sh        # además pushea el reporte al remote
+FORCE_REPORTE=1 ./scripts/reporte-cambios.sh  # reporte aunque no haya commits nuevos
 ```
+
+Si no entraron commits nuevos, la tarea **no genera reporte ni commitea**: la
+evidencia de que corrió es el log. Un archivo "sin cambios" commiteado por día y
+por integrante serían ~120 commits vacíos por mes tapando la historia real.
 
 Para programarlo en macOS usamos un **LaunchAgent** en vez de `cron`, porque
 `crontab` necesita que le des Full Disk Access a la terminal desde Ajustes del
