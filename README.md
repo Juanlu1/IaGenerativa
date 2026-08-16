@@ -34,11 +34,45 @@ La aplicacion esta desplegada en Railway y usa PostgreSQL persistente para produ
 - DATABASE_URL se configura mediante una variable de entorno de Railway.
 - No se guardan secretos en el codigo ni en el repositorio.
 - Se verifico manualmente que los links y sus clicks sobreviven a un redeploy.
+
+## Tarea programada de cada integrante
+
+Cada integrante deja corriendo en **su propia máquina** una tarea que, todos los
+días, actualiza su copia local desde el remote y genera un reporte de los cambios
+del repositorio. El reporte lo redacta el agente, no un `git log` pelado: sale en
+`reportes/<usuario>/<fecha>.md` con los commits nuevos, quién los hizo, qué
+archivos tocaron y un resumen en lenguaje llano.
+
+El script es el mismo para todos — `scripts/reporte-cambios.sh` — y se puede
+correr a mano para probarlo:
+
+```bash
+./scripts/reporte-cambios.sh            # actualiza, reporta y commitea local
+COMMIT=0 ./scripts/reporte-cambios.sh   # solo genera el archivo, sin commitear
+PUSH=1   ./scripts/reporte-cambios.sh   # además pushea el reporte al remote
+```
+
+Para programarlo en macOS usamos un **LaunchAgent** en vez de `cron`, porque
+`crontab` necesita que le des Full Disk Access a la terminal desde Ajustes del
+Sistema y `launchd` no:
+
+```bash
+cp scripts/com.corta.reporte-cambios.plist ~/Library/LaunchAgents/
+# editá las rutas del plist para que apunten a tu clon del repo
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.corta.reporte-cambios.plist
+launchctl kickstart -p gui/$(id -u)/com.corta.reporte-cambios   # dispararlo ahora
+```
+
+Los logs de cada corrida quedan en `~/Library/Logs/corta-reporte.log`. En Linux
+alcanza con una línea de `crontab -e`:
+`0 9 * * * /ruta/al/repo/scripts/reporte-cambios.sh >> ~/corta-reporte.log 2>&1`
+
 ## Qué hace cada archivo vivo
 
 | Archivo | Qué hace |
 |---|---|
-| `server.js` | La app Express: endpoints de crear link, redirect y estadísticas; lee/escribe `links.json`. |
+| `server.js` | La app Express: endpoints de crear link, redirect y estadísticas. Delega el guardado en `storage.js`. |
+| `storage.js` | Capa de persistencia: usa PostgreSQL si hay `DATABASE_URL` (producción) y `links.json` si no (local). Acá viven la deduplicación por URL, el reintento ante colisión de código y el conteo de clicks. |
 | `utils.js` | `generarCodigo()`, usado por `server.js` para generar el código corto. |
 | `links.json` | Store de datos (array de links). No se trackea en git — ver `.gitignore`. |
 | `public/index.html` | Página principal: formulario para acortar una URL. |
@@ -47,6 +81,9 @@ La aplicacion esta desplegada en Railway y usa PostgreSQL persistente para produ
 | `public/logo.png` | Logo mostrado en `index.html`. |
 | `SPEC.md` | Contrato de comportamiento. Fuente de verdad para tests e implementación. |
 | `test/` | Batería de tests derivada de `SPEC.md` (ver tabla abajo). |
+| `scripts/reporte-cambios.sh` | Tarea programada del extra de equipo: actualiza la copia local y le pide al agente el reporte de cambios. |
+| `scripts/com.corta.reporte-cambios.plist` | Plantilla de LaunchAgent (macOS) para disparar esa tarea todos los días. |
+| `reportes/` | Reportes de cambios generados por la tarea programada, uno por integrante y fecha. |
 | `mission.md` | Consigna original de la misión. Se queda en el repo por decisión del equipo. |
 | `notas.txt` | Notas del desarrollador anterior; tiene una credencial, por eso está en `.gitignore` y nunca se commitea. |
 | `CLAUDE.md` / `AGENTS.md`/ `.github/copilot-instructions.md` | Contrato vivo para el agente de código: reglas, estado del proyecto, decisiones. |
@@ -78,6 +115,13 @@ La última columna indica si el test nace en verde (ya cumple hoy) o en rojo
 | `SPEC 5: codigo existente devuelve 200 con {clicks, url, creado}` | §5 Estadísticas | 4 | 🔴 rojo |
 | `SPEC 5: codigo inexistente devuelve 404` | §5 Estadísticas | 4 | 🔴 rojo |
 | `SPEC 5: consultar stats no incrementa clicks` | §5 Estadísticas, §6 | 4 | 🟢 verde |
+| `SPEC 7: un link permanece disponible al crear una nueva instancia del almacenamiento` | §7 Persistencia | 5 | 🔴 rojo |
+| `SPEC 7: los clicks permanecen al crear una nueva instancia del almacenamiento` | §7 Persistencia | 5 | 🔴 rojo |
+| `SPEC 7: stats recupera los valores persistidos` | §7 Persistencia | 5 | 🔴 rojo |
+| `SPEC 7: incrementar clicks no pierde incrementos concurrentes` | §7 Persistencia | 5 | 🔴 rojo |
+| `SPEC 7 y SPEC 3: la deduplicacion por URL exacta se mantiene` | §7, §3 dedup | 5 | 🔴 rojo |
+| `SPEC 7 y SPEC 3: codigo sigue siendo unico ante una colision` | §7, §3 unicidad | 5 | 🔴 rojo |
 
-Persistencia (§7 del SPEC, Milestone 5) todavía no tiene tests: es un test de
-integración que va junto con la migración a Postgres.
+Los tests de persistencia (§7) corren contra un backend en memoria que simula una
+base compartida entre instancias: prueban el contrato que `storage.js` tiene que
+cumplir, sin depender de PostgreSQL ni de Railway.

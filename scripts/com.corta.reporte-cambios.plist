@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Plantilla de LaunchAgent (macOS) para la tarea programada del extra de equipo.
+
+  Antes de usarla, reemplazá TU_USUARIO y la ruta a tu clon del repo por las
+  tuyas. Despues:
+
+    cp scripts/com.corta.reporte-cambios.plist ~/Library/LaunchAgents/
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.corta.reporte-cambios.plist
+    launchctl kickstart -p gui/$(id -u)/com.corta.reporte-cambios   # probarlo ahora
+
+  Para descargarla:
+    launchctl bootout gui/$(id -u)/com.corta.reporte-cambios
+
+  Usamos launchd y no crontab porque en macOS `crontab` necesita que le des
+  Full Disk Access a la terminal desde Ajustes del Sistema; launchd no.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.corta.reporte-cambios</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-lc</string>
+        <string>/Users/TU_USUARIO/ruta/a/IaGenerativa/scripts/reporte-cambios.sh</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/TU_USUARIO/ruta/a/IaGenerativa</string>
+
+    <!-- Todos los dias a las 09:00, hora local de la maquina -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>9</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- No correr al iniciar sesion: solo en el horario programado -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/TU_USUARIO/Library/Logs/corta-reporte.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/TU_USUARIO/Library/Logs/corta-reporte.log</string>
+</dict>
+</plist>
