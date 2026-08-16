@@ -43,6 +43,19 @@ del repositorio. El reporte lo redacta el agente, no un `git log` pelado: sale e
 `reportes/<usuario>/<fecha>.md` con los commits nuevos, quién los hizo, qué
 archivos tocaron y un resumen en lenguaje llano.
 
+### Antes de configurarla
+
+Dos requisitos que no dan error obvio si faltan:
+
+- **Tener `claude` instalado y logueado** en esa máquina. Si no, la tarea muere
+  con `ERROR: no encuentro el ejecutable 'claude' en el PATH`.
+- **Tener `git config user.name` y `user.email` bien puestos.** El nombre de la
+  subcarpeta del reporte sale de ahí: si están vacíos, tus reportes terminan en
+  `reportes/root/` y tus commits quedan sin autor real (ya nos pasó una vez, en
+  el commit `9a0eecb`).
+
+### El script
+
 El script es el mismo para todos — `scripts/reporte-cambios.sh` — y se puede
 correr a mano para probarlo:
 
@@ -57,9 +70,10 @@ Si no entraron commits nuevos, la tarea **no genera reporte ni commitea**: la
 evidencia de que corrió es el log. Un archivo "sin cambios" commiteado por día y
 por integrante serían ~120 commits vacíos por mes tapando la historia real.
 
-Para programarlo en macOS usamos un **LaunchAgent** en vez de `cron`, porque
-`crontab` necesita que le des Full Disk Access a la terminal desde Ajustes del
-Sistema y `launchd` no:
+### Programarla (macOS)
+
+Usamos un **LaunchAgent** en vez de `cron`, porque `crontab` necesita que le des
+Full Disk Access a la terminal desde Ajustes del Sistema y `launchd` no:
 
 ```bash
 cp scripts/com.corta.reporte-cambios.plist ~/Library/LaunchAgents/
@@ -67,6 +81,11 @@ cp scripts/com.corta.reporte-cambios.plist ~/Library/LaunchAgents/
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.corta.reporte-cambios.plist
 launchctl kickstart -p gui/$(id -u)/com.corta.reporte-cambios   # dispararlo ahora
 ```
+
+Disparala a mano con `kickstart` apenas la configures, en vez de esperar a las 9
+del día siguiente: el LaunchAgent corre con un PATH distinto al de tu terminal, y
+así te enterás en el momento si no encuentra `claude`. Que el script ande cuando
+lo corrés vos no prueba que launchd lo dispare bien.
 
 Los logs de cada corrida quedan en `~/Library/Logs/corta-reporte.log`. En Linux
 alcanza con una línea de `crontab -e`:
