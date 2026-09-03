@@ -29,8 +29,12 @@ python3 -m venv .venv
 ## Levantar la interfaz
 
 ```bash
-.venv/bin/python -m chat.app     # http://localhost:5000
+.venv/bin/python -m chat.app     # http://localhost:5001
 ```
+
+El puerto por defecto es el **5001** y no el 5000: en macOS el AirPlay Receiver
+ocupa el 5000 y devuelve `403` en el navegador. Se puede cambiar con
+`PORT=8000 .venv/bin/python -m chat.app`.
 
 ## Correr los tests de la interfaz
 

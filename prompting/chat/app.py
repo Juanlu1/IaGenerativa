@@ -145,4 +145,8 @@ def crear_app(base) -> Flask:
 
 
 if __name__ == "__main__":
-    crear_app(Path(__file__).resolve().parent.parent).run(port=5000, debug=True)
+    # 5001 y no 5000: en macOS el AirPlay Receiver (Control Center) escucha en
+    # *:5000 por IPv4 y IPv6. Flask solo toma el IPv4, y como localhost resuelve
+    # primero a ::1, el navegador cae en AirPlay y devuelve 403.
+    puerto = int(os.environ.get("PORT", "5001"))
+    crear_app(Path(__file__).resolve().parent.parent).run(port=puerto, debug=True)
