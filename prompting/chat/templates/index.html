@@ -1,0 +1,176 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Chat multi-modelo — OpenRouter</title>
+<style>
+  body { font: 15px/1.5 system-ui, sans-serif; margin: 0; display: flex; height: 100vh; }
+  main { flex: 1; display: flex; flex-direction: column; padding: 1rem; overflow: hidden; gap: .5rem; }
+  aside { width: 320px; background: #f4f4f5; padding: 1rem; overflow-y: auto; }
+  #conversacion { flex: 1; overflow-y: auto; border: 1px solid #ddd; padding: .75rem; }
+  .turno { margin-bottom: 1rem; }
+  .rol { font-weight: 600; font-size: .75rem; text-transform: uppercase; color: #666; }
+  .texto { white-space: pre-wrap; }
+  .usage { font-size: .8rem; color: #444; background: #fafafa; padding: .4rem; margin-top: .3rem; border-left: 3px solid #bbb; }
+  .error .texto { color: #b00; }
+  textarea { width: 100%; height: 6rem; font: inherit; box-sizing: border-box; }
+  #schema { height: 4rem; }
+  table { border-collapse: collapse; width: 100%; font-size: .78rem; margin-top: .5rem; }
+  th, td { border: 1px solid #ccc; padding: .25rem .4rem; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  #aviso { background: #fee; color: #900; padding: .5rem; display: none; margin-bottom: .5rem; }
+  .ctl { display: block; margin: .25rem 0; }
+  h3 { margin: 1rem 0 .25rem; font-size: .85rem; text-transform: uppercase; color: #555; }
+  button { font: inherit; }
+  .demo { display: block; width: 100%; margin-bottom: .25rem; }
+</style>
+
+<main>
+  <div>
+    <label>Modelo:
+      <select id="slot">
+        {% for s in slots %}
+        <option value="{{ s.numero }}">Slot {{ s.numero }} — {{ s.modelo }} ({{ s.capacidad }})</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Log en:
+      <select id="carpeta">
+        <option value="pruebas">logs/pruebas</option>
+        <option value="conway">logs/conway</option>
+      </select>
+    </label>
+    <span id="archivo-log"></span>
+  </div>
+
+  <div id="controles">
+    <label class="ctl" data-slot="1">Effort:
+      <select id="effort"><option>low</option><option selected>medium</option><option>high</option></select>
+    </label>
+    <label class="ctl" data-slot="2">
+      <input type="checkbox" id="contexto" checked> Adjuntar contexto estático (cacheable)
+    </label>
+    <label class="ctl" data-slot="4">
+      <input type="checkbox" id="razonar" checked> Razonamiento
+    </label>
+    <div class="ctl" data-slot="3">
+      JSON Schema:
+      <textarea id="schema">{"type":"object","properties":{"respuesta":{"type":"string"},"confianza":{"type":"number"}},"required":["respuesta"]}</textarea>
+    </div>
+  </div>
+
+  <div id="conversacion"></div>
+
+  <div>
+    <textarea id="mensaje" placeholder="Escribí el mensaje..."></textarea>
+    <input id="ruta" placeholder="…o pegá la ruta de un archivo con el prompt" size="45">
+    <button id="cargar">Cargar archivo</button>
+    <button id="enviar">Enviar</button>
+  </div>
+</main>
+
+<aside>
+  <div id="aviso">Presupuesto bajo: queda menos de USD 0.20.</div>
+  <h3>Conversación</h3>
+  <div id="totales">sin mensajes</div>
+  <h3>Presupuesto de la key</h3>
+  <div id="presupuesto">…</div>
+  <h3>Demos</h3>
+  <div id="resultado-demo"></div>
+</aside>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const conv = $("conversacion");
+
+function pintarControles() {
+  const n = $("slot").value;
+  document.querySelectorAll(".ctl").forEach(e => {
+    e.style.display = (e.dataset.slot === n) ? "block" : "none";
+  });
+}
+
+function agregarTurno(rol, texto, usage) {
+  const div = document.createElement("div");
+  div.className = "turno" + (rol === "error" ? " error" : "");
+  div.innerHTML = '<div class="rol"></div><div class="texto"></div>';
+  div.querySelector(".rol").textContent = rol;
+  div.querySelector(".texto").textContent = texto;
+  if (usage) {
+    const u = document.createElement("div");
+    u.className = "usage";
+    u.textContent = `entrada ${usage.entrada} · salida ${usage.salida} · razonamiento ${usage.razonamiento}`
+      + ` · cacheados ${usage.cacheados} · costo ${usage.costo} · descuento ${usage.descuento}`;
+    div.appendChild(u);
+  }
+  conv.appendChild(div);
+  conv.scrollTop = conv.scrollHeight;
+}
+
+async function cambiarSlot() {
+  const r = await fetch("/api/slot", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({slot: Number($("slot").value), carpeta: $("carpeta").value})
+  });
+  const d = await r.json();
+  conv.innerHTML = "";
+  $("totales").textContent = "sin mensajes";
+  $("archivo-log").textContent = "log: " + d.log;
+  pintarControles();
+}
+
+function opciones() {
+  const n = $("slot").value;
+  if (n === "1") return {effort: $("effort").value};
+  if (n === "2") return {contexto: $("contexto").checked};
+  if (n === "4") return {razonar: $("razonar").checked};
+  if (n === "3") { try { return {schema: JSON.parse($("schema").value)}; }
+                   catch (e) { alert("El JSON Schema no es JSON válido"); return null; } }
+  return {};
+}
+
+async function enviar() {
+  const texto = $("mensaje").value.trim();
+  const op = opciones();
+  if (!texto || op === null) return;
+  agregarTurno("usuario", texto, null);
+  $("mensaje").value = "";
+  $("enviar").disabled = true;
+  try {
+    const r = await fetch("/api/chat", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({mensaje: texto, opciones: op})
+    });
+    const d = await r.json();
+    if (d.error) { agregarTurno("error", d.error, null); return; }
+    agregarTurno("asistente", d.respuesta, d.usage);
+    $("totales").textContent =
+      `entrada ${d.totales.entrada} · salida ${d.totales.salida} · costo ${d.totales.costo}`;
+    refrescarPresupuesto();
+  } finally {
+    $("enviar").disabled = false;
+  }
+}
+
+async function refrescarPresupuesto() {
+  const d = await (await fetch("/api/presupuesto")).json();
+  if (d.error) { $("presupuesto").textContent = d.error; return; }
+  $("presupuesto").textContent =
+    `gastado $${d.usage} de $${d.limit} · queda $${d.limit_remaining}`;
+  $("aviso").style.display = (d.limit_remaining < 0.20) ? "block" : "none";
+}
+
+$("slot").onchange = cambiarSlot;
+$("carpeta").onchange = cambiarSlot;
+$("enviar").onclick = enviar;
+$("cargar").onclick = async () => {
+  const r = await fetch("/api/prompt-archivo", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ruta: $("ruta").value})
+  });
+  const d = await r.json();
+  if (d.error) { alert(d.error); return; }
+  $("mensaje").value = d.texto;
+};
+
+pintarControles();
+refrescarPresupuesto();
+</script>
