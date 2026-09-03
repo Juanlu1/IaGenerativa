@@ -52,7 +52,12 @@ como se escribe la interfaz del ejercicio 1 y que numeros van al informe.
    `tokens_prompt` = 12 (normalizado) contra `native_tokens_prompt` = 18 (el real
    del proveedor, que es el que se factura). Al informe van los **native**; mezclar
    los dos hace que las cuentas no cierren.
-8. **La respuesta trae `cost_details`** ademas de `cost`, con el desglose de entrada
+8. **Omitir `reasoning` no apaga el razonamiento.** DeepSeek razona por defecto:
+   la misma pregunta sin el parametro devolvio 30 tokens de razonamiento, y con
+   `reasoning: {"enabled": false}` devolvio 0 y costo la mitad. Para comparar
+   precios entre modelos hay que apagarlo explicitamente, o se compara el largo
+   de la respuesta en vez de la tarifa.
+9. **La respuesta trae `cost_details`** ademas de `cost`, con el desglose de entrada
    y salida por separado. Sirve para la tabla del ejercicio 3.
 
 ## Decisiones tomadas

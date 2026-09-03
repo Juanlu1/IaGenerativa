@@ -31,8 +31,15 @@ def test_slot_4_con_razonamiento_prendido_manda_reasoning():
     assert body["reasoning"] == {"effort": "medium"}
 
 
-def test_slot_4_con_razonamiento_apagado_no_manda_reasoning():
-    assert "reasoning" not in construir_body(get_slot(4), MENSAJES, {"razonar": False})
+def test_slot_4_con_razonamiento_apagado_lo_apaga_explicitamente():
+    # Verificado contra la API: omitir el parametro no alcanza, DeepSeek razona
+    # igual. Hay que mandar enabled:false.
+    body = construir_body(get_slot(4), MENSAJES, {"razonar": False})
+    assert body["reasoning"] == {"enabled": False}
+
+
+def test_sin_la_clave_razonar_no_se_toca_el_default_del_proveedor():
+    assert "reasoning" not in construir_body(get_slot(4), MENSAJES, {})
 
 
 def test_el_contexto_estatico_va_primero_y_marcado_para_cachear():

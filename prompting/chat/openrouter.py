@@ -22,8 +22,11 @@ def construir_body(slot: Slot, mensajes: list[dict], opciones: dict) -> dict:
     body = {"model": slot.modelo, "messages": mensajes}
     if slot.control == "effort" and opciones.get("effort"):
         body["reasoning"] = {"effort": opciones["effort"]}
-    elif slot.control == "reasoning" and opciones.get("razonar"):
-        body["reasoning"] = {"effort": "medium"}
+    elif slot.control == "reasoning" and "razonar" in opciones:
+        # Omitir el parametro NO apaga el razonamiento: DeepSeek razona por
+        # defecto. Para apagarlo hay que mandarlo explicitamente.
+        body["reasoning"] = ({"effort": "medium"} if opciones["razonar"]
+                             else {"enabled": False})
     elif slot.control == "schema" and opciones.get("schema"):
         body["response_format"] = {
             "type": "json_schema",

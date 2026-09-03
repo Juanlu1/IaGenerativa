@@ -110,7 +110,7 @@ def crear_app(base) -> Flask:
     @app.post("/api/demo/<nombre>")
     def demo(nombre):
         datos = request.get_json(force=True)
-        pregunta = datos.get("pregunta") or "Explicá en una línea qué es un autómata celular."
+        pregunta = datos.get("pregunta") or None
         estado.asegurar_log()
         c = cliente()
         try:
