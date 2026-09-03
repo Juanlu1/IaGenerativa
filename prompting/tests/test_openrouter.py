@@ -49,3 +49,32 @@ def test_el_contexto_estatico_sale_de_los_archivos_del_repo(tmp_path):
     (tmp_path / "SPEC.md").write_text("contrato", encoding="utf-8")
     texto = contexto_estatico(tmp_path)
     assert "enunciado" in texto and "contrato" in texto
+
+
+import pytest
+from chat.openrouter import ErrorOpenRouter, leer_api_key
+
+
+def test_lee_la_key_con_igual(tmp_path):
+    env = tmp_path / ".env"
+    env.write_text("OPENROUTER_API_KEY=sk-or-v1-abc\n", encoding="utf-8")
+    assert leer_api_key(env) == "sk-or-v1-abc"
+
+
+def test_lee_la_key_aunque_este_escrita_con_dos_puntos(tmp_path):
+    env = tmp_path / ".env"
+    env.write_text("OPENROUTER_API_KEY: sk-or-v1-abc\n", encoding="utf-8")
+    assert leer_api_key(env) == "sk-or-v1-abc"
+
+
+def test_ignora_comentarios_y_lineas_vacias(tmp_path):
+    env = tmp_path / ".env"
+    env.write_text("# comentario\n\nOPENROUTER_API_KEY=sk-or-v1-abc\n", encoding="utf-8")
+    assert leer_api_key(env) == "sk-or-v1-abc"
+
+
+def test_sin_key_lanza_error_claro(tmp_path):
+    env = tmp_path / ".env"
+    env.write_text("OTRA=cosa\n", encoding="utf-8")
+    with pytest.raises(ErrorOpenRouter, match="OPENROUTER_API_KEY"):
+        leer_api_key(env)
