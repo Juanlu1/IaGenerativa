@@ -3,3 +3,5 @@ notas.txt
 links.json
 .env
 .DS_Store
+.idea/
+.vscode/
