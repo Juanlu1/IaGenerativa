@@ -22,6 +22,20 @@ construimos, en [`SPEC.md`](SPEC.md); el diseño de la interfaz, en
 
 ```bash
 cp .env.example .env      # y pegá la key de OpenRouter del grupo
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+```
+
+## Levantar la interfaz
+
+```bash
+.venv/bin/python -m chat.app     # http://localhost:5000
+```
+
+## Correr los tests de la interfaz
+
+```bash
+.venv/bin/pytest -q              # 46 tests, ninguno toca la red
 ```
 
 La key **nunca** se commitea: `.env` está en el `.gitignore` de la raíz.
@@ -38,7 +52,7 @@ script tal cual salió del chat.
 ## Estado
 
 - [ ] **Antes de todo**: router, mapa de modelos y parámetros comunes → van al `INFORME.md`
-- [ ] **Ej 1**: interfaz con los 4 modelos, usage por respuesta, log `.md` por conversación
-- [ ] **Ej 1**: log de prueba de cada uno de los 4 modelos
+- [x] **Ej 1**: interfaz con los 4 modelos, usage por respuesta, log `.md` por conversación
+- [x] **Ej 1**: log de prueba de cada uno de los 4 modelos ([índice](logs/pruebas/README.md))
 - [ ] **Ej 2**: `vida.py` en 1 prompt (2 máximo), 9 tests en verde, cache hits desde el 2º intento
 - [ ] **Ej 3**: informe con la cuenta final, cerrando contra el dashboard de OpenRouter
