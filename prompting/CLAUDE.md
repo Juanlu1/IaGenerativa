@@ -23,17 +23,50 @@ original de la cátedra, en [`mission.md`](mission.md).
 5. **El usage no se transcribe a mano.** Lo que va al log y al informe sale del
    objeto `usage` de la respuesta, tal cual lo devuelve OpenRouter.
 
+## Hallazgos verificados contra la API (2026-09-02)
+
+Todo esto se comprobo con llamadas reales, no sale de la documentacion. Condiciona
+como se escribe la interfaz del ejercicio 1 y que numeros van al informe.
+
+1. **La cuenta de OpenRouter es del curso, no del grupo.** `GET /api/v1/credits`
+   devuelve el consumo de *todos* (25 creditos totales, 14.35 gastados por otros).
+   Contra eso el informe no puede cerrar.
+2. **Nuestra key tiene limite propio de USD 1** y su `usage` es solo nuestro:
+   `GET /api/v1/key` -> `usage`, `limit`, `limit_remaining`. Ese es el numero
+   auditable del ejercicio 3, y reemplaza al dashboard de actividad (al que no
+   tenemos acceso: los profes dieron la key, no la cuenta). Se toma la lectura
+   **antes y despues** de cada corrida y la diferencia es el gasto de esa corrida.
+3. **Los 4 IDs del enunciado existen y estan vigentes.** El slot 4 sale 15.4x mas
+   barato que el slot 2 en tokens de entrada ($0.065/M vs $1.00/M), que es
+   exactamente la comparacion que pide el enunciado.
+4. **`cache_discount` no siempre viene.** Sin evento de cache el campo esta
+   ausente, no en cero. La interfaz tiene que tolerar campos faltantes o revienta
+   con KeyError en la primera respuesta. Lo mismo vale para `reasoning_tokens`.
+5. **DeepSeek si devuelve los tokens de pensamiento**: `reasoning_tokens` llego
+   con valor (23 en la prueba). No sufrimos el problema que el enunciado advierte
+   para la serie o de OpenAI.
+6. **`GET /api/v1/generation?id=<id>` tarda en estar disponible**: a los 4 segundos
+   da 404, a los 15 responde. Si la interfaz lo consulta, tiene que reintentar; no
+   sirve pedirlo inmediatamente despues de la respuesta.
+7. **Hay dos conteos de tokens distintos y no dan igual.** En la misma llamada:
+   `tokens_prompt` = 12 (normalizado) contra `native_tokens_prompt` = 18 (el real
+   del proveedor, que es el que se factura). Al informe van los **native**; mezclar
+   los dos hace que las cuentas no cierren.
+8. **La respuesta trae `cost_details`** ademas de `cost`, con el desglose de entrada
+   y salida por separado. Sirve para la tabla del ejercicio 3.
+
 ## Decisiones tomadas
 
 <!-- Sección mantenida por /collect-memory. Actualizar al cerrar cada sesión. -->
 
 - Reorganización del repo en carpetas por misión (`corta/`, `prompting/`); el
   tooling de equipo quedó en la raíz.
-- La cuenta de OpenRouter es **una sola por grupo**: el ejercicio 3 contrasta los
-  números contra el dashboard de actividad, y con cuentas separadas no cierra.
+- La contabilidad del ejercicio 3 sale del `usage` de nuestra key, no del dashboard
+  de la cuenta: la cuenta es compartida con todo el curso (ver hallazgos 1 y 2).
 
 ## Estado del proyecto
 
+- **Paso 0** (repo organizado, key verificada, 4 modelos confirmados): HECHO.
 - **Antes de todo** (router, mapa de modelos, parámetros): pendiente.
 - **Ejercicio 1** (interfaz + logs de prueba por modelo): pendiente.
 - **Ejercicio 2** (`vida.py` en 1 prompt): pendiente — depende del ej 1.
