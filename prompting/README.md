@@ -4,7 +4,8 @@ Chat propio multi-modelo sobre **OpenRouter**, y con él resolver el juego de la
 vida de Conway en la mínima cantidad de prompts posible, midiendo tokens y gasto.
 
 El enunciado completo está en [`mission.md`](mission.md). El contrato de lo que
-construimos, en [`SPEC.md`](SPEC.md).
+construimos, en [`SPEC.md`](SPEC.md); el diseño de la interfaz, en
+[`DESIGN.md`](DESIGN.md).
 
 ## Qué hay acá
 
