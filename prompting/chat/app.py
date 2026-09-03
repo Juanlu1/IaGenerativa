@@ -4,6 +4,7 @@ from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
 
+from chat.demos import demo_cache, demo_effort, demo_precio
 from chat.logger import LogConversacion
 from chat.openrouter import (Cliente, ErrorOpenRouter, contexto_estatico,
                              leer_api_key, mensajes_con_contexto)
@@ -105,6 +106,26 @@ def crear_app(base) -> Flask:
             totales={"entrada": estado.total_entrada, "salida": estado.total_salida,
                      "costo": moneda(estado.total_costo)},
         )
+
+    @app.post("/api/demo/<nombre>")
+    def demo(nombre):
+        datos = request.get_json(force=True)
+        pregunta = datos.get("pregunta") or "Explicá en una línea qué es un autómata celular."
+        estado.asegurar_log()
+        c = cliente()
+        try:
+            if nombre == "effort":
+                filas = demo_effort(c, estado.log, pregunta)
+            elif nombre == "cache":
+                filas = demo_cache(c, estado.log, contexto_estatico(base), pregunta)
+            elif nombre == "precio":
+                filas = demo_precio(c, estado.log, pregunta)
+            else:
+                return jsonify(error=f"demo desconocido: {nombre}"), 404
+        except ErrorOpenRouter as e:
+            estado.log.error(str(e))
+            return jsonify(error=str(e)), 502
+        return jsonify(filas=filas)
 
     @app.post("/api/prompt-archivo")
     def prompt_archivo():

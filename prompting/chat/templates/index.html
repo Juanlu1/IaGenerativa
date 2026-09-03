@@ -74,6 +74,9 @@
   <h3>Presupuesto de la key</h3>
   <div id="presupuesto">…</div>
   <h3>Demos</h3>
+  <button class="demo" data-demo="effort">Effort (slot 1)</button>
+  <button class="demo" data-demo="cache">Cache (slot 2)</button>
+  <button class="demo" data-demo="precio">Precio (slots 2 y 4)</button>
   <div id="resultado-demo"></div>
 </aside>
 
@@ -170,6 +173,31 @@ $("cargar").onclick = async () => {
   if (d.error) { alert(d.error); return; }
   $("mensaje").value = d.texto;
 };
+
+async function correrDemo(nombre) {
+  $("resultado-demo").textContent = "corriendo…";
+  document.querySelectorAll(".demo").forEach(b => b.disabled = true);
+  try {
+    const r = await fetch("/api/demo/" + nombre, {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({})
+    });
+    const d = await r.json();
+    if (d.error) { $("resultado-demo").textContent = d.error; return; }
+    const filas = d.filas.map(f =>
+      `<tr><td>${f.etiqueta}</td><td>${f.entrada}</td><td>${f.salida}</td>`
+      + `<td>${f.razonamiento}</td><td>${f.cacheados}</td><td>${f.costo}</td><td>${f.segundos}s</td></tr>`
+    ).join("");
+    $("resultado-demo").innerHTML =
+      `<table><tr><th>caso</th><th>in</th><th>out</th><th>razon.</th>`
+      + `<th>cache</th><th>costo</th><th>tiempo</th></tr>${filas}</table>`;
+    refrescarPresupuesto();
+  } finally {
+    document.querySelectorAll(".demo").forEach(b => b.disabled = false);
+  }
+}
+
+document.querySelectorAll(".demo").forEach(b => b.onclick = () => correrDemo(b.dataset.demo));
 
 pintarControles();
 refrescarPresupuesto();
