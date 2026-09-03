@@ -28,7 +28,12 @@ sobre diccionarios, testeables sin red ni gasto.
 | `chat/usage.py` | Normaliza el `usage` crudo de OpenRouter a una estructura fija | — |
 | `chat/openrouter.py` | Cliente HTTP: arma el body por slot, llama, devuelve texto + usage + generation id | `usage` |
 | `chat/logger.py` | Abre y appendea el `.md` de cada conversación | `usage` |
-| `chat/app.py` | Flask: rutas, estado de la conversación, los 3 demos, la página | todos |
+| `chat/demos.py` | Las 3 secuencias de demo (effort, cache, precio) | `openrouter`, `slots`, `usage` |
+| `chat/app.py` | Flask: rutas, estado de la conversación, la página | todos |
+
+Los demos salieron de `app.py` al planificar: son secuencias con logica propia y
+se testean con un cliente falso, cosa que no se puede hacer comodo desde dentro
+de las rutas.
 
 ## Flujo de un mensaje
 
