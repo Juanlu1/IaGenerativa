@@ -68,11 +68,42 @@ como se escribe la interfaz del ejercicio 1 y que numeros van al informe.
   tooling de equipo quedó en la raíz.
 - La contabilidad del ejercicio 3 sale del `usage` de nuestra key, no del dashboard
   de la cuenta: la cuenta es compartida con todo el curso (ver hallazgos 1 y 2).
+  En el informe se verificó por `generation id` y se explicitó por qué no hay
+  contraste contra el dashboard.
+- Las respuestas de "Antes de todo" van como primera sección de `INFORME.md`, no en
+  un archivo aparte: la rúbrica las evalúa como parte del informe (sin ellas el
+  ejercicio 3 tiene tope de 15/20).
+- Se borraron los logs vacíos (solo encabezado, sin turnos) que la interfaz crea al
+  cambiar de modelo: no son intentos, y uno en `logs/conway/` hacía que los logs
+  contaran 3 intentos contra 2 del informe.
+- Intento ganador de Conway = `logs/conway/2026-09-17-160135-slot4.md` (su código es
+  idéntico a `vida.py`); el intento 2 es `2026-09-17-142741-slot4.md`. Los nombres
+  mezclan hora UTC y local; el orden real lo dan los `generation id`, y está
+  explicado en el informe para que no parezca edición posterior.
+- `.env.example` se había borrado por accidente en el commit de `vida.py`
+  (`c367fdf`); se restauró con su contenido original.
+- La conclusión del informe nombra decisiones concretas (`reasoning.effort: "low"`,
+  pedir solo el código), porque "mantener todo" no puntúa en la rúbrica.
+
+## Convenciones del equipo
+
+<!-- Sección mantenida por /collect-memory. Actualizar al cerrar cada sesión. -->
+
+- El agente **no hace commits ni push**: deja los cambios en el working tree y el
+  equipo commitea.
+- Al editar entregables ya escritos (como `INFORME.md`), cambiar solo lo necesario
+  y conservar el texto del equipo; no reescribir el documento entero.
 
 ## Estado del proyecto
 
 - **Paso 0** (repo organizado, key verificada, 4 modelos confirmados): HECHO.
-- **Antes de todo** (router, mapa de modelos, parámetros): pendiente.
-- **Ejercicio 1** (interfaz + logs de prueba por modelo): pendiente.
-- **Ejercicio 2** (`vida.py` en 1 prompt): pendiente — depende del ej 1.
-- **Ejercicio 3** (informe): pendiente — depende del ej 2.
+- **Antes de todo** (router, mapa de modelos, parámetros): HECHO — en `INFORME.md`.
+  DeepSeek y Kimi no figuran en el board de frontera (top 5).
+- **Ejercicio 1** (interfaz + logs de prueba por modelo + demos): HECHO.
+- **Ejercicio 2** (`vida.py` en 1 prompt): HECHO — 1 prompt, 9/9 tests, cache hit en
+  el intento 2.
+- **Ejercicio 3** (informe): HECHO salvo un `[COMPLETAR]`: la lectura de `usage` de
+  `GET /api/v1/key` antes/después (anotarla o borrar el corchete si no se tomó).
+- **Pendiente**: commitear los cambios de esta sesión (`.env.example`, borrado de
+  logs vacíos, `INFORME.md`, `CLAUDE.md`). Los tests unitarios de la interfaz no se
+  corrieron en esta máquina (no hay `.venv`); no los exige la entrega.
