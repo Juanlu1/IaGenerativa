@@ -47,6 +47,6 @@ La primera corrida descarga el modelo del encoder desde Hugging Face.
 ## Estado del proyecto
 
 - **Parte 1** (RAG vectorial): HECHA. `config_rag.json` = bge-m3, sección con
-  metadatos, k=1 → context_relevance 1,000 en dev (BERT de base: 0,375). Falta
-  volcar la tabla y la justificación al `INFORME.md`.
+  metadatos, k=1 → context_relevance 1,000 en dev (BERT de base: 0,375). Informe de la parte 1
+  escrito en `INFORME.md` (sección "Parte 1").
 - **Partes 2 a 5**: a cargo de otros integrantes del grupo.
