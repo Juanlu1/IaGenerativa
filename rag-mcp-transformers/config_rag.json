@@ -1,3 +1,3 @@
-{"encoder": "e5-base", "chunking": "seccion", "metadatos": true,
+{"encoder": "bge-m3", "chunking": "seccion", "metadatos": true,
  "tam_ventana": null, "solapamiento": null,
- "k": 3, "umbral": null, "margen": 0.02}
+ "k": 1, "umbral": null, "margen": null}

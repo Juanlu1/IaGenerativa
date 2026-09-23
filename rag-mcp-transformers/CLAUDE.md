@@ -38,7 +38,15 @@ La primera corrida descarga el modelo del encoder desde Hugging Face.
 - El evaluador pide la evidencia **textual** dentro del fragmento: un chunking
   que corte oraciones pierde recall aunque el fragmento sea el correcto.
 
+- Grilla de 100 configuraciones (`experimentos/tabla.md`): BERT sin ajustar no pasa
+  de 0,375; anteponer título de documento y sección mejora a todos los encoders;
+  las ventanas de palabras rinden peor que el corte por sección.
+- `bge-m3` pesa ~2,2 GB: la primera vez que alguien corre el recuperador se
+  descarga (tarda unos minutos). Después arranca en ~15 s en CPU.
+
 ## Estado del proyecto
 
-- **Parte 1** (RAG vectorial): interfaz y CLI andando; experimentos en curso.
+- **Parte 1** (RAG vectorial): HECHA. `config_rag.json` = bge-m3, sección con
+  metadatos, k=1 → context_relevance 1,000 en dev (BERT de base: 0,375). Falta
+  volcar la tabla y la justificación al `INFORME.md`.
 - **Partes 2 a 5**: a cargo de otros integrantes del grupo.
