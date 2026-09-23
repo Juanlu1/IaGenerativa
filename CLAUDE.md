@@ -13,6 +13,7 @@ Una carpeta por misión. Antes de tocar código, ubicá en cuál estás y leé s
 |---|---|---|
 | `corta/` | Corta — acortador de URLs (clase 2, entregada) | [`corta/CLAUDE.md`](corta/CLAUDE.md) |
 | `prompting/` | El prompt mínimo (clase 5, en curso) | [`prompting/CLAUDE.md`](prompting/CLAUDE.md) |
+| `rag-mcp-transformers/` | RAG, MCP y Transformers — Hospital Arroyo Claro (entrega 9/10) | [`rag-mcp-transformers/CLAUDE.md`](rag-mcp-transformers/CLAUDE.md) |
 
 En la raíz solo queda tooling de equipo: `scripts/` (tarea programada),
 `reportes/`, `.claude/skills/` y los archivos de contrato. Nada de código de
