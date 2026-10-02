@@ -3,7 +3,8 @@
 Instrucciones para el agente que trabaja en **esta carpeta** (`rag-mcp-transformers/`).
 Las reglas comunes al repo están en el [`CLAUDE.md` de la raíz](../CLAUDE.md).
 El enunciado de la cátedra está en [`mission.md`](mission.md); el contrato de la
-parte 1 (recuperador), en [`SPEC.md`](SPEC.md). Entrega: viernes 9/10/2026.
+parte 1 (recuperador), en [`SPEC.md`](SPEC.md), y el de las partes 2 y 3 (agente y
+servidor MCP), en [`SPEC_AGENTE.md`](SPEC_AGENTE.md). Entrega: viernes 9/10/2026.
 
 ## Reglas propias de esta misión
 
@@ -19,13 +20,24 @@ parte 1 (recuperador), en [`SPEC.md`](SPEC.md). Entrega: viernes 9/10/2026.
 4. **No tunear para las preguntas `dev`.** La cátedra evalúa con otro conjunto.
    Ante empates (< 0,02), gana la configuración más simple.
 
+5. **Las seis herramientas viven solo en `herramientas.py`.** `agente.py` y
+   `servidor_mcp.py` las envuelven; `agente_mcp.py` no puede importarlas (hay un
+   test que lo verifica). La descripción que lee el modelo es el docstring.
+6. **Cada corrida del agente deja su log `.md` en `logs/`.** Sin log, la parte 2
+   vale cero. Los logs de corridas descartadas también se commitean.
+
 ## Entorno
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt pytest
-pytest                      # tests del recuperador, con encoder falso (sin red)
+pytest                      # 45 tests, sin red: encoder y modelo falsos
+python3 api/servidor.py &   # la API tiene que estar corriendo para los agentes
 ```
+
+La key de OpenRouter va en `.env` (ver `.env.example`). Los agentes la cargan
+solos; `evaluar/evaluar.py` no, así que antes hay que hacer
+`set -a; source .env; set +a`.
 
 Funciona con Python 3.14 (torch 2.14, transformers 5.17, sentence-transformers 6.1).
 La primera corrida descarga el modelo del encoder desde Hugging Face.
@@ -44,9 +56,31 @@ La primera corrida descarga el modelo del encoder desde Hugging Face.
 - `bge-m3` pesa ~2,2 GB: la primera vez que alguien corre el recuperador se
   descarga (tarda unos minutos). Después arranca en ~15 s en CPU.
 
+- El juez casi siempre pone 5: no alcanza para comparar configuraciones del
+  agente. Hay que leer los logs. En A10 puso 5 a una respuesta que no coincidía con
+  la referencia.
+- El modelo reformula la consulta en términos técnicos y el recuperador trae otra
+  sección. Pedirle en la descripción que busque con las palabras del paciente lo
+  arregló con k=1; subir k también, pero baja *context relevance*.
+- Con temperatura 0 el agente igual varía entre corridas (A09: a veces busca la
+  norma del triage, a veces no).
+- La cuenta de OpenRouter es del curso y se queda sin crédito: el juez pide saldo
+  para 65.536 tokens de salida y devuelve 402 aunque a nuestra key le quede límite.
+- `GET /api/v1/key` se actualiza con demora: sirve para el total de la sesión, no
+  para el costo de una corrida sola.
+- El MCP Inspector se puede manejar con `playwright-core` y el Chrome instalado
+  (`DANGEROUSLY_OMIT_AUTH=true MCP_AUTO_OPEN_ENABLED=false`), sin sacar capturas a mano.
+
 ## Estado del proyecto
 
 - **Parte 1** (RAG vectorial): HECHA. `config_rag.json` = bge-m3, sección con
   metadatos, k=1 → context_relevance 1,000 en dev (BERT de base: 0,375). Informe de la parte 1
   escrito en `INFORME.md` (sección "Parte 1").
-- **Partes 2 a 5**: a cargo de otros integrantes del grupo.
+- **Parte 2** (agente): HECHA salvo la evaluación del juez de la corrida entregada
+  (`respuestas.jsonl`, corrida 05). Ruteo 1,00. Las corridas 01 a 03 sí están evaluadas.
+- **Parte 3** (MCP): HECHA salvo la evaluación del juez de `respuestas_mcp.jsonl`.
+  Capturas del Inspector en `experimentos/inspector/`.
+- **Pendiente (bloqueado por crédito de OpenRouter, 1/10/2026):** correr el
+  evaluador sobre `respuestas.jsonl` y `respuestas_mcp.jsonl` y completar las
+  celdas "pendiente" de `INFORME.md` (tabla de corridas, tabla comparativa y costo).
+- **Partes 4 y 5**: a cargo de otros integrantes del grupo. Sin empezar.

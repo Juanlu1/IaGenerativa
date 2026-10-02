@@ -347,7 +347,6 @@ Misma configuración que la corrida 05. Archivos: `respuestas_mcp.jsonl` y
 | Tokens de entrada | 39.183 | 39.375 |
 | Tokens de salida | 2.532 | 2.531 |
 | Costo del agente (USD) | 0,003664 | 0,003665 |
-| Tiempo de la corrida | 1 min 40 s | 1 min 39 s |
 
 Las tres métricas del juez están pendientes por la misma falta de crédito. El
 comando es:
