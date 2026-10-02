@@ -198,3 +198,209 @@ Generada por `experimentar.py` (copia de `experimentos/tabla.md`), ordenada por 
 | bert-base | sección | no | 5 | — | — | **0.150** | 0.450 | 0.090 | 0.314 | 5.00 | `bert-base__seccion__k5.jsonl.eval.json` |
 | bert-base | ventana 40/10 | no | 3 | — | — | **0.150** | 0.300 | 0.100 | 0.225 | 3.00 | `bert-base__ventana40-10__k3.jsonl.eval.json` |
 | bert-base | ventana 40/10 | no | 5 | — | — | **0.133** | 0.400 | 0.080 | 0.250 | 5.00 | `bert-base__ventana40-10__k5.jsonl.eval.json` |
+
+## Parte 2: agente con dos fuentes
+
+### Qué se construyó
+
+`agente.py` es un agente de tool calling hecho con LangChain sobre
+`deepseek/deepseek-v4-flash-0731` (OpenRouter, temperatura 0). El contrato está en
+[`SPEC_AGENTE.md`](SPEC_AGENTE.md). Las piezas:
+
+- **`herramientas.py`**: las seis herramientas como funciones comunes de Python.
+  Es el único lugar donde se consulta la API o el recuperador. La descripción que
+  lee el modelo es el docstring de cada función.
+- **`bucle_agente.py`**: el modelo (`ChatOpenAI`), el prompt de sistema, el bucle
+  (el modelo pide herramientas, se ejecutan, ve los resultados y responde), la
+  salida con el formato del enunciado y el log de la corrida.
+- **`agente.py`**: envuelve cada función como tool de LangChain
+  (`StructuredTool.from_function`) y corre el bucle.
+
+Cada corrida escribe un log `.md` en `logs/` con cada pregunta, las herramientas
+llamadas con sus argumentos y resultados, la respuesta y el usage de cada llamada
+al modelo, tomado del objeto que devuelve OpenRouter.
+
+### Corridas
+
+Todas sobre las 12 preguntas de `datos/preguntas_agente_dev.jsonl`. Lo único que
+cambia entre corridas es la herramienta `buscar_documentos`: cuántos fragmentos
+devuelve (`k`) y cómo está escrita su descripción.
+
+| Corrida | Qué cambia | Context relevance | Faithfulness | Answer relevance | Ruteo | Costo agente (USD) | Costo juez (USD) |
+|---|---|---|---|---|---|---|---|
+| 01 | k=1. La descripción traía un ejemplo de consulta igual a la pregunta A12 | 5,000 | 5,000 | 5,000 | 1,00 | 0,003665 | 0,01764 |
+| 02 | k=1, con un ejemplo que no está en `dev` | 4,917 | 5,000 | 5,000 | 1,00 | 0,003705 | 0,01784 |
+| 03 | k=2 | 4,667 | 5,000 | 5,000 | 1,00 | 0,003720 | 0,01757 |
+| 04 | k=3 | sin evaluar | sin evaluar | sin evaluar | 1,00 (a mano) | 0,003769 | — |
+| **05 (entregada)** | k=1 y la descripción pide buscar con las palabras del paciente | **pendiente** | **pendiente** | **pendiente** | 1,00 (a mano) | 0,003664 | — |
+
+Archivos de cada corrida: `experimentos/agente/<corrida>.jsonl`, su `.eval.json`
+cuando existe, y `logs/agente-<corrida>.md`. `respuestas.jsonl` es una copia de la
+corrida 05.
+
+**Las corridas 04 y 05 no tienen evaluación del juez.** El 1/10/2026 la cuenta de
+OpenRouter del curso se quedó sin crédito (USD 45,00 cargados, USD 44,996
+consumidos) y el modelo juez empezó a devolver `HTTP 402: Payment Required`. El
+límite de nuestra key no se alcanzó (quedan USD 0,88 de USD 1). La evaluación de
+la corrida 04 se cortó en la quinta pregunta; las cuatro que llegó a puntuar
+dieron *context relevance* 4, 4, 4 y 3. El ruteo de 04 y 05 se calculó a mano con
+la fórmula del evaluador, porque el script no lo informa sin llamar al juez.
+
+Cuando la cátedra recargue la cuenta, la evaluación pendiente es:
+
+```bash
+python3 evaluar/evaluar.py agente --preguntas datos/preguntas_agente_dev.jsonl --respuestas respuestas.jsonl
+```
+
+### Qué muestran los números
+
+**1. El ruteo fue 1,00 en todas las corridas.** El agente llamó siempre a las
+herramientas esperadas, incluidas las tres preguntas que necesitan dos fuentes
+(A10, A11 y A12). Ninguna llamada a la API falló por un nombre mal escrito: el
+modelo pasó `terapia intensiva`, `enalapril 10 mg` e `insulina NPH` bien al primer
+intento.
+
+**2. Más fragmentos bajan *context relevance* y no mejoran las otras dos.** Con
+k=2, el juez bajó a 4 las preguntas A01, A03, A04 y A12 por "un fragmento
+adicional irrelevante". *Faithfulness* y *answer relevance* quedaron en 5 con
+cualquier k. Es el mismo resultado que la parte 1: en este corpus cada respuesta
+está en una sola sección.
+
+**3. El juez no distingue bien entre corridas.** Casi todo da 5, así que las
+diferencias entre configuraciones salen de una o dos preguntas. Las conclusiones
+de abajo se apoyan en leer los logs, no solo en el promedio.
+
+### Preguntas donde el agente falló
+
+**A10 — "Quiero internar a mi nene en pediatría, ¿hay lugar y me puedo quedar con
+él?"** Es la falla más importante, y el juez no la penalizó. En las corridas 01 y
+02 el modelo reformuló la segunda parte como *"¿Puede un acompañante quedarse con
+un paciente internado en pediatría?"*. Con esa consulta el recuperador devuelve la
+sección "Ingreso a internación programada — Acompañante" (coseno 0,667) antes que
+"Régimen de visitas — Pediatría" (0,614). El agente respondió con la norma general
+("un acompañante durante la noche") en vez de la de pediatría ("madre, padre o
+tutor pueden permanecer las 24 horas"), que es la de la referencia. El juez puso
+*answer relevance* 5 igual.
+
+La causa no es el recuperador, sino la consulta. La parte 1 se midió con preguntas
+escritas como las escribe un paciente; con *"¿Me puedo quedar con mi hijo internado
+en pediatría?"* el mismo recuperador trae primero la sección correcta. Por eso la
+corrida 05 agrega a la descripción de `buscar_documentos` que la consulta se
+escriba con las palabras del paciente. En esa corrida el modelo buscó *"¿Puedo
+quedarme con mi hijo internado en pediatría?"*, recibió la sección de pediatría y
+respondió las 24 horas. Con k=2 y k=3 la respuesta también fue correcta, pero a
+costa de *context relevance* en las otras preguntas.
+
+**A09 — "¿Cuánto se está esperando hoy en la guardia si me clasifican como
+verde?"** La referencia agrega que 135 minutos supera el máximo de 2 horas del
+triage, aunque la única herramienta esperada es `consultar_espera`. El agente no
+es estable en esta pregunta: en las corridas 02 y 04 además buscó la norma en los
+documentos y respondió la comparación; en las 01, 03 y 05 respondió solo los 135
+minutos. El juez puso 5 en los dos casos. Con temperatura 0 el modelo igual varía
+entre corridas.
+
+**Ejemplo filtrado en la corrida 01.** La primera descripción de
+`buscar_documentos` tenía como ejemplo *"¿Qué hay que presentar para retirar
+medicamentos en la farmacia?"*, y el modelo usó esa frase textual para responder
+A12. Era ajustar a `dev` sin querer. Se cambió por un ejemplo de telemedicina, que
+no aparece en ninguna pregunta `dev`. Los 5,000 de la corrida 01 no se toman como
+resultado.
+
+### Configuración entregada
+
+La de la corrida 05: `buscar_documentos` devuelve un fragmento (la configuración
+de la parte 1, sin cambios) y la descripción pide buscar con las palabras del
+paciente. Se eligió porque es la única con k=1 que responde bien A10, y k=1 es lo
+que mejor puntúa en *context relevance*. El riesgo es el mismo que en la parte 1:
+si una pregunta de test necesita dos secciones del mismo tema, un solo fragmento
+no alcanza y el agente tiene que hacer dos búsquedas.
+
+## Parte 3: las mismas herramientas como servidor MCP
+
+### Qué se construyó
+
+- **`servidor_mcp.py`**: publica las seis funciones de `herramientas.py` con
+  FastMCP (SDK `mcp` 1.30), por stdio. No usa LangChain. La descripción de cada
+  herramienta es el mismo docstring que usa la parte 2.
+- **`agente_mcp.py`**: levanta el servidor, descubre las herramientas con
+  `tools/list` (`load_mcp_tools` de `langchain-mcp-adapters`) y corre el mismo
+  bucle de `bucle_agente.py`. No importa `herramientas.py` ni `recuperador.py`: un
+  test lo verifica (`tests/test_servidor_mcp.py`).
+
+**MCP Inspector.** El servidor se conectó al Inspector (v1.0.2) y se llamó a cada
+una de las seis herramientas. Las capturas están en `experimentos/inspector/`: la
+lista de herramientas (`00-tools-list.png`) y una por herramienta con su resultado
+(`01` a `06`). Se sacaron automatizando Chrome sobre el Inspector.
+
+### Comparación con la parte 2
+
+Misma configuración que la corrida 05. Archivos: `respuestas_mcp.jsonl` y
+`logs/agente_mcp-01.md`.
+
+| | Parte 2 (corrida 05) | Parte 3 (MCP) |
+|---|---|---|
+| Context relevance | pendiente | pendiente |
+| Faithfulness | pendiente | pendiente |
+| Answer relevance | pendiente | pendiente |
+| Ruteo (a mano) | 1,00 | 1,00 |
+| Llamadas al modelo | 24 | 24 |
+| Tokens de entrada | 39.183 | 39.375 |
+| Tokens de salida | 2.532 | 2.531 |
+| Costo del agente (USD) | 0,003664 | 0,003665 |
+| Tiempo de la corrida | 1 min 40 s | 1 min 39 s |
+
+Las tres métricas del juez están pendientes por la misma falta de crédito. El
+comando es:
+
+```bash
+python3 evaluar/evaluar.py agente --preguntas datos/preguntas_agente_dev.jsonl --respuestas respuestas_mcp.jsonl
+```
+
+**Qué se puede afirmar desde los logs, sin el juez:**
+
+- **El modelo ve exactamente las mismas herramientas.** La primera llamada de cada
+  pregunta tiene los mismos tokens de entrada en los dos agentes (1.548 en A01).
+  MCP no agrega ni quita nada a la definición de las herramientas.
+- **En 11 de las 12 preguntas, las herramientas llamadas y los contextos recibidos
+  son idénticos**, carácter por carácter.
+- **La única diferencia es A09.** El agente MCP además buscó la norma del triage en
+  los documentos; el de la parte 2 no. Es la misma inestabilidad que aparece entre
+  corridas de la parte 2, no un efecto de MCP. Explica los 192 tokens de entrada
+  de más.
+- **El costo es el mismo**, porque MCP solo cambia cómo viajan las llamadas a las
+  herramientas, no lo que se le manda al modelo.
+
+Por eso se espera que las métricas del juez sean iguales o casi iguales a las de
+la parte 2, con A09 como única fuente de diferencia.
+
+## Costo de la misión en OpenRouter
+
+No tenemos acceso al dashboard de actividad: la cuenta es del curso y nosotros
+solo tenemos una key con límite de USD 1. Como en la misión de prompting, el
+número auditable es el consumo de la key (`GET /api/v1/key`), leído antes y
+después del trabajo.
+
+| | USD |
+|---|---|
+| Consumo de la key antes de las partes 2 y 3 | 0,032443 |
+| Consumo de la key después | 0,116161 |
+| **Gasto de las partes 2 y 3** | **0,083718** |
+
+| Desglose | USD | De dónde sale |
+|---|---|---|
+| Agente: 5 corridas de la parte 2 | 0,018523 | suma del usage de cada log |
+| Agente: 1 corrida de la parte 3 | 0,003665 | usage del log |
+| Juez: 3 evaluaciones completas | 0,053050 | `costo_juez_usd` de cada `.eval.json` |
+| Resto | 0,008480 | evaluación de la corrida 04 cortada en la quinta pregunta, llamadas de prueba al modelo e intentos del juez |
+| **Total** | **0,083718** | diferencia de la key |
+
+La parte 1 no usa OpenRouter: el encoder corre en la computadora. El juez es el
+63 % del gasto; una corrida completa del agente cuesta USD 0,0037 y evaluarla
+cuesta USD 0,018.
+
+El consumo antes y después que figura en cada log no sirve para auditar una
+corrida sola: OpenRouter actualiza ese número con demora, y la diferencia de un
+log a veces incluye el juez de la corrida anterior. El desglose de arriba usa el
+usage de cada respuesta, y solo el total sale de la key.
+
+Faltan sumar las dos evaluaciones pendientes, unos USD 0,036.
