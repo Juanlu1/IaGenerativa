@@ -14,6 +14,9 @@ import urllib.request
 
 API_POR_DEFECTO = "http://localhost:8765"
 SEPARADOR = "\n\n---\n\n"
+# Cuántos fragmentos devuelve buscar_documentos. None = el k de config_rag.json.
+# RAG_K permite probar otros valores sin tocar el código (ver INFORME.md, parte 2).
+K_DOCUMENTOS = int(os.environ["RAG_K"]) if os.environ.get("RAG_K") else None
 
 _recuperador = None
 _candado = threading.Lock()
@@ -46,8 +49,8 @@ def _api(ruta, **parametros):
 
 
 def buscar_documentos(consulta: str) -> str:
-    """Busca en los documentos del hospital, que tienen las normas y los procedimientos que casi no cambian: horarios y reglas de visita de cada sector, quién puede acompañar o quedarse con un paciente, preparación para estudios y cirugías, requisitos y documentación para turnos, internación, alta y retiro de medicamentos, coberturas, niveles de triage de la guardia y sus tiempos máximos, vacunas, donación de sangre, accesos y derechos del paciente. Usala para cualquier pregunta sobre cómo funciona el hospital, qué hay que llevar o qué está permitido. No conoce el estado de hoy (camas libres, quién está de guardia, turnos disponibles, stock de farmacia, espera actual). 'consulta' es una pregunta completa en lenguaje natural, sobre un solo tema y nombrando el sector, estudio o trámite concreto; por ejemplo: '¿Qué hay que presentar para retirar medicamentos en la farmacia?'. Devuelve el fragmento más relevante. Si la pregunta del paciente tiene dos temas, hacé una búsqueda por cada tema."""
-    return SEPARADOR.join(recuperador().buscar(consulta))
+    """Busca en los documentos del hospital, que tienen las normas y los procedimientos que casi no cambian: horarios y reglas de visita de cada sector, quién puede acompañar o quedarse con un paciente, preparación para estudios y cirugías, requisitos y documentación para turnos, internación, alta y retiro de medicamentos, coberturas, niveles de triage de la guardia y sus tiempos máximos, vacunas, donación de sangre, accesos y derechos del paciente. Usala para cualquier pregunta sobre cómo funciona el hospital, qué hay que llevar o qué está permitido. No conoce el estado de hoy (camas libres, quién está de guardia, turnos disponibles, stock de farmacia, espera actual). 'consulta' es una pregunta completa sobre un solo tema, escrita con las mismas palabras que usó el paciente (el buscador funciona mejor con preguntas de pacientes que con términos técnicos) y nombrando el sector, estudio o trámite concreto; por ejemplo: '¿Cómo se pide una consulta por telemedicina?'. Devuelve los fragmentos más relevantes, separados por '---'. Si la pregunta del paciente tiene dos temas, hacé una búsqueda por cada tema."""
+    return SEPARADOR.join(recuperador().buscar(consulta, k=K_DOCUMENTOS))
 
 
 def consultar_camas(sector: str) -> str:

@@ -47,7 +47,11 @@ Los nombres son fijos (los usa el evaluador para medir el ruteo):
   en las dos partes. Así, si los números de la parte 3 difieren de los de la 2, la
   causa no es una descripción distinta.
 - El recuperador se crea **una sola vez** por proceso (cargar el modelo tarda unos
-  15 segundos) y se usa con la configuración entregada en la parte 1, sin pisar `k`.
+  15 segundos) y se usa con la configuración entregada en la parte 1. La variable
+  `RAG_K` pisa la cantidad de fragmentos solo para experimentar (ver `INFORME.md`).
+- La descripción de `buscar_documentos` le pide al modelo que busque **con las
+  palabras del paciente**: el recuperador se midió con preguntas de pacientes, y
+  una consulta reformulada en términos técnicos trae otra sección.
 - La URL de la API es `http://localhost:8765`, o la de la variable
   `HOSPITAL_API_URL` si está definida (la usan los tests).
 
