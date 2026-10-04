@@ -231,26 +231,20 @@ devuelve (`k`) y cómo está escrita su descripción.
 | 01 | k=1. La descripción traía un ejemplo de consulta igual a la pregunta A12 | 5,000 | 5,000 | 5,000 | 1,00 | 0,003665 | 0,01764 |
 | 02 | k=1, con un ejemplo que no está en `dev` | 4,917 | 5,000 | 5,000 | 1,00 | 0,003705 | 0,01784 |
 | 03 | k=2 | 4,667 | 5,000 | 5,000 | 1,00 | 0,003720 | 0,01757 |
-| 04 | k=3 | sin evaluar | sin evaluar | sin evaluar | 1,00 (a mano) | 0,003769 | — |
-| **05 (entregada)** | k=1 y la descripción pide buscar con las palabras del paciente | **pendiente** | **pendiente** | **pendiente** | 1,00 (a mano) | 0,003664 | — |
+| 04 | k=3 | 4,250 | 5,000 | 5,000 | 1,00 | 0,003769 | 0,02044 |
+| **05 (entregada)** | k=1 y la descripción pide buscar con las palabras del paciente | **5,000** | **5,000** | **5,000** | **1,00** | 0,003664 | 0,01621 |
 
-Archivos de cada corrida: `experimentos/agente/<corrida>.jsonl`, su `.eval.json`
-cuando existe, y `logs/agente-<corrida>.md`. `respuestas.jsonl` es una copia de la
-corrida 05.
+Archivos de cada corrida: `experimentos/agente/<corrida>.jsonl`, su `.eval.json` y
+`logs/agente-<corrida>.md`. `respuestas.jsonl` y su `.eval.json` son una copia de
+la corrida 05.
 
-**Las corridas 04 y 05 no tienen evaluación del juez.** El 1/10/2026 la cuenta de
-OpenRouter del curso se quedó sin crédito (USD 45,00 cargados, USD 44,996
-consumidos) y el modelo juez empezó a devolver `HTTP 402: Payment Required`. El
-límite de nuestra key no se alcanzó (quedan USD 0,88 de USD 1). La evaluación de
-la corrida 04 se cortó en la quinta pregunta; las cuatro que llegó a puntuar
-dieron *context relevance* 4, 4, 4 y 3. El ruteo de 04 y 05 se calculó a mano con
-la fórmula del evaluador, porque el script no lo informa sin llamar al juez.
-
-Cuando la cátedra recargue la cuenta, la evaluación pendiente es:
-
-```bash
-python3 evaluar/evaluar.py agente --preguntas datos/preguntas_agente_dev.jsonl --respuestas respuestas.jsonl
-```
+**Las corridas 04 y 05 se evaluaron tres días después.** El 1/10/2026 la cuenta de
+OpenRouter del curso se quedó sin crédito (USD 44,996 consumidos de USD 45) y el
+modelo juez empezó a devolver `HTTP 402: Payment Required`, aunque a nuestra key le
+quedaban USD 0,88 de límite. La evaluación de la corrida 04 se cortó en la quinta
+pregunta. Cuando la cátedra recargó la cuenta, el 4/10, se evaluaron completas la
+04, la 05 y la del agente MCP. El agente no se volvió a correr: se evaluaron los
+mismos archivos generados el 1/10.
 
 ### Qué muestran los números
 
@@ -262,7 +256,8 @@ intento.
 
 **2. Más fragmentos bajan *context relevance* y no mejoran las otras dos.** Con
 k=2, el juez bajó a 4 las preguntas A01, A03, A04 y A12 por "un fragmento
-adicional irrelevante". *Faithfulness* y *answer relevance* quedaron en 5 con
+adicional irrelevante" (4,667). Con k=3 bajó más: siete preguntas por debajo de 5,
+dos de ellas a 3 (4,250). *Faithfulness* y *answer relevance* quedaron en 5 con
 cualquier k. Es el mismo resultado que la parte 1: en este corpus cada respuesta
 está en una sola sección.
 
@@ -334,28 +329,22 @@ lista de herramientas (`00-tools-list.png`) y una por herramienta con su resulta
 
 ### Comparación con la parte 2
 
-Misma configuración que la corrida 05. Archivos: `respuestas_mcp.jsonl` y
-`logs/agente_mcp-01.md`.
+Misma configuración que la corrida 05. Archivos: `respuestas_mcp.jsonl`, su
+`.eval.json` y `logs/agente_mcp-01.md`.
 
 | | Parte 2 (corrida 05) | Parte 3 (MCP) |
 |---|---|---|
-| Context relevance | pendiente | pendiente |
-| Faithfulness | pendiente | pendiente |
-| Answer relevance | pendiente | pendiente |
-| Ruteo (a mano) | 1,00 | 1,00 |
+| Context relevance | 5,000 | 5,000 |
+| Faithfulness | 5,000 | 5,000 |
+| Answer relevance | 5,000 | 5,000 |
+| Ruteo | 1,00 | 1,00 |
 | Llamadas al modelo | 24 | 24 |
 | Tokens de entrada | 39.183 | 39.375 |
 | Tokens de salida | 2.532 | 2.531 |
 | Costo del agente (USD) | 0,003664 | 0,003665 |
+| Costo del juez (USD) | 0,01621 | 0,01807 |
 
-Las tres métricas del juez están pendientes por la misma falta de crédito. El
-comando es:
-
-```bash
-python3 evaluar/evaluar.py agente --preguntas datos/preguntas_agente_dev.jsonl --respuestas respuestas_mcp.jsonl
-```
-
-**Qué se puede afirmar desde los logs, sin el juez:**
+**Los números no cambian entre la parte 2 y la parte 3.** Los logs explican por qué:
 
 - **El modelo ve exactamente las mismas herramientas.** La primera llamada de cada
   pregunta tiene los mismos tokens de entrada en los dos agentes (1.548 en A01).
@@ -369,8 +358,10 @@ python3 evaluar/evaluar.py agente --preguntas datos/preguntas_agente_dev.jsonl -
 - **El costo es el mismo**, porque MCP solo cambia cómo viajan las llamadas a las
   herramientas, no lo que se le manda al modelo.
 
-Por eso se espera que las métricas del juez sean iguales o casi iguales a las de
-la parte 2, con A09 como única fuente de diferencia.
+En A09, la respuesta del agente MCP agregó la comparación con el máximo de 2 horas
+y la de la parte 2 no; el juez puso 5 a las dos. La conclusión es que pasar las
+herramientas a MCP no cambia ni la calidad ni el costo: cambia dónde viven las
+herramientas, y con eso, que cualquier cliente MCP las pueda usar.
 
 ## Costo de la misión en OpenRouter
 
@@ -379,27 +370,34 @@ solo tenemos una key con límite de USD 1. Como en la misión de prompting, el
 número auditable es el consumo de la key (`GET /api/v1/key`), leído antes y
 después del trabajo.
 
-| | USD |
-|---|---|
-| Consumo de la key antes de las partes 2 y 3 | 0,032443 |
-| Consumo de la key después | 0,116161 |
-| **Gasto de las partes 2 y 3** | **0,083718** |
+| Lectura de la key | Fecha | USD |
+|---|---|---|
+| Antes de las partes 2 y 3 | 1/10 | 0,032443 |
+| Después de correr los agentes y las primeras evaluaciones | 1/10 | 0,116161 |
+| Después de las evaluaciones pendientes | 4/10 | 0,155707 |
+| **Gasto de las partes 2 y 3** | | **0,123263** |
+
+El total coincide con lo que OpenRouter informa como consumo de la key en octubre
+(`usage_monthly`), así que todo el gasto de octubre es de esta misión.
 
 | Desglose | USD | De dónde sale |
 |---|---|---|
-| Agente: 5 corridas de la parte 2 | 0,018523 | suma del usage de cada log |
+| Agente: 5 corridas de la parte 2 | 0,018523 | usage de cada log |
 | Agente: 1 corrida de la parte 3 | 0,003665 | usage del log |
-| Juez: 3 evaluaciones completas | 0,053050 | `costo_juez_usd` de cada `.eval.json` |
-| Resto | 0,008480 | evaluación de la corrida 04 cortada en la quinta pregunta, llamadas de prueba al modelo e intentos del juez |
-| **Total** | **0,083718** | diferencia de la key |
+| Juez: 6 evaluaciones completas | 0,107770 | `costo_juez_usd` de cada `.eval.json` |
+| Pruebas y evaluaciones cortadas por el 402 | sin desglose | llamadas de prueba al modelo y la evaluación de la 04 del 1/10 |
+| **Suma del usage informado** | **0,129958** | |
+| **Consumo de la key** | **0,123263** | |
+
+La suma del usage que informa OpenRouter en cada respuesta no coincide exacto con
+el consumo de la key: el 1/10 la key subió USD 0,0085 más que esa suma, y el 4/10,
+USD 0,0152 menos. Entre los dos días la diferencia es de USD 0,0067 (5 %). El
+número auditable es el de la key; el desglose sirve para ver en qué se fue.
 
 La parte 1 no usa OpenRouter: el encoder corre en la computadora. El juez es el
-63 % del gasto; una corrida completa del agente cuesta USD 0,0037 y evaluarla
-cuesta USD 0,018.
+83 % del gasto: una corrida completa del agente cuesta USD 0,0037 y evaluarla, unos
+USD 0,018.
 
-El consumo antes y después que figura en cada log no sirve para auditar una
-corrida sola: OpenRouter actualiza ese número con demora, y la diferencia de un
-log a veces incluye el juez de la corrida anterior. El desglose de arriba usa el
-usage de cada respuesta, y solo el total sale de la key.
-
-Faltan sumar las dos evaluaciones pendientes, unos USD 0,036.
+El consumo antes y después que figura en cada log tampoco sirve para auditar una
+corrida sola: OpenRouter actualiza ese número con demora, y la diferencia de un log
+a veces incluye el juez de la corrida anterior.

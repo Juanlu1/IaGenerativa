@@ -76,11 +76,10 @@ La primera corrida descarga el modelo del encoder desde Hugging Face.
 - **Parte 1** (RAG vectorial): HECHA. `config_rag.json` = bge-m3, sección con
   metadatos, k=1 → context_relevance 1,000 en dev (BERT de base: 0,375). Informe de la parte 1
   escrito en `INFORME.md` (sección "Parte 1").
-- **Parte 2** (agente): HECHA salvo la evaluación del juez de la corrida entregada
-  (`respuestas.jsonl`, corrida 05). Ruteo 1,00. Las corridas 01 a 03 sí están evaluadas.
-- **Parte 3** (MCP): HECHA salvo la evaluación del juez de `respuestas_mcp.jsonl`.
-  Capturas del Inspector en `experimentos/inspector/`.
-- **Pendiente (bloqueado por crédito de OpenRouter, 1/10/2026):** correr el
-  evaluador sobre `respuestas.jsonl` y `respuestas_mcp.jsonl` y completar las
-  celdas "pendiente" de `INFORME.md` (tabla de corridas, tabla comparativa y costo).
+- **Parte 2** (agente): HECHA. Entregada la corrida 05 (`respuestas.jsonl`): 5/5/5 y
+  ruteo 1,00. Las cinco corridas tienen log y evaluación.
+- **Parte 3** (MCP): HECHA. `respuestas_mcp.jsonl`: 5/5/5 y ruteo 1,00. Capturas del
+  Inspector en `experimentos/inspector/`.
+- **Costo de las partes 2 y 3:** USD 0,123 de la key (lectura del 4/10). Las
+  evaluaciones pendientes se corrieron el 4/10, cuando la cátedra recargó la cuenta.
 - **Partes 4 y 5**: a cargo de otros integrantes del grupo. Sin empezar.
