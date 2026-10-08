@@ -8,14 +8,21 @@ def softmax(M):
     return exp_M / np.sum(exp_M, axis=-1, keepdims=True)
 
 
-def atencion(Q, K, V):
-    dk = Q.shape[-1]
 
+def atencion(Q, K, V, mascara=False):
+    dk = Q.shape[-1]
     puntajes = Q @ K.T / np.sqrt(dk)
+
+    if mascara:
+        n = puntajes.shape[0]
+        mask = np.triu(np.ones(puntajes.shape, dtype=bool), k=1)
+        puntajes[mask] = -np.inf
+
     A = softmax(puntajes)
     salida = A @ V
 
     return salida, A
+
 
 
 def autoatencion(X, WQ, WK, WV, mascara=False):
