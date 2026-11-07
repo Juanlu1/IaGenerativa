@@ -14,7 +14,7 @@ def main():
     ap.add_argument("--consultas", type=Path, required=True)
     a = ap.parse_args()
     dataset = cargar_dataset(a.consultas)
-    for granularidad in ("apartado", "seccion", "hibrido2", "hibrido3"):
+    for granularidad in ("apartado", "seccion", "hibrido2", "hibrido3", "mixto"):
         buscador = BuscadorNormas(a.normas, granularidad)
         resultado = {"granularidad": granularidad,
                      "entorno": evaluar_buscador(buscador, dataset),

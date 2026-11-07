@@ -16,7 +16,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--normas", type=Path, required=True)
     ap.add_argument("--consultas", type=Path, required=True)
-    ap.add_argument("--granularidad", choices=("apartado", "seccion", "hibrido2", "hibrido3"), default="seccion")
+    ap.add_argument("--granularidad", choices=("apartado", "seccion", "hibrido2", "hibrido3", "mixto"),
+                    default="mixto")
     a = ap.parse_args()
     buscador = BuscadorNormas(a.normas, a.granularidad)
     for linea in a.consultas.read_text(encoding="utf-8").splitlines():
