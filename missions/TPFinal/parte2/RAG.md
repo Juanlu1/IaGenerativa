@@ -31,12 +31,12 @@ normas y sus parámetros, y un ranking BM25 propio para recuperarlas.
 
 ## Evaluación oficial
 
-Desde `missions/TPFinal` del kit de la cátedra, con el paquete `admision`
-instalado (por ejemplo, `uv sync`):
+Desde `missions/TPFinal`, con el paquete `admision` instalado (por ejemplo,
+`uv sync`):
 
 ```bash
 uv run python -m admision.evaluar_rag \
-  --entrega <ruta-al-repo-del-grupo>/tpfinal/entrega_rag.py \
+  --entrega parte2/entrega_rag.py \
   --normas normas/original \
   --consultas rag/consultas_dev.jsonl
 ```
@@ -57,7 +57,7 @@ importa para la nota.
 Para comprobar que los parámetros no quedan memorizados en el buscador:
 
 ```bash
-python <ruta-al-repo-del-grupo>/tpfinal/evaluar_variantes_rag.py \
+uv run python parte2/evaluar_variantes_rag.py \
   --normas normas \
   --consultas rag/consultas_dev.jsonl
 ```
@@ -109,19 +109,18 @@ precedencia. Las 60 consultas se usaron para desarrollar el RAG; alcanzar
 
 ## Integración con el agente del grupo
 
-Cuando se cree `tpfinal/entrega.py`, importar la función de este módulo:
+Cuando se cree `missions/TPFinal/entrega.py`, importar la función de este módulo:
 
 ```python
-from rag_buscador import construir_buscador
+from parte2.rag_buscador import construir_buscador
 
 # construir_agente() lo implementa quien integre el modelo y el prompt.
 ```
 
 El cargador oficial añade la carpeta de `entrega.py` al `sys.path`, así que
-este import funciona si ambos archivos están en `tpfinal/`. El kit `admision`
-debe instalarse como dependencia del proyecto del grupo, con versiones
-fijadas en `pyproject.toml` y `uv.lock`. No se copia ni se modifica
-`admision/` en el repositorio del grupo.
+este import funciona desde la raíz de la misión. El grupo conserva sus
+dependencias fijadas en `pyproject.toml` y `uv.lock`; no se modifica
+`admision/`.
 
 Antes de la entrega final hay que probar el agente con `normas/original`,
 `normas/b` y `normas/c`, y registrar casos resueltos, contexto y tiempo por

@@ -42,3 +42,23 @@ El script toma los parámetros de `normas/original/parametros.yaml` y exige que
 los IDs de historial y trazas coincidan en número y orden. Los resultados son
 una primera clasificación automatizada; revisen especialmente cada fila marcada
 en `curado/auditoria.csv` antes de considerarlos definitivos.
+
+## Parte 2: buscador de normas
+
+La implementación y sus experimentos están en [`parte2/`](parte2/). El
+adaptador `parte2/entrega_rag.py` permite evaluar el buscador por separado;
+todavía no implementa el agente completo. Desde esta carpeta:
+
+```powershell
+uv run python -m admision.evaluar_rag --entrega parte2/entrega_rag.py --normas normas/original --consultas rag/consultas_dev.jsonl
+uv run python parte2/evaluar_variantes_rag.py --normas normas --consultas rag/consultas_dev.jsonl
+```
+
+El primer comando es la evaluación obligatoria de la cátedra. El segundo
+comprueba las versiones `original`, `b` y `c` ajustando en memoria los valores
+numéricos de la evidencia de desarrollo. Los resultados, decisiones y límites
+están en [`parte2/RAG.md`](parte2/RAG.md) y en `INFORME.md`.
+
+Cuando se arme `entrega.py`, puede importar
+`from parte2.rag_buscador import construir_buscador`. El agente y el punto de
+control del modelo se integrarán allí por separado.
