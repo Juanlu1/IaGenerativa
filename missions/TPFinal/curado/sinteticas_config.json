@@ -1,0 +1,11 @@
+{
+  "semilla": 20261108,
+  "cantidad": 500,
+  "generador": "admision.generador.generar",
+  "politica": "generar_sinteticas.py",
+  "versiones_normas": [
+    "original",
+    "b",
+    "c"
+  ]
+}
