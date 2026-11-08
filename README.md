@@ -9,9 +9,13 @@ Repositorio del grupo para la materia **IA Generativa** (Austral, 2do cuatrimest
 |---|---|---|---|
 | [`corta/`](corta/) | **Corta** — acortador de URLs, del caos a producción | 2 | Entregada (5 milestones, deployada en Railway) |
 | [`prompting/`](prompting/) | **El prompt mínimo** — chat multi-modelo vía OpenRouter + Conway en 1 prompt | 5 | En curso |
+| [`missions/TPFinal/`](missions/TPFinal/) | **TP Final** — agente de admisión de guardia | Final | Parte 1 — curado de datos en curso |
+| [`rag-mcp-transformers/`](rag-mcp-transformers/) | **RAG, MCP y Transformers** — Hospital Arroyo Claro | 9 | Partes 1–3 completas; partes 4–5 a cargo de otros integrantes |
 
-Cada misión tiene su propio `README.md`, `SPEC.md`, `CLAUDE.md` y `mission.md`
-(el enunciado original de la cátedra) dentro de su carpeta.
+Cada misión tiene su propio contrato y documentación dentro de su carpeta. El kit
+oficial del TP Final está en `missions/TPFinal/`; su manual de origen es
+[`README.md`](missions/TPFinal/README.md) y las instrucciones del grupo, en
+[`README-equipo.md`](missions/TPFinal/README-equipo.md).
 
 ## Tooling de equipo (raíz)
 

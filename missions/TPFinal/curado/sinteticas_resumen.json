@@ -1,0 +1,20 @@
+{
+  "conversaciones_sinteticas": 500,
+  "versiones_normas": {
+    "original": 167,
+    "b": 167,
+    "c": 166
+  },
+  "circuitos": {
+    "codigo_sepsis": 161,
+    "ninguno": 149,
+    "ecg": 128,
+    "codigo_acv": 62
+  },
+  "coberturas": {
+    "obra_social": 86,
+    "sin_cobertura": 224,
+    "prepaga": 95,
+    "art": 95
+  }
+}
