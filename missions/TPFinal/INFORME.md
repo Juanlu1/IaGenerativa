@@ -66,3 +66,47 @@ uv run python generar_sinteticas.py
 `curado/auditoria.csv`, `curado/conversaciones_reales.jsonl` y
 `curado/resumen.json`. `generar_sinteticas.py` genera las conversaciones
 sintéticas y sus archivos de configuración y resumen.
+
+## Parte 2 — Buscador propio (RAG)
+
+### Método
+
+`parte2/rag_buscador.py` construye el índice con la carpeta de normas recibida
+en cada corrida, mediante el cargador oficial de `admision.normas`. Usa un
+ranking BM25 propio que combina la similitud de la sección completa y la de
+su apartado más pertinente. Devuelve dos secciones completas para conservar
+las excepciones, precedencias y valores de parámetros. No llama a servicios
+externos durante la búsqueda ni contiene números de las normas fijados en el
+código. Los experimentos y su justificación están en `parte2/RAG.md`.
+
+### Evaluación aislada
+
+Comando, desde esta carpeta:
+
+```powershell
+uv run python -m admision.evaluar_rag --entrega parte2/entrega_rag.py --normas normas/original --consultas rag/consultas_dev.jsonl
+```
+
+Sobre las 60 consultas de desarrollo, el buscador obtuvo recall de evidencia
+**1,000**, precisión **0,567**, **590 tokens por consulta** y **60/60** consultas
+con toda la evidencia. La referencia BM25 de la cátedra informa 0,875, 0,492,
+580 tokens y 51/60, respectivamente. Los tokens siguen la estimación del
+evaluador oficial de cuatro caracteres por token.
+
+`parte2/evaluar_variantes_rag.py` repite la evaluación con `original`, `b` y
+`c`. Como el set de desarrollo contiene los números de `original`, el script
+ajusta solo esas evidencias numéricas en memoria para cada versión. Dio 60/60
+en las tres versiones. Es una prueba de que el buscador lee los parámetros de
+la carpeta recibida, no un test independiente.
+
+También se comparó el ranking con las 2.457 búsquedas de las 800 trazas de
+referencia mediante `parte2/validar_trazas_rag.py`. La unión de secciones
+recuperadas por caso cubrió 2.891 de los 3.652 IDs de `fundamentos` anotados
+en esas fichas, igual que el ranking solo por sección; el ranking elegido usó
+540 tokens promedio por búsqueda frente a 552 de esa alternativa. Los
+`fundamentos` no son etiquetas oficiales por consulta, así que este contraste
+sirve para detectar regresiones, no para puntuar al agente.
+
+**Pendiente:** conectar `construir_buscador` con el `entrega.py` del grupo y
+medir casos resueltos, contexto, costo y tiempo con un agente ejecutable.
+El 60/60 corresponde al set de desarrollo del RAG; no estima el test secreto.
