@@ -149,9 +149,15 @@ Casos resueltos sobre los 50 de práctica, con el modelo sin entrenar. Fuente: `
 | Prompt | Tokens | original | b | c | Corrida |
 |---|---:|---:|---:|---:|---|
 | Referencia de la cátedra (sin entrenar) | | 12 | 15 | 12 | `mission.md` |
-| `prompt_base.txt` | 615 | PENDIENTE | PENDIENTE | PENDIENTE | `corridas/base/` |
+| `prompt_base.txt` | 615 | 11 | 8 | 9 | `corridas/base/` |
 | `prompt_corto.txt` | 467 | PENDIENTE | PENDIENTE | PENDIENTE | `corridas/prompt_corto/` |
 | `prompt_optimizado.txt` | PENDIENTE | PENDIENTE | PENDIENTE | PENDIENTE | `corridas/prompt_optimizado/` |
+
+La línea de base (`corridas/base/`, commit `d222a92`, 50 casos, búsquedas 1,3 por caso) queda por debajo de la
+referencia de la cátedra en las tres versiones, sobre todo en b (8 contra 15). Los controles que más fallan son
+`box_antes_del_registro` (60 a 62 % de aciertos), `registro` (68 a 74 %), `aviso_al_voluntariado` (72 %), `cobertura`
+(72 a 76 %) y la verificación (72 a 78 %); `numero_documento` y `circuito` casi no fallan. La generación es greedy, pero
+el lote en GPU puede mover algún caso entre corridas (ver Auditabilidad en `mission.md`).
 
 Optimización con GEPA (`corridas/gepa/gepa1/resumen.json` y `log.jsonl`):
 
