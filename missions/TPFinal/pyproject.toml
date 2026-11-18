@@ -13,6 +13,10 @@ dependencies = [
     "transformers==5.20.2",
     # Cliente de Modal: lanza la evaluación en una A100 de 40 GB desde la Mac (modal_app.py).
     "modal==1.6.3",
+    # Parte 3: optimización del mensaje de sistema con GEPA (optimizar_prompt.py). DSPy aporta el cliente de
+    # modelos pagos (litellm) para la reflexión opcional.
+    "dspy[litellm]==3.4.1",
+    "gepa==0.1.4",
     # vLLM no tiene wheels para macOS: se instala solo en Linux (el contenedor de Modal con la A100).
     "vllm==0.33.0; sys_platform == 'linux'",
 ]
