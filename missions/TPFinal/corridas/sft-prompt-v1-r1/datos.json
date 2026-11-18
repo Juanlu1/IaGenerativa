@@ -1,0 +1,24 @@
+{
+  "train": {
+    "ruta": "datos/train.jsonl",
+    "sha256": "63139319143e32c98dd1ba4015a1ac78bacb9499eda1bf9efb38e95803650f65",
+    "lineas": 2850,
+    "conversaciones_usadas": 2850,
+    "descartadas_por_largo": [],
+    "tokens": 8640302,
+    "tokens_en_perdida": 838716,
+    "largo_maximo": 4176,
+    "largo_medio": 3031.7
+  },
+  "val": {
+    "ruta": "datos/val.jsonl",
+    "sha256": "5f606a520f3e85366afc05d19cd59eef608f792308713631934a38fc8f0a201b",
+    "lineas": 150,
+    "conversaciones_usadas": 150,
+    "descartadas_por_largo": [],
+    "tokens": 447945,
+    "tokens_en_perdida": 43580,
+    "largo_maximo": 4142,
+    "largo_medio": 2986.3
+  }
+}

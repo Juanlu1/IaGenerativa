@@ -1,0 +1,23 @@
+[
+  {
+    "paso": 200,
+    "revision": "69815ca2620eac21a8c7b4e68925586f0bbd37fc",
+    "etiqueta": "sft-prompt-v1-r1-paso-200"
+  },
+  {
+    "paso": 300,
+    "revision": "273530697075d4b98c1bb0219037584664070622",
+    "etiqueta": "sft-prompt-v1-r1-paso-300"
+  },
+  {
+    "paso": 314,
+    "revision": "c559132acbdc6729874d57a45ab928e7c4168c41",
+    "etiqueta": "sft-prompt-v1-r1-paso-314"
+  },
+  {
+    "paso": 314,
+    "revision": "a5af001800f7da670f72d2a9461ec3a2d805f4f6",
+    "etiqueta": "sft-prompt-v1-r1-final",
+    "etiqueta_movil": "final"
+  }
+]

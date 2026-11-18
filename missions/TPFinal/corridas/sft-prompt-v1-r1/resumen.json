@@ -1,0 +1,82 @@
+{
+  "corrida": "sft-prompt-v1-r1",
+  "pasos": 314,
+  "segundos": 5406.2,
+  "train_loss": 0.007451677668804877,
+  "eval": {
+    "eval_loss": 0.004024903755635023,
+    "eval_runtime": 48.3148,
+    "eval_samples_per_second": 3.105,
+    "eval_steps_per_second": 1.552,
+    "eval_entropy": 0.005968309035524726,
+    "eval_mean_token_accuracy": 0.9985714181264241,
+    "eval_num_tokens": 10280994.0,
+    "epoch": 1.7578947368421054
+  },
+  "revisiones": [
+    {
+      "paso": 200,
+      "revision": "69815ca2620eac21a8c7b4e68925586f0bbd37fc",
+      "etiqueta": "sft-prompt-v1-r1-paso-200"
+    },
+    {
+      "paso": 300,
+      "revision": "273530697075d4b98c1bb0219037584664070622",
+      "etiqueta": "sft-prompt-v1-r1-paso-300"
+    },
+    {
+      "paso": 314,
+      "revision": "c559132acbdc6729874d57a45ab928e7c4168c41",
+      "etiqueta": "sft-prompt-v1-r1-paso-314"
+    },
+    {
+      "paso": 314,
+      "revision": "a5af001800f7da670f72d2a9461ec3a2d805f4f6",
+      "etiqueta": "sft-prompt-v1-r1-final",
+      "etiqueta_movil": "final"
+    }
+  ],
+  "vllm": {
+    "rank": 32,
+    "alpha": 32,
+    "modulos": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
+    "tensores": 516,
+    "max_lora_rank_vllm": 32,
+    "problemas": []
+  },
+  "wandb": "https://forge.coreweave.com/wandb/juanlu1-austral/tp-admision-guardia/runs/68qllkha",
+  "datos": {
+    "train": {
+      "ruta": "datos/train.jsonl",
+      "sha256": "63139319143e32c98dd1ba4015a1ac78bacb9499eda1bf9efb38e95803650f65",
+      "lineas": 2850,
+      "conversaciones_usadas": 2850,
+      "descartadas_por_largo": [],
+      "tokens": 8640302,
+      "tokens_en_perdida": 838716,
+      "largo_maximo": 4176,
+      "largo_medio": 3031.7
+    },
+    "val": {
+      "ruta": "datos/val.jsonl",
+      "sha256": "5f606a520f3e85366afc05d19cd59eef608f792308713631934a38fc8f0a201b",
+      "lineas": 150,
+      "conversaciones_usadas": 150,
+      "descartadas_por_largo": [],
+      "tokens": 447945,
+      "tokens_en_perdida": 43580,
+      "largo_maximo": 4142,
+      "largo_medio": 2986.3
+    }
+  },
+  "semilla": 20261117,
+  "vram_max_gb": 20.81
+}
