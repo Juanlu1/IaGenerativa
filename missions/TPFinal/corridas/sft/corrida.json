@@ -1,0 +1,30 @@
+{
+  "etiqueta": "sft",
+  "fecha": "2026-11-18T07:18:01Z",
+  "commit": "a726121c1a837752970953483858af6acb02113c",
+  "config": "config_sft_base.yaml",
+  "prompt": "prompt_base.txt",
+  "modelo": "google/gemma-4-E4B-it",
+  "revision": "4ecc2ba63bcac23ba4a767fc87025b1450f84c9c",
+  "adaptador_lora": "Juanlu1/gemma-admision",
+  "adaptador_revision": "67deca83dd206515f99683fa46bb1b3db3eb8f1d",
+  "casos": 50,
+  "construir_agente_segundos": 315.907,
+  "versiones": {
+    "original": {
+      "resueltos": 21,
+      "casos": 50,
+      "error": null
+    },
+    "b": {
+      "resueltos": 22,
+      "casos": 50,
+      "error": null
+    },
+    "c": {
+      "resueltos": 22,
+      "casos": 50,
+      "error": null
+    }
+  }
+}
