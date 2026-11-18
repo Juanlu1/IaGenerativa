@@ -1,6 +1,6 @@
-# Informe — TP Final: agente de admisión de guardia
+# Informe: TP Final: agente de admisión de guardia
 
-## Parte 1 — Curado e ingeniería de datos
+## Parte 1: Curado e ingeniería de datos
 
 ### Método
 
@@ -85,7 +85,7 @@ uv run python generar_sinteticas.py
 `curado/resumen.json`. `generar_sinteticas.py` genera las conversaciones
 sintéticas y sus archivos de configuración y resumen.
 
-## Parte 2 — Buscador propio (RAG)
+## Parte 2: Buscador propio (RAG)
 
 ### Método
 
@@ -129,7 +129,7 @@ sirve para detectar regresiones, no para puntuar al agente.
 medir casos resueltos, contexto, costo y tiempo con un agente ejecutable.
 El 60/60 corresponde al set de desarrollo del RAG; no estima el test secreto.
 
-## Parte 4 — Entrenamiento
+## Parte 4: Entrenamiento
 
 El apartado completo (estrategia, conjunto de datos, configuración, comandos
 y la tabla de casos resueltos) está en [`informe_parte4.md`](informe_parte4.md).
