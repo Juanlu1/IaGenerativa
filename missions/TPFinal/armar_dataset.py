@@ -228,7 +228,10 @@ def contador_de_tokens(nombre: str | None):
                 f"estimacion: caracteres de los mensajes / {CARACTERES_POR_TOKEN}, como admision.evaluar_rag")
     from transformers import AutoTokenizer  # solo si se pide; en Lightning, con el tokenizador real
     tok = AutoTokenizer.from_pretrained(nombre)
-    return (lambda mensajes: len(tok.apply_chat_template(mensajes, tokenize=True)),
+    # Igual que entrenar.py: se renderiza la plantilla y se tokeniza el texto (en transformers 5,
+    # apply_chat_template(tokenize=True) devuelve un diccionario, no la lista de ids).
+    return (lambda mensajes: len(tok(tok.apply_chat_template(mensajes, tokenize=False),
+                                     add_special_tokens=False)["input_ids"]),
             f"apply_chat_template de {nombre}")
 
 
