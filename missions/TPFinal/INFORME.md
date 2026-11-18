@@ -75,7 +75,7 @@ excluirlas al entrenar.
 
 Desde esta carpeta, con el entorno preparado mediante `uv sync`:
 
-```powershell
+```bash
 uv run python curar.py
 uv run python generar_sinteticas.py
 ```
@@ -101,7 +101,7 @@ código. Los experimentos y su justificación están en `parte2/RAG.md`.
 
 Comando, desde esta carpeta:
 
-```powershell
+```bash
 uv run python -m admision.evaluar_rag --entrega parte2/entrega_rag.py --normas normas/original --consultas rag/consultas_dev.jsonl
 ```
 
@@ -125,11 +125,466 @@ en esas fichas, igual que el ranking solo por sección; el ranking elegido usó
 `fundamentos` no son etiquetas oficiales por consulta, así que este contraste
 sirve para detectar regresiones, no para puntuar al agente.
 
-**Pendiente:** conectar `construir_buscador` con el `entrega.py` del grupo y
-medir casos resueltos, contexto, costo y tiempo con un agente ejecutable.
-El 60/60 corresponde al set de desarrollo del RAG; no estima el test secreto.
+`entrega.py` usa este buscador en `construir_buscador`; los casos resueltos,
+el contexto y el tiempo con el agente completo están en las Partes 3 y 4. El
+60/60 corresponde al set de desarrollo del RAG; no estima el test secreto.
+
+## Parte 3: Optimización de prompt, antes de entrenar
+
+Todo se hizo con Gemma 4 E4B sin entrenar (`google/gemma-4-E4B-it`, revisión
+`4ecc2ba63bcac23ba4a767fc87025b1450f84c9c`), servido con vLLM 0.33.0 (transformers 5.20.2) en una A100 de 40 GB de
+Modal. Después, para entrenar y servir el adaptador con la misma pila, el repositorio pasó a vLLM 0.34.0
+(transformers 5.22.2, el mismo torch 2.14.0; ver Parte 4, Configuración). Los números de esta parte son los de
+vLLM 0.33.0 y no se volvieron a medir.
+
+### Qué se optimiza
+
+Solo el texto del mensaje de sistema. El resto del agente es el de `entrega.py` sin cambios: el `AgenteJSON` del kit
+(`admision/ejemplo.py`), el mismo formato de mensajes (una llamada a una herramienta por turno, en JSON), el buscador
+de la Parte 2 y la misma generación determinista (temperatura 0). Así el prompt se optimiza en el mismo formato con el
+que después se evalúa y se entrena.
+
+El punto de partida es `prompt_base.txt`, el mensaje de sistema de `admision/ejemplo.py` tal cual.
+
+### Largo del prompt
+
+Se mide en tokens con el tokenizer de Gemma 4 E4B (misma revisión), sobre el texto del mensaje de sistema solo, sin
+la plantilla de chat (`AutoTokenizer.encode(texto, add_special_tokens=False)`). `optimizar_prompt.py` usa la misma
+medida para la penalización por largo; si no puede cargar el tokenizer, usa caracteres / 4 y lo anota en su
+`resumen.json`.
+
+| Prompt | Tokens | Caracteres |
+|---|---:|---:|
+| `prompt_base.txt` | 615 | 2.232 |
+| `prompt_corto.txt` | 467 | 1.634 |
+| `prompt_optimizado.txt` | 693 | 2.429 |
+
+### Prompt corto, a mano
+
+`prompt_corto.txt` es `prompt_base.txt` acortado a mano sin sacar ninguna regla: las cinco herramientas con todos sus
+argumentos y valores posibles, los ocho campos de la ficha más `fundamentos`, el protocolo (solo un objeto JSON por
+turno, una herramienta por turno, el caso termina con `registrar_decision`), que el agente no toma decisiones clínicas
+y qué normas tiene que buscar antes de decidir. Se sacaron las descripciones repetidas y la redacción larga de los
+argumentos. Queda 24 % más corto (de 615 a 467 tokens). `config_corto.yaml` es `config.yaml` con ese prompt.
+
+### Optimización con GEPA
+
+`optimizar_prompt.py` usa GEPA (paquete `gepa` 0.1.4, el motor que corre debajo de `dspy.GEPA` en DSPy 3.4.1) con
+un adaptador propio (`AdaptadorAdmision`). No se usó un módulo de DSPy porque el agente juega los casos en lote con
+vLLM y con su propio formato de mensajes; envolverlo en una firma de DSPy habría cambiado el formato con el que se
+optimiza respecto del que se evalúa.
+
+- **Candidato:** un solo componente, el texto del mensaje de sistema.
+- **Evaluación:** por cada candidato, el adaptador arma el agente de `entrega.py` con ese mensaje y juega todos los
+  casos del lote en una sola tanda de vLLM, en el entorno real del kit (`admision.entorno.Entorno`, con el buscador
+  armado con las normas de la versión de cada caso).
+- **Métrica por caso:** controles aprobados / 9 según el comparador del kit (`admision.comparar.comparar`), menos
+  `--penalizacion` puntos por cada 1.000 tokens del prompt (por defecto 0,02: el prompt base pierde 0,0123).
+- **Devolución en texto para la reflexión:** cuántos controles aprobó, cada control que falló con el valor esperado y
+  el registrado (en la verificación, qué entidad había que consultar, cuáles no y cuáles consultó), si respondió sin
+  JSON o no llegó a registrar, qué buscó en las normas, la nota de triage completa y las llamadas a herramientas.
+- **Modelo de reflexión:** por defecto la misma Gemma local, con temperatura 0,7 y semilla por llamada (semilla + número
+  de llamada), para que las propuestas varíen pero se puedan reproducir. Si hay `ANTHROPIC_API_KEY` usa Claude
+  (`claude-opus-5-5`, SDK oficial de Anthropic) y si no, con `OPENAI_API_KEY`, un modelo de OpenAI por DSPy
+  (`--modelo-reflexion`). Los modelos pagos se usan solo para desarrollar el prompt, nunca dentro del agente.
+- **Plantilla de reflexión propia**, en español. La de GEPA pide incluir en la instrucción toda la información
+  factual de los ejemplos, lo que llevaría a copiar los números de las normas al prompt. Como en el test esos números
+  cambian, la plantilla lo prohíbe: el agente tiene que buscarlos con `buscar_normativa`. También exige conservar las
+  herramientas, los campos y el protocolo, y pide un mensaje corto.
+- **Selección:** frente de Pareto por caso de validación (`candidate_selection_strategy="pareto"`), minilotes de
+  reflexión del tamaño del presupuesto. El prompt final es el candidato de mayor puntaje en validación (a igual
+  puntaje, el más corto).
+- **Semilla:** `--semilla` (por defecto 0) fija la elección de casos, el orden de GEPA y la reflexión local.
+
+| Presupuesto | Casos de optimización | Casos de validación | Tope de casos jugados | Tope de tiempo | Minilote |
+|---|---:|---:|---:|---:|---:|
+| `prueba` | 6 | 6 | 40 | 10 minutos | 3 |
+| `completo` (default) | 90 | 45 | 3.000 | 90 minutos | 6 |
+
+El presupuesto completo está pensado para 1,5 horas en la A100; el tope de tiempo lo garantiza aunque cada
+iteración tarde más de lo previsto. Cada valor se puede cambiar por argumento.
+
+### Casos usados
+
+**No se usan los 50 casos de práctica.** Con ellos se mide la tabla del informe; optimizar el prompt sobre esos mismos
+casos daría números optimistas. Tampoco se usa ningún caso del test, que no tenemos.
+
+Se investigó si se podían armar casos con respuesta desde el historial, y se puede. `casos_optimizacion.py` arma un
+caso del kit (`admision.casos.Caso`) por cada fila clasificada `correcta` en `historial_clasificado.csv`:
+
+- el triage y los documentos salen de la fila de `historial/historial.csv`;
+- el nombre, el id del paciente y el motivo por el que no puede responder salen de la nota de triage de
+  `historial/trazas.jsonl`;
+- lo que contesta el paciente (cobertura, ART) y lo que informa cada entidad salen de lo que el operador preguntó y
+  verificó en la traza. Si el operador no preguntó la cobertura porque había credencial, el paciente declara la
+  credencial que cuenta.
+
+La ficha esperada de cada caso se calcula para las normas original, b y c con `etiquetar`, que aplica NOR-ADM-01 a
+03, NOR-COB-01 a 04 y NOR-TDE-01 a 04 con los parámetros de cada versión, más las dos costumbres de `costumbres.md`
+(preferir la prepaga si hay dos credenciales y avisar al voluntariado desde los 75 años sin acompañante).
+
+Controles:
+
+1. **El etiquetador reproduce las 150 fichas esperadas de la práctica** (50 casos x 3 versiones, los 8 campos, la
+   entidad a verificar y las prohibidas). Acá la práctica solo sirve para comprobar el etiquetador; no entra en la
+   optimización.
+2. **Reconstrucción exacta:** la nota de triage que arma el entorno del kit con el caso reconstruido tiene que ser
+   idéntica, carácter por carácter, a la que vio el operador. Si no, la fila se descarta.
+3. **Consistencia con el operador:** con las normas originales, la ficha calculada tiene que ser igual a la que
+   registró el operador, y su verificación tiene que aprobar el control calculado. Si no, la fila se descarta.
+
+Pasan las 1.590 filas correctas, sin descartes (`uv run python casos_optimizacion.py`). Por circuito: 509 sepsis,
+494 sin circuito, 340 ECG y 247 ACV; por cobertura: 756 sin cobertura, 311 prepaga, 306 ART y 217 obra social.
+
+Límite: el control 3 no es independiente de la Parte 1. Una fila es `correcta` justamente porque cumple las normas y
+las costumbres, así que el etiquetador y la clasificación comparten la misma lectura de las normas. El control
+independiente es el 1, contra las fichas oficiales de la práctica.
+
+De esas filas, `optimizar_prompt.py` elige con la semilla los casos de optimización y de validación, sin repetir caso
+entre los dos conjuntos, y reparte la versión de las normas en rotación (original, b, c), así el prompt no se ajusta a
+los números de una sola versión.
+
+### Comandos
+
+Prueba en la Mac, sin GPU (modelo falso: el agente sigue un guion fijo y la reflexión saca el último párrafo):
+
+```bash
+MODELO_FALSO=1 uv run python optimizar_prompt.py --presupuesto prueba --salida corridas/gepa/prueba_mac --sin-copiar-a-raiz
+```
+
+En Modal (detalle en `MODAL.md`, sección 7):
+
+```bash
+nohup uv run modal run --detach modal_app.py::gepa --etiqueta gepa_prueba --args="--presupuesto prueba" > corridas/gepa_prueba.log 2>&1 &
+nohup uv run modal run --detach modal_app.py::gepa --etiqueta gepa1 > corridas/gepa1.log 2>&1 &
+mkdir -p corridas/gepa
+uv run modal volume get --force tp-corridas /corridas/gepa/gepa1 corridas/gepa
+cp corridas/gepa/gepa1/prompt_optimizado.txt corridas/gepa/gepa1/config_optimizado.yaml .
+```
+
+En `gepa1` la salida de GEPA fue el prompt inicial, así que `prompt_optimizado.txt` se tomó del candidato 9 de
+`log.jsonl` (ver Resultados) y `config_optimizado.yaml` es la de la corrida con otro comentario en la primera línea.
+
+Evaluación de cada prompt sobre los 50 casos de práctica con las normas original, b y c:
+
+```bash
+nohup uv run modal run --detach modal_app.py::evaluar --etiqueta base > corridas/base.log 2>&1 &
+nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prompt_corto --config config_corto.yaml > corridas/prompt_corto.log 2>&1 &
+nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prompt_optimizado --config config_optimizado.yaml > corridas/prompt_optimizado.log 2>&1 &
+uv run modal volume get --force tp-corridas /corridas/<etiqueta> corridas
+uv run python tabla.py
+```
+
+Cada evaluación deja en `corridas/<etiqueta>/` el commit, la configuración y el prompt usados (`corrida.json`) y las
+conversaciones completas, con cada mensaje que entró al modelo y cada uno que salió (`<version>/trazas.jsonl`).
+
+### Resultados
+
+Casos resueltos sobre los 50 de práctica, con el modelo sin entrenar. Fuente: `corridas/tabla.md`.
+
+| Prompt | Tokens | original | b | c | Corrida |
+|---|---:|---:|---:|---:|---|
+| Referencia de la cátedra (sin entrenar) | | 12 | 15 | 12 | `mission.md` |
+| `prompt_base.txt` | 615 | 11 | 8 | 9 | `corridas/base/` |
+| `prompt_corto.txt` | 467 | 6 | 5 | 3 | `corridas/prompt_corto/` |
+| `prompt_optimizado.txt` | 693 | 8 | 10 | 10 | `corridas/prompt_optimizado/` |
+
+La línea de base (`corridas/base/`, commit `d222a92`, 50 casos, búsquedas 1,3 por caso) queda por debajo de la
+referencia de la cátedra en las tres versiones, sobre todo en b (8 contra 15). Los controles que más fallan son
+`box_antes_del_registro` (60 a 62 % de aciertos), `registro` (68 a 74 %), `aviso_al_voluntariado` (72 %), `cobertura`
+(72 a 76 %) y la verificación (72 a 78 %); `numero_documento` y `circuito` casi no fallan. La generación es greedy, pero
+el lote en GPU puede mover algún caso entre corridas (ver Auditabilidad en `mission.md`).
+
+Optimización con GEPA (`corridas/gepa/gepa1/resumen.json` y `log.jsonl`):
+
+| | Tokens | Puntaje | Controles aprobados medios (validación) | Resueltos (validación, de 45) |
+|---|---:|---:|---:|---:|
+| Prompt inicial (candidato 0) | 615 | 0,8348 | 0,8471 | 8 |
+| Candidato 9 (`prompt_optimizado.txt`) | 693 | 0,8307 | 0,8446 | 15 |
+| Otros 22 candidatos | 571 a 767 | 0,7156 a 0,7984 | 0,7286 a 0,8125 | 4 a 12 |
+
+24 candidatos, tope de 3.000 casos jugados alcanzado en 3.347 s (56 minutos de optimización, más la carga del
+modelo), reflexión con la misma Gemma, semilla 0, penalización 0,02. La corrida se lanzó desde el commit `44c8299`;
+`resumen.json` lo marca "con cambios sin commitear" solo por los logs locales de lanzamiento, que ahora están en
+`.gitignore`.
+
+**GEPA no encontró un candidato con mejor puntaje que el inicial**, así que su salida
+(`corridas/gepa/gepa1/prompt_optimizado.txt`) es `prompt_base.txt` tal cual. La métrica de GEPA es el promedio de
+controles aprobados, y la del TP son los casos resueltos (los 9 controles a la vez). En validación el candidato 9
+resolvió casi el doble de casos que el inicial (15 contra 8) con un promedio de controles casi igual. Por eso
+`prompt_optimizado.txt` es el candidato 9 (`texto` de la línea `"candidato": 9` de `log.jsonl`), no la salida
+directa de GEPA. Elegirlo mirando la validación entre 24 candidatos puede premiar el azar; la evaluación sobre los
+50 casos de práctica, que no se usaron en la optimización, es la que dice si la mejora es real.
+
+Qué cambia el candidato 9 respecto del base: ordena el trabajo en un protocolo de cinco pasos (leer triage,
+preguntar cobertura, verificar afiliación, buscar normativa, registrar), pide buscar en las normas antes de registrar,
+con ejemplos de consultas, y prohíbe usar valores numéricos fijos de las normas. Conserva las cinco herramientas, los
+argumentos y el formato JSON. Es 13 % más largo (693 tokens).
+
+#### Lectura de los resultados
+
+- **El prompt corto empeora en las tres versiones** (6, 5 y 3 contra 11, 8 y 9). Casi toda la caída está en
+  `box_antes_del_registro`, que baja de 60 a 62 % de aciertos a 36 a 42 %, y en `plazo_circuito_min` (de 90 a 92 %
+  a 78 a 80 %). Al sacar la redacción larga de los argumentos se perdió contexto que la Gemma sin entrenar usaba para
+  esos campos, aunque las reglas sigan escritas. Ahorra 148 tokens de prompt y unos 3.700 caracteres de contexto por
+  caso, que no compensan.
+- **El prompt optimizado mejora en las normas b y c** (10 y 10 contra 8 y 9) y queda por debajo en las originales (8
+  contra 11): 28 casos resueltos en total, igual que la base. Busca más en las normas (1,9 búsquedas por caso contra
+  1,3), lo que sube `registro` (72 a 84 % contra 68 a 74 %), `circuito` (100 %) y `plazo_circuito_min`; con las
+  normas cambiadas eso es lo que más importa. A cambio, el contexto por caso crece de unos 19.000 a unos 25.500
+  caracteres.
+- **Ninguno llega a la referencia de la cátedra sin entrenar** (12, 15 y 12). Los controles que siguen fallando en
+  los tres prompts son `box_antes_del_registro`, `cobertura`, `aviso_al_voluntariado` y la verificación. Son reglas
+  que dependen de combinar varios datos del caso, y el ajuste fino de la Parte 4 apunta a ellas.
+- La mejora de 8 a 15 en validación no se sostuvo con la misma fuerza en la práctica: con 45 casos y 24 candidatos,
+  parte de esa diferencia era azar.
 
 ## Parte 4: Entrenamiento
 
-El apartado completo (estrategia, conjunto de datos, configuración, comandos
-y la tabla de casos resueltos) está en [`informe_parte4.md`](informe_parte4.md).
+Los números que todavía no se midieron dicen **PENDIENTE**: se completan con
+los comandos indicados, nunca a mano. Los comandos de Modal están en
+[`MODAL.md`](MODAL.md), secciones 8 a 14.
+
+### Estrategia
+
+Fine-tuning supervisado (SFT) con LoRA sobre `google/gemma-4-E4B-it`, en bf16,
+en una A100 de 40 GB. El entrenamiento le enseña al modelo el oficio: el
+protocolo JSON de las herramientas, el orden de los pasos, qué buscar, a quién
+preguntar, qué verificar y las costumbres del hospital. Los números de las
+normas no se aprenden: llegan en cada caso por `buscar_normativa`, así que el
+conjunto de datos los hace variar (ver abajo).
+
+- **Pérdida solo sobre el asistente.** Las respuestas del modelo (una llamada
+  JSON por turno, más la marca de fin de turno `<turn|>`) son lo único que
+  suma a la pérdida. El sistema, los resultados de las herramientas y el
+  primer mensaje quedan en -100. La plantilla de Gemma 4 no trae las marcas
+  `{% generation %}` que usa TRL para esto, así que `entrenar.py` arma las
+  etiquetas con los offsets del tokenizador. En la prueba se controló que los
+  tramos marcados, decodificados, son exactamente los turnos del asistente
+  más su `<turn|>`: con la plantilla de chat real de `google/gemma-4-E4B-it`
+  (solo su `chat_template.jinja`, sin bajar el modelo), la máscara fue exacta
+  en las 150 conversaciones de val. En las 16 conversaciones de la prueba
+  (variante `datos/sin_prompt/`), 4.766 de 47.179 tokens entran en la
+  pérdida (10,1%, con el tokenizador del modelo diminuto).
+- **Compatible con vLLM.** `entrega.py` carga el adaptador con el soporte LoRA
+  de vLLM 0.34.0. Según su código (`vllm/model_executor/models/gemma4.py`,
+  `gemma4_mm.py` y `vllm/config/lora.py`), para Gemma 4 acepta LoRA en
+  `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj` y
+  `down_proj` del modelo de lenguaje, y ranks 1, 8, 16, 32, 64, 128, 256, 320
+  o 512 (`max_lora_rank`). Las torres de visión y audio solo admiten LoRA con
+  `enable_tower_connector_lora`, experimental, así que el adaptador no las
+  toca: `entrenar.py` usa una expresión regular que deja afuera `vision` y
+  `audio`, y antes de subir cada punto de control verifica rank, módulos,
+  ausencia de `modules_to_save` y de DoRA. Los nombres de los tensores quedan
+  como `base_model.model.model.language_model.layers.N...`, que vLLM mapea a
+  `language_model.model.layers.N...`. `entrega.py` usa `enable_lora=True` y
+  `max_lora_rank=32` (`config.yaml`), el rank del adaptador.
+- **Dos variantes de datos**, para la tabla: "prompt + entrenamiento" con
+  `prompt_optimizado.txt`, en `datos/` (la que lee `entrenar.yaml` por
+  defecto), y "solo entrenamiento" con el mensaje de sistema de
+  `admision/ejemplo.py`, en `datos/sin_prompt/`. Solo cambia el mensaje de
+  sistema; las conversaciones son las mismas. Se eligió
+  `prompt_optimizado.txt` para la variante principal porque en la Parte 3
+  empata en total con el prompt base (28 casos) pero gana en las normas b y c
+  (10 y 10 contra 8 y 9), que se parecen más al test, donde cambian los
+  números.
+
+### Conjunto de datos
+
+`armar_dataset.py` (semilla 20261117) junta tres orígenes en el formato del
+manual del kit ([`KIT.md`](KIT.md)) y separa 5% de cada origen para
+validación. Las dos variantes tienen las mismas conversaciones
+(`datos/resumen.json` y `datos/sin_prompt/resumen.json`):
+
+| Origen | Conversaciones | Train | Val |
+|---|---:|---:|---:|
+| Historial, filas `correcta` de `historial_clasificado.csv` (normas originales) | 1.600 | 1.520 | 80 |
+| Trazas de la cátedra, `entrenamiento/trazas.jsonl` (valores variables) | 800 | 760 | 40 |
+| Sintéticas, `curado/conversaciones_sinteticas.jsonl` (200 por versión: original, b y c) | 600 | 570 | 30 |
+| **Total** | **3.000** | **2.850** | **150** |
+
+Tokens estimados como caracteres / 4, igual que `admision.evaluar_rag`:
+
+| | `datos/` (`prompt_optimizado.txt`) | `datos/sin_prompt/` (`admision/ejemplo.py`) |
+|---|---:|---:|
+| Tokens totales | 8.140.628 | 7.992.888 |
+| Train / val | 7.740.202 / 400.426 | 7.599.855 / 393.033 |
+| Por conversación: media / mediana | 2.713,5 / 2.748 | 2.664,3 / 2.699 |
+| Por conversación: percentil 95 / máximo (`E-177`) | 3.481 / 3.779 | 3.432 / 3.729 |
+| Mensaje de sistema por conversación | 607 | 558 |
+| `train.jsonl` / `val.jsonl` | 32,2 MB / 1,7 MB | 31,7 MB / 1,6 MB |
+| sha256 de `train.jsonl` | `63139319143e...` | `16830998562d...` |
+
+- Los tokens reales del tokenizador de Gemma quedan en
+  `corridas/<corrida>/datos.json` y en W&B. El tokenizador del modelo
+  diminuto de la prueba de la Mac no es idéntico al de Gemma 4 E4B (otro
+  sha256 de `tokenizer.json`), así que la relación real entre tokens y
+  caracteres sale de la prueba en GPU: PENDIENTE.
+- Los dos `train.jsonl` pesan menos de 50 MB y van en git. Si una variante
+  pasa ese límite, se publica con `armar_dataset.py --subir-hf` en un repo de
+  dataset de HF (ver [`MODAL.md`](MODAL.md), sección 8).
+- sha256 completos:
+  `63139319143e32c98dd1ba4015a1ac78bacb9499eda1bf9efb38e95803650f65`
+  (`datos/train.jsonl`) y
+  `16830998562d978367220e329a3595673287a0889dcf886c14ad89cd88bcd072`
+  (`datos/sin_prompt/train.jsonl`). Rearmar la variante sin prompt en su
+  carpeta nueva dio el mismo hash que antes de moverla. La versión
+  anterior, armada con la clasificación de la primera pasada (corte del
+  voluntariado en 76 años, 1.590 filas correctas), tenía 2.990 conversaciones
+  y el hash `a1e640db...` y no se usó para entrenar.
+
+#### Las búsquedas muestran los números de cada traza
+
+Cada traza de la cátedra usa sus propios valores de las normas (por ejemplo,
+P-ADM-2 toma 8 valores entre 55 y 80 años en las 800 trazas). Si las
+búsquedas se rehicieran con `normas/original`, el modelo vería un número en la
+búsqueda y una ficha decidida con otro, y aprendería a ignorar la búsqueda.
+Copiar el resultado original de la traza tampoco alcanza: viene del BM25 de la
+cátedra, no del buscador que va a usar el agente.
+
+La solución aprovecha que los textos de las normas son idénticos en las tres
+versiones (`diff` de `normas/original`, `b` y `c` solo difiere en
+`parametros.yaml`) y que cada resultado de búsqueda termina con su línea
+`Valores: ...`. Para cada traza, `armar_dataset.py`:
+
+1. lee los valores que muestran sus propios resultados de búsqueda;
+2. arma una carpeta temporal con los textos de `normas/original` y un
+   `parametros.yaml` con esos valores. Los parámetros que no cambian entre
+   versiones (P-COB-1 y los de otras áreas) se toman de `normas/original`;
+3. rehace cada búsqueda con `parte2/rag_buscador.py` sobre esa carpeta, con la
+   misma consulta de la traza.
+
+Si el buscador citara un parámetro que varía entre versiones y que la traza
+nunca mostró, esa búsqueda conserva el resultado original. Resultados en este
+conjunto: 7.316 búsquedas rehechas, **0** con resultado original y 5.478 que
+devolvieron las mismas secciones que la traza; en esas 5.478 el texto nuevo
+coincide carácter por carácter con el original, lo que confirma que los
+valores reconstruidos son los de cada traza. Con `--busquedas originales` se
+puede armar la variante que copia los resultados de la traza, para comparar.
+
+#### Sintéticas
+
+`generar_sinteticas.py` genera 600 casos con `admision.generador` (semilla
+20261108) y los juega con una política determinista, en el simulador oficial,
+con el buscador del grupo armado con la versión de normas de cada caso (200
+por versión). Las consultas siguen las 14 plantillas y el orden de pasos de
+las trazas de la cátedra, que son las que va a escribir el agente.
+
+Antes de usarla, la política se validó contra las fichas esperadas de la
+práctica con el comparador oficial (`uv run python validar_politica.py`):
+
+| Pasada | original | b | c |
+|---|---:|---:|---:|
+| Costumbre del voluntariado con corte en 76 años (`costumbres.md`) | 49/50 | 49/50 | 49/50 |
+| Corte en 75 años | **50/50** | **50/50** | **50/50** |
+
+El único fallo de la primera pasada fue `pev-006` (75 años, sin acompañante):
+el historial muestra el corte en 75 (ver [`revision_parte1.md`](revision_parte1.md)).
+Esa corrección se aplicó también a la clasificación del historial, lo que suma
+10 conversaciones reales.
+
+**Cuidado al leer la tabla final:** como las sintéticas usan las normas b y c
+para que el modelo no memorice los números de `original`, la evaluación de
+práctica con b y c deja de ser del todo independiente de los datos de
+entrenamiento (no hay casos de práctica en el entrenamiento, pero sí los
+valores de esas versiones). El test de la cátedra usa otros números; las
+trazas de la cátedra, con valores que varían traza a traza, son lo que más
+se le parece.
+
+### Configuración
+
+`entrenar.yaml`, comentado valor por valor. Lo principal:
+
+| Parámetro | Valor | Por qué |
+|---|---|---|
+| Modelo | `google/gemma-4-E4B-it`, bf16, SDPA | el del enunciado; ~16 GB en bf16 |
+| LoRA | r = 32, alpha = 32, dropout 0,05 | rank aceptado por vLLM; ~1% de parámetros |
+| Módulos | q/k/v/o_proj, gate/up/down_proj del modelo de lenguaje | lo que carga vLLM |
+| Épocas | 3 | ~530 pasos; a confirmar con la prueba chica |
+| lr | 1e-4, coseno, 3% de calentamiento | habitual en LoRA |
+| Batch | 2 por paso x 8 de acumulación = 16 conversaciones | logits de 262.144 tokens de vocabulario |
+| Largo máximo | 6.144 tokens (se descartan, no se truncan) | la más larga ronda 3.700 estimados |
+| Gradient checkpointing | sí | memoria de activaciones |
+| Semilla | 20261117 | datos, LoRA y dropout |
+| Puntos de control | cada 100 pasos, a `HF_REPO` | con estado para retomar |
+
+La duración de 2 a 4 horas es una estimación (unos 23 millones de tokens
+procesados a 2.000 o 3.000 tokens por segundo), no una medición. La prueba
+chica en GPU mide segundos por paso y VRAM; con eso se ajustan las épocas.
+
+Dependencias: una sola pila para entrenar y para evaluar, con versión exacta
+en `pyproject.toml` y `uv.lock`: vllm 0.34.0 (solo en Linux), torch 2.14.0,
+transformers 5.22.2, trl 1.17.1, peft 0.21.2, accelerate 1.15.0, datasets
+5.1.0, huggingface_hub 2.4.0, wandb 0.31.0, pyyaml 6.0.3 y modal 1.6.4. torch
+y transformers son las que acepta vllm 0.34.0 (`torch==2.14.0`,
+`transformers<5.23.0`, `huggingface_hub>=2.0.0`). La Parte 3 se midió con
+vllm 0.33.0 y transformers 5.20.2; se pasó a 0.34.0 porque vllm 0.33.0 no
+acepta transformers 5.22.2 (pide `<5.21.0`) y porque las reglas de LoRA de
+Gemma 4 que controla `entrenar.py` se tomaron del código de la 0.34.0. Las
+imágenes de Modal de la evaluación (`modal_app.py`) y del entrenamiento
+(`modal_entrenar.py`) se arman desde el mismo `uv.lock`.
+
+### Auditabilidad de cada corrida
+
+- **W&B:** configuración completa, semilla, comando, ruta y sha256 de
+  `train.jsonl` y `val.jsonl` (también como artefacto de tipo dataset),
+  tokens reales, conversaciones descartadas, parámetros entrenables, VRAM
+  máxima y la revisión de HF de cada punto de control.
+- **Hugging Face (`HF_REPO`):** un commit por punto de control con el
+  adaptador en la raíz (lo carga vLLM tal cual), `estado/` para retomar y
+  `corrida.json` con corrida, paso, semilla, sha256 de los datos, configuración
+  y link de W&B. Etiquetas `<corrida>-paso-<N>`, `<corrida>-final` y `final`
+  (esta última solo en corridas completas).
+- **Repositorio:** `corridas/<corrida>/resumen.json`, `revisiones.json`,
+  `datos.json` y `config_usada.yaml`, bajados del volumen de Modal.
+
+### Comandos
+
+```bash
+uv run python validar_politica.py                     # política sintética contra la práctica
+uv run python generar_sinteticas.py                   # 600 conversaciones sintéticas
+uv run python armar_dataset.py --prompt prompt_optimizado.txt   # datos/ (prompt + entrenamiento)
+uv run python armar_dataset.py --salida datos/sin_prompt         # datos/sin_prompt/ (solo entrenamiento)
+uv run python entrenar.py --prueba                    # Mac, modelo diminuto
+uv run modal run --detach modal_entrenar.py --corrida prueba-gpu-01 --max-pasos 20
+uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1
+uv run modal run --detach modal_entrenar.py --corrida sft-ejemplo-v1 \
+    --datos datos/sin_prompt/train.jsonl --val datos/sin_prompt/val.jsonl
+```
+
+### Resultados
+
+Casos resueltos de los 50 de práctica, con las normas completas. La evaluación
+corre `admision.correr practica` con `entrega.py` (sección 4 del
+[`README.md`](README.md)); cada celda debe citar el punto de control y el
+prompt que la producen. Las dos filas sin entrenar son las corridas de la
+Parte 3 (`corridas/base/` y `corridas/prompt_optimizado/`, en
+`corridas/tabla.md`), medidas con vLLM 0.33.0; `prompt_base.txt` es el
+mensaje de sistema de `admision/ejemplo.py` tal cual.
+
+| Variante | Punto de control | Prompt | original | b | c |
+|---|---|---|---:|---:|---:|
+| Referencia de la cátedra, sin entrenar | - | `admision/ejemplo.py` | 12 | 15 | 12 |
+| Referencia de la cátedra, SFT con las 800 trazas | - | `admision/ejemplo.py` | 25 | 24 | 25 |
+| Sin entrenar | modelo base | `admision/ejemplo.py` (`prompt_base.txt`) | 11 | 8 | 9 |
+| Solo prompt | modelo base | `prompt_optimizado.txt` | 8 | 10 | 10 |
+| Solo entrenamiento | PENDIENTE (`sft-ejemplo-v1-final`) | `admision/ejemplo.py` | PENDIENTE | PENDIENTE | PENDIENTE |
+| Prompt + entrenamiento | PENDIENTE (`sft-prompt-v1-final`) | `prompt_optimizado.txt` | PENDIENTE | PENDIENTE | PENDIENTE |
+
+Del entrenamiento: tiempo, pasos, pérdida final de train y val y VRAM máxima
+de cada corrida, de `corridas/<corrida>/resumen.json`: **PENDIENTE**.
+
+### Pasadas del desarrollo
+
+1. **Buscador propio de las sintéticas.** La primera versión de
+   `generar_sinteticas.py` tenía un buscador de palabras clave fijas y
+   consultas inventadas: las conversaciones no mostraban lo que el agente iba
+   a ver. Se reemplazó por el buscador del grupo y las consultas de las trazas.
+2. **Corte del voluntariado.** La validación contra la práctica dio 49/50 por
+   un corte de edad mal tomado del historial (76 en vez de 75). Corregido, 50/50.
+3. **API de transformers 5.** La primera prueba de `entrenar.py` falló porque
+   `warmup_ratio` y `group_by_length` ya no existen en `TrainingArguments`;
+   ahora son `warmup_steps` con una fracción y
+   `train_sampling_strategy="group_by_length"`.
+4. **Etiqueta final.** Al planear la prueba chica en GPU se vio que movería la
+   etiqueta `final` de HF; ahora solo la mueven las corridas completas.

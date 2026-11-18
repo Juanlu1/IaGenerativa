@@ -1,4 +1,4 @@
-# Candidato 9 de corridas/gepa/gepa1 (el de más casos resueltos en validación); ver informe_parte3.md. Solo cambia el prompt.
+# Candidato 9 de corridas/gepa/gepa1 (el de más casos resueltos en validación); ver INFORME.md, Parte 3. Solo cambia el prompt.
 modelo: google/gemma-4-E4B-it
 revision: 4ecc2ba63bcac23ba4a767fc87025b1450f84c9c
 prompt: prompt_optimizado.txt
