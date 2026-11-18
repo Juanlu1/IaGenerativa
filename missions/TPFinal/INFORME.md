@@ -777,6 +777,24 @@ con lo que hay en el repositorio solo se puede comprobar la del paso 314.
 `sft-prompt-v1-r1-final` y no la etiqueta móvil `final`, que pisa cada
 corrida completa. La configuración sin entrenar queda en `config_base.yaml`.
 
+#### Corridas que no tienen carpeta en `corridas/`
+
+Las cuatro filas que pide la consigna (sin entrenar, solo prompt, solo
+entrenamiento y las dos cosas) tienen su corrida. Estas otras no dejaron
+archivos en el repositorio, y por qué:
+
+| Corrida | Qué pasó | Por qué no hay archivos |
+|---|---|---|
+| `prueba-gpu-01` | falló al armar el modelo (atención SDPA en la torre de audio, pasada 5) | no llegó a entrenar; `entrenar.py` escribe `resumen.json` y `revisiones.json` recién al terminar (líneas 460 y 461). Lo que haya escrito antes en el volumen de Modal (por ejemplo `datos.json`, línea 366) no se bajó al repositorio. Si dejó run en W&B, su id: PENDIENTE |
+| `sft-prompt-v1` (pasos 1 a 100) | Modal la canceló en el paso 106 al suspenderse la Mac (pasada 6) | no terminó, así que no escribió `resumen.json`. Quedó el punto de control `sft-prompt-v1-paso-100` en HF y el run `68qllkha` de W&B, que la continuación `sft-prompt-v1-r1` siguió usando |
+| `sft-ejemplo-v1` | cancelada en el paso 73 por la misma suspensión | no terminó ni llegó a subir un punto de control; se relanzó de cero como `sft-ejemplo-v2`. Su run de W&B: PENDIENTE (el id no quedó en ningún archivo del repo) |
+| `gepa_prueba` | la prueba chica de GEPA falló con `FileNotFoundError` (Parte 3, Lo que no funcionó) | su salida no se bajó del volumen de Modal |
+
+Tampoco se evaluaron sobre la práctica los puntos de control intermedios
+(pasos 100 a 314 que no se eligieron) ni se repitió ninguna evaluación de
+los adaptadores para medir la variación del lote en GPU. El motivo no quedó
+registrado: PENDIENTE que lo complete el equipo.
+
 ### Pasadas del desarrollo
 
 1. **Buscador propio de las sintéticas.** La primera versión de
