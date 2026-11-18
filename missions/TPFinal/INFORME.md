@@ -611,30 +611,34 @@ Las épocas salen de la prueba chica en la A100 (`corridas/prueba-gpu-02/`,
 
 | Medida | Valor |
 |---|---|
-| Segundos por paso | PENDIENTE: se usó 27,5 (pasos 5 a 20) y 29,1 de promedio con el arranque, leídos en W&B `2r5rmemo`, pero ningún archivo del repo los respalda. `resumen.json` solo tiene 643,6 s para los 20 pasos, con la evaluación incluida |
+| Segundos por paso | 26,3 entre los pasos 10 y 20 (`_runtime` 330,2 s y 592,9 s en `wandb_history.jsonl`, que registra cada 10 pasos); 643,6 s para los 20 pasos con la evaluación incluida (`resumen.json`) |
 | Pasos por época | 178 (2.850 conversaciones / 16) |
 | VRAM máxima | 20,75 GB de 40, sin errores de memoria |
-| Pérdida de train | media de la corrida: 0,2924. Pasos 10 y 20: PENDIENTE (W&B `2r5rmemo`, sin archivo en el repo) |
+| Pérdida de train | 0,4416 en el paso 10 y 0,1433 en el paso 20 (`wandb_history.jsonl`); media de la corrida: 0,2924 |
 | Pérdida de val (paso 20) | 0,1273 (precisión por token 0,968) |
 | Evaluación sobre val | 49 s |
 | Puntos de control en HF | `Juanlu1/gemma-admision`: `prueba-gpu-02-paso-20` (`6d13f855fe77e8b22577adf67d4aae1a769e305d`) y `prueba-gpu-02-final` (`427aae909639f0b4c261ce71c1cc6daff61eb8f3`); compatibles con vLLM (rank 32, 7 módulos) |
 
-Salvo lo marcado PENDIENTE, todo sale de `corridas/prueba-gpu-02/resumen.json`
-y `datos.json`. Comando: `uv run modal run --detach modal_entrenar.py
+Todo sale de `corridas/prueba-gpu-02/resumen.json`, `datos.json` y
+`wandb_history.jsonl` (run `2r5rmemo`, bajado con `uv run python
+exportar_registros.py`). Comando: `uv run modal run --detach modal_entrenar.py
 --corrida prueba-gpu-02 --max-pasos 20` (datos `datos/train.jsonl`, prompt
 `prompt_optimizado.txt`, semilla 20261117; la configuración exacta, todavía
 con 3 épocas que `--max-pasos` corta, está en
 `corridas/prueba-gpu-02/config_usada.yaml`. El commit de código no quedó
 registrado en los archivos de la corrida).
 
-Las épocas se eligieron con los segundos por paso medidos en esa prueba
-(PENDIENTE de respaldar, ver arriba). Con esa medida, 3 épocas (534 pasos)
-tardaban demasiado y 2 épocas (356 pasos) quedaban demasiado cerca del tope
-de 3 horas para una medida de 20 pasos; se eligieron 1,75 épocas (unos 312
-pasos). Las horas que se estimaron para cada opción dependen del número
-PENDIENTE y se sacaron de acá. El tiempo real de las corridas completas sí
-está respaldado: `segundos` de `corridas/<corrida>/resumen.json` (tabla de
-abajo).
+Las épocas se eligieron con los segundos por paso de esa prueba. En su
+momento se anotaron 27,5 s por paso (pasos 5 a 20), una cifra que no se
+puede reconstruir desde lo que quedó registrado, porque W&B tiene una fila
+cada 10 pasos. Con los 26,3 s por paso que sí están registrados, 3 épocas
+(534 pasos) son unas 3,9 horas y 2 épocas (356 pasos) unas 2,6, demasiado
+cerca del tope de 3 horas para una medida de 20 pasos. Con 1,75 épocas
+(unos 312 pasos) son unas 2,3 horas de entrenamiento, más la carga del
+modelo, 4 evaluaciones y las subidas. La conclusión es la misma con 27,5 o
+con 26,3. El tiempo real de las corridas completas está en `segundos` de
+`corridas/<corrida>/resumen.json` (tabla de abajo): `sft-ejemplo-v2` hizo
+los 314 pasos en 7.778 s, 24,8 s por paso con las evaluaciones incluidas.
 
 Dependencias: una sola pila para entrenar y para evaluar, con versión exacta
 en `pyproject.toml` y `uv.lock`: vllm 0.34.0 (solo en Linux), torch 2.14.0,
@@ -750,50 +754,74 @@ indicios, no mediciones finas (Parte 3).
 |---|---|---|
 | Datos | `datos/` (sha256 `63139319...`) | `datos/sin_prompt/` (sha256 `16830998...`) |
 | Pasos | 314 (1,76 épocas): 1 a 100 en `sft-prompt-v1`, 101 a 314 en `sft-prompt-v1-r1` | 314 (1,76 épocas), sin cortes |
-| Tiempo | 5.406 s (1,50 h) de la continuación (pasos 101 a 314). Pasos 1 a 100: PENDIENTE (se informaron 42 min, sin archivo que los respalde), así que el total también queda PENDIENTE | 7.778 s (2,16 h) |
-| Pérdida de train | 0,00745 de media en los pasos 101 a 314. Último registro (paso 310): PENDIENTE | 0,0380 de media en los 314 pasos (incluye el arranque). Último registro (paso 310): PENDIENTE |
-| Pérdida de val | 0,00402 (paso 314). Pasos 100, 200 y 300: PENDIENTE | 0,00530 (paso 314). Pasos 100, 200 y 300: PENDIENTE |
-| Precisión por token en val | 0,9986 (paso 314) | 0,9981 (paso 314); paso 300: PENDIENTE |
+| Tiempo | 2.547,7 s (42 min, con la carga del modelo) hasta el registro del paso 100 y 2.596,5 s con su evaluación, más 5.406 s (1,50 h) de la continuación (pasos 101 a 314): unas 2,2 h | 7.778 s (2,16 h) |
+| Pérdida de train | 0,00745 de media en los pasos 101 a 314; 0,00258 en el último registro (paso 310) | 0,0380 de media en los 314 pasos (incluye el arranque); 0,00347 en el último registro (paso 310) |
+| Pérdida de val | 0,01494 (paso 100), 0,00557 (200), 0,00405 (300), 0,00402 (314) | 0,01685 (paso 100), 0,00695 (200), 0,00529 (300), 0,00530 (314) |
+| Precisión por token en val | 0,9986 (paso 314) | 0,9981 (pasos 300 y 314) |
 | VRAM máxima | 20,81 GB | 20,72 GB |
 | Comando | `modal_entrenar.py --corrida sft-prompt-v1`, retomada con `--corrida sft-prompt-v1-r1 --retomar hf:sft-prompt-v1-paso-100` (Comandos) | `modal_entrenar.py --corrida sft-ejemplo-v2 --datos datos/sin_prompt/train.jsonl --val datos/sin_prompt/val.jsonl` |
-| Puntos de control (`Juanlu1/gemma-admision`) | `sft-prompt-v1-paso-100` (revisión PENDIENTE: la corrida cortada no dejó archivos), `-r1-paso-200` `69815ca`, `-r1-paso-300` `2735306`, `-r1-paso-314` `c559132`, `-r1-final` `a5af001` | `sft-ejemplo-v2-paso-100` `d003d71`, `-paso-200` `e841460`, `-paso-300` `67deca8`, `-paso-314` `53d6d35`, `-final` `858d416` |
-| W&B | `68qllkha` (la continuación sigue el mismo run) | `g69gw15q` |
+| Puntos de control (`Juanlu1/gemma-admision`) | `sft-prompt-v1-paso-100` `ee52fc1`, `-r1-paso-200` `69815ca`, `-r1-paso-300` `2735306`, `-r1-paso-314` `c559132`, `-r1-final` `a5af001` | `sft-ejemplo-v2-paso-100` `d003d71`, `-paso-200` `e841460`, `-paso-300` `67deca8`, `-paso-314` `53d6d35`, `-final` `858d416` |
+| W&B | `68qllkha` (la continuación sigue el mismo run, que W&B muestra como `sft-prompt-v1-r1`) | `g69gw15q` |
 
-Los números con valor salen de `corridas/<corrida>/resumen.json` (`segundos`,
-`train_loss`, `eval`, `vram_max_gb`, `wandb`) y las revisiones completas, de
-`revisiones.json`. Los marcados PENDIENTE se leyeron en W&B o en el log de
-Modal de la corrida, pero no quedaron en ningún archivo del repositorio:
-falta exportar el historial de W&B (por ejemplo, `run.history()` de cada run)
-a `corridas/<corrida>/`.
+De dónde sale cada número:
+
+- `segundos`, `train_loss` (media), `eval` del paso 314 y `vram_max_gb`:
+  `corridas/<corrida>/resumen.json`.
+- Pérdidas y precisión por paso, último registro de train y `_runtime`:
+  `corridas/<corrida>/wandb_history.jsonl`, el historial completo del run
+  (`uv run python exportar_registros.py`). El de `68qllkha` está en
+  `corridas/sft-prompt-v1-r1/` e incluye los pasos 1 a 100 de `sft-prompt-v1`.
+  `_runtime` cuenta desde `wandb.init`, así que los 2.547,7 s incluyen la
+  carga del modelo.
+- Revisiones: `corridas/<corrida>/revisiones.json`. La de
+  `sft-prompt-v1-paso-100` (`ee52fc1916acba1bb605dc7b01293350ae121085`), que
+  la corrida cortada no llegó a escribir, sale de `corridas/hf_etiquetas.json`.
 
 **Punto de control elegido.** El criterio es usar, en cada corrida, el de
-menor pérdida de validación. En `sft-prompt-v1-r1` se eligió el final (paso
-314, 0,00402). En `sft-ejemplo-v2` se eligió el del paso 300, y
-`config_sft_base.yaml` fija su commit `67deca83dd20...`
-(`sft-ejemplo-v2-paso-300`). Las pérdidas de validación de los pasos 100, 200
-y 300 que respaldan esas elecciones están PENDIENTES de exportar (ver arriba);
-con lo que hay en el repositorio solo se puede comprobar la del paso 314.
+menor pérdida de validación. En `sft-prompt-v1-r1` es el final (paso 314,
+0,00402), apenas por debajo del paso 300 (0,00405): la pérdida bajó en todas
+las evaluaciones, sin señales de sobreajuste. En `sft-ejemplo-v2` la menor es
+la del paso 300 (0,00529 contra 0,00530 del paso 314), así que
+`config_sft_base.yaml` fija el commit `67deca83dd20...`
+(`sft-ejemplo-v2-paso-300`). La diferencia es mínima: en los últimos pasos la
+tasa de aprendizaje ya era casi cero (coseno; 6,7e-8 en el registro del paso 310, contra 1e-4 de pico)
+y la pérdida de validación quedó plana. Se respetó el criterio en vez de
+elegir el final. Los puntos de control intermedios no se evaluaron sobre la
+práctica: no había presupuesto ni tiempo para correr una evaluación por cada
+uno, así que la elección se hizo solo por la pérdida de validación.
 `config.yaml` fija el commit `a5af001800f7...` de la etiqueta
 `sft-prompt-v1-r1-final` y no la etiqueta móvil `final`, que pisa cada
 corrida completa. La configuración sin entrenar queda en `config_base.yaml`.
 
-#### Corridas que no tienen carpeta en `corridas/`
+#### Corridas cortadas o fallidas
 
 Las cuatro filas que pide la consigna (sin entrenar, solo prompt, solo
-entrenamiento y las dos cosas) tienen su corrida. Estas otras no dejaron
-archivos en el repositorio, y por qué:
+entrenamiento y las dos cosas) tienen su corrida. Estas otras no terminaron;
+`entrenar.py` escribe `resumen.json` y `revisiones.json` recién al terminar
+(líneas 460 y 461), así que de ellas solo queda lo que se registró en W&B y
+en HF mientras corrían. `exportar_registros.py` baja todos los runs del
+proyecto de W&B, los que fallaron incluidos (4 runs:
+`corridas/<corrida>/wandb_run.json`).
 
-| Corrida | Qué pasó | Por qué no hay archivos |
+| Corrida | Qué pasó | Qué quedó |
 |---|---|---|
-| `prueba-gpu-01` | falló al armar el modelo (atención SDPA en la torre de audio, pasada 5) | no llegó a entrenar; `entrenar.py` escribe `resumen.json` y `revisiones.json` recién al terminar (líneas 460 y 461). Lo que haya escrito antes en el volumen de Modal (por ejemplo `datos.json`, línea 366) no se bajó al repositorio. Si dejó run en W&B, su id: PENDIENTE |
-| `sft-prompt-v1` (pasos 1 a 100) | Modal la canceló en el paso 106 al suspenderse la Mac (pasada 6) | no terminó, así que no escribió `resumen.json`. Quedó el punto de control `sft-prompt-v1-paso-100` en HF y el run `68qllkha` de W&B, que la continuación `sft-prompt-v1-r1` siguió usando |
-| `sft-ejemplo-v1` | cancelada en el paso 73 por la misma suspensión | no terminó ni llegó a subir un punto de control; se relanzó de cero como `sft-ejemplo-v2`. Su run de W&B: PENDIENTE (el id no quedó en ningún archivo del repo) |
-| `gepa_prueba` | la prueba chica de GEPA falló con `FileNotFoundError` (Parte 3, Lo que no funcionó) | su salida no se bajó del volumen de Modal |
+| `prueba-gpu-01` | falló al armar el modelo (atención SDPA en la torre de audio, pasada 5) | nada: no tiene run en el proyecto de W&B ni etiquetas en HF (`corridas/hf_etiquetas.json`). Lo que haya escrito en el volumen de Modal antes de fallar (por ejemplo `datos.json`, línea 366) no se bajó |
+| `sft-prompt-v1` (pasos 1 a 100) | Modal la canceló al suspenderse la Mac, después del paso 100 (pasada 6) | el punto de control `sft-prompt-v1-paso-100` (`ee52fc1`) y el run `68qllkha`, que la continuación siguió usando: sus filas de los pasos 10 a 100 están en `corridas/sft-prompt-v1-r1/wandb_history.jsonl` |
+| `sft-ejemplo-v1` | cancelada por la misma suspensión; W&B la marca `crashed` | el run `3y5836ny` en `corridas/sft-ejemplo-v1/`: último registro en el paso 70 (pérdida de train 0,0248, `_runtime` 1.748,5 s), ningún punto de control. Se relanzó de cero como `sft-ejemplo-v2` |
+| `gepa_prueba` | la prueba chica de GEPA falló con `FileNotFoundError` (Parte 3, Lo que no funcionó) | su salida no se bajó del volumen de Modal; GEPA no registra en W&B |
 
-Tampoco se evaluaron sobre la práctica los puntos de control intermedios
-(pasos 100 a 314 que no se eligieron) ni se repitió ninguna evaluación de
-los adaptadores para medir la variación del lote en GPU. El motivo no quedó
-registrado: PENDIENTE que lo complete el equipo.
+Los pasos exactos en que se cortaron `sft-prompt-v1` y `sft-ejemplo-v1` (106
+y 73, según el log de Modal de cada lanzamiento) no quedaron en ningún
+archivo: W&B registra cada 10 pasos y los logs locales de lanzamiento están
+en `.gitignore`.
+
+No se evaluaron sobre la práctica los puntos de control intermedios (los de
+los pasos 100 a 314 que no se eligieron): no había presupuesto ni tiempo
+para una evaluación por cada uno, así que se eligió solo por menor pérdida
+de validación (Punto de control elegido). Tampoco se repitió ninguna
+evaluación de los adaptadores para medir la variación del lote en GPU; el
+motivo de esto último no quedó registrado: PENDIENTE que lo complete el
+equipo.
 
 ### Pasadas del desarrollo
 
@@ -818,11 +846,13 @@ registrado: PENDIENTE que lo complete el equipo.
    Gemma 4 E4B con su configuración real en el dispositivo `meta`.
 6. **Corte por suspensión de la Mac.** `modal run --detach` no alcanzó: al
    cerrarse la tapa de la Mac, Modal canceló las dos corridas
-   (`Function call was cancelled`). `sft-prompt-v1` iba por el paso 106 y ya
-   había subido `sft-prompt-v1-paso-100`: se retomó desde ahí como
-   `sft-prompt-v1-r1`, que siguió en el paso 101 con el mismo run de W&B.
-   `sft-ejemplo-v1` iba por el paso 73, sin ningún punto de control, así que
-   se relanzó de cero como `sft-ejemplo-v2`. Desde entonces cada lanzamiento
+   (`Function call was cancelled`). `sft-prompt-v1` ya había pasado el paso
+   100 (el log de Modal mostraba el 106, ver Corridas cortadas o fallidas) y
+   había subido `sft-prompt-v1-paso-100` (`ee52fc1`): se retomó desde ahí
+   como `sft-prompt-v1-r1`, que siguió en el paso 101 con el mismo run de W&B
+   (`68qllkha`). `sft-ejemplo-v1` (run `3y5836ny`, `crashed`, último registro
+   en el paso 70) no había llegado a ningún punto de control, así que se
+   relanzó de cero como `sft-ejemplo-v2`. Desde entonces cada lanzamiento
    corre bajo `caffeinate -is`, que impide que la Mac se suspenda.
 
 ## Parte 5: Recursos y producción
@@ -850,8 +880,9 @@ De dónde sacar los datos (todo está en el repositorio salvo W&B):
 | Tokens reales de train y val, tokens en la pérdida | `corridas/<corrida>/datos.json` |
 | Batch, acumulación, largo máximo y épocas usadas | `corridas/<corrida>/config_usada.yaml` y `entrenar.yaml` |
 | Tiempo de la optimización de prompt (`segundos`, casos jugados) | `corridas/gepa/gepa1/resumen.json` |
-| Métricas de sistema por paso (GPU, memoria, segundos por paso) | W&B, proyecto `juanlu1-austral/tp-admision-guardia`: runs `68qllkha` (`sft-prompt-v1` + `-r1`), `g69gw15q` (`sft-ejemplo-v2`) y `2r5rmemo` (`prueba-gpu-02`); links en el campo `wandb` de cada `resumen.json` |
+| Pérdidas, `_runtime` (segundos desde el arranque) y VRAM por registro, cada 10 pasos; configuración completa del run | `corridas/<corrida>/wandb_history.jsonl` y `wandb_config.json` (`uv run python exportar_registros.py`), runs `68qllkha` (`sft-prompt-v1` + `-r1`, en `corridas/sft-prompt-v1-r1/`), `g69gw15q` (`sft-ejemplo-v2`), `2r5rmemo` (`prueba-gpu-02`) y `3y5836ny` (`sft-ejemplo-v1`, cortada) |
+| Métricas de sistema de la GPU (uso, memoria, potencia) | solo en W&B, proyecto `juanlu1-austral/tp-admision-guardia`, pestaña System de cada run: `exportar_registros.py` baja el historial de entrenamiento, no el de sistema |
 
-Ojo: los tiempos de los pasos 1 a 100 de `sft-prompt-v1` y los segundos por
-paso de `prueba-gpu-02` no están en ningún archivo (Parte 4, PENDIENTE); si
-se usan, hay que exportarlos de W&B a `corridas/` antes de citarlos.
+Ojo: los segundos por paso que se pueden citar salen de `_runtime` en
+`wandb_history.jsonl` (una fila cada 10 pasos) y de `segundos` en
+`resumen.json`; la Parte 4 ya usa esas dos fuentes.
