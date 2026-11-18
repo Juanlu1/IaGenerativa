@@ -1,20 +1,36 @@
 {
-  "conversaciones_sinteticas": 500,
+  "conversaciones_sinteticas": 600,
   "versiones_normas": {
-    "original": 167,
-    "b": 167,
-    "c": 166
+    "original": 200,
+    "b": 200,
+    "c": 200
   },
   "circuitos": {
-    "codigo_sepsis": 161,
-    "ninguno": 149,
-    "ecg": 128,
-    "codigo_acv": 62
+    "codigo_sepsis": 194,
+    "ninguno": 170,
+    "ecg": 159,
+    "codigo_acv": 77
   },
   "coberturas": {
-    "obra_social": 86,
-    "sin_cobertura": 224,
-    "prepaga": 95,
-    "art": 95
+    "obra_social": 102,
+    "sin_cobertura": 266,
+    "art": 114,
+    "prepaga": 118
+  },
+  "consultas": {
+    "registro del paciente y ubicación en el box": 600,
+    "número de afiliado con terminación reservada": 366,
+    "ingreso en ambulancia plazo del circuito": 145,
+    "registro con pasaporte o cédula": 142,
+    "consulta de la cobertura sin credencial código sepsis plazo": 119,
+    "consulta de la cobertura sin credencial dolor torácico plazo": 81,
+    "código sepsis plazo": 75,
+    "accidente de trabajo ART": 75,
+    "consulta de la cobertura sin credencial": 62,
+    "consulta de la cobertura sin credencial signos neurológicos focales de inicio súbito plazo": 52,
+    "accidente de trabajo ART dolor torácico plazo": 39,
+    "dolor torácico plazo": 39,
+    "consulta y verificación de la cobertura": 33,
+    "signos neurológicos focales de inicio súbito plazo": 25
   }
 }

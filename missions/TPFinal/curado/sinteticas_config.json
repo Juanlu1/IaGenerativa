@@ -1,11 +1,13 @@
 {
   "semilla": 20261108,
-  "cantidad": 500,
+  "cantidad": 600,
   "generador": "admision.generador.generar",
-  "politica": "generar_sinteticas.py",
+  "politica": "generar_sinteticas.py (decidir y jugar_caso)",
+  "buscador": "parte2/rag_buscador.py (construir_buscador sobre normas/<version>)",
   "versiones_normas": [
     "original",
     "b",
     "c"
-  ]
+  ],
+  "reparto": "en rueda por indice de caso"
 }
