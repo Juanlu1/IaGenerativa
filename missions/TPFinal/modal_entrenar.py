@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -34,8 +35,10 @@ volumen_corridas = modal.Volume.from_name("tp-corridas", create_if_missing=True)
 secretos = [modal.Secret.from_name("tp-secrets")]
 
 imagen = (
+    # Las mismas versiones que la evaluación (pyproject.toml / uv.lock): el adaptador se entrena con la pila que
+    # lo sirve con vLLM. Sin el toolkit de CUDA: el entrenamiento no compila kernels.
     modal.Image.debian_slim(python_version="3.12")
-    .pip_install_from_requirements(str(AQUI / "deps_entrenamiento.txt"))
+    .uv_sync(uv_project_dir=str(AQUI))
     .env({"HF_HOME": HF_CACHE, "TOKENIZERS_PARALLELISM": "false", "PYTHONUNBUFFERED": "1"})
     # Solo lo que usa el entrenamiento: el código, la configuración y los datos.
     .add_local_file(str(AQUI / "entrenar.py"), f"{REMOTO}/entrenar.py")
@@ -47,7 +50,7 @@ imagen = (
 @app.function(image=imagen, gpu="A100-40GB", secrets=secretos, timeout=24 * 3600,
               volumes={HF_CACHE: volumen_hf, CORRIDAS: volumen_corridas})
 def entrenar(argumentos: list[str], corrida: str, conservar_checkpoints: bool = False) -> None:
-    comando = ["python", "entrenar.py", *argumentos, "--corrida", corrida, "--salida", CORRIDAS]
+    comando = [sys.executable, "entrenar.py", *argumentos, "--corrida", corrida, "--salida", CORRIDAS]
     print("$", " ".join(comando), flush=True)
     proceso = subprocess.Popen(comando, cwd=REMOTO)
     ultimo = time.time()

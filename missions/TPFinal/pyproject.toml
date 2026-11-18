@@ -8,19 +8,29 @@ version = "1.1.0"
 description = "Kit del TP final de IA Generativa: la ficha de admisión de guardia"
 requires-python = ">=3.12,<3.15"
 dependencies = [
-    "pyyaml>=6.0",
+    "pyyaml==6.0.3",
     "python-dotenv==1.2.1",
-    "transformers==5.20.2",
-    # Cliente de Modal: lanza la evaluación en una A100 de 40 GB desde la Mac (modal_app.py).
-    "modal==1.6.3",
+    # Una sola pila para evaluar con vLLM y para entrenar: la que acepta vllm 0.34.0
+    # (torch==2.14.0, transformers<5.23.0, huggingface_hub>=2.0.0).
+    "torch==2.14.0",
+    "transformers==5.22.2",
+    "huggingface_hub==2.4.0",
+    # Cliente de Modal: lanza la evaluación (modal_app.py) y el entrenamiento (modal_entrenar.py) desde la Mac.
+    "modal==1.6.4",
     # Parte 3: optimización del mensaje de sistema con GEPA (optimizar_prompt.py). DSPy aporta el cliente de
     # modelos pagos (litellm) para la reflexión opcional.
     "dspy[litellm]==3.4.1",
     "gepa==0.1.4",
     # SDK oficial de Anthropic: reflexión de GEPA con Claude si hay ANTHROPIC_API_KEY (solo desarrollo).
     "anthropic==2.3.0",
-    # vLLM no tiene wheels para macOS: se instala solo en Linux (el contenedor de Modal con la A100).
-    "vllm==0.33.0; sys_platform == 'linux'",
+    # Parte 4: SFT con LoRA (entrenar.py).
+    "trl==1.17.1",
+    "peft==0.21.2",
+    "accelerate==1.15.0",
+    "datasets==5.1.0",
+    "wandb==0.31.0",
+    # vLLM no tiene wheels para macOS: se instala solo en Linux (los contenedores de Modal).
+    "vllm==0.34.0; sys_platform == 'linux'",
 ]
 
 [tool.setuptools]
