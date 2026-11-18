@@ -1,20 +1,32 @@
-"""Genera conversaciones sintéticas reproducibles con el simulador oficial."""
+"""Genera conversaciones sintéticas reproducibles con el simulador oficial.
+
+Cada caso sale de `admision.generador.generar` y lo juega una política determinista
+derivada de las normas y de las costumbres del historial. Las búsquedas pasan por
+el buscador del grupo (`parte2/rag_buscador.py`) armado con la carpeta de normas de
+la versión que le toca al caso, así que cada conversación muestra los números de
+esa versión. Las consultas siguen las mismas plantillas que usan las trazas de la
+cátedra (`entrenamiento/trazas.jsonl`), que son las que va a escribir el agente.
+
+La misma política se valida contra las fichas esperadas de `practica/` con
+`validar_politica.py`.
+"""
 
 from __future__ import annotations
 
+import argparse
 import json
-import re
-import unicodedata
 from collections import Counter
 from pathlib import Path
 from typing import Any
 
-import yaml
-
+from admision.casos import Caso
 from admision.ejemplo import mensaje_de_sistema, primer_mensaje
 from admision.entorno import Entorno
 from admision.generador import generar
+from admision.normas import cargar_normas
+from parte2.rag_buscador import construir_buscador
 
+import yaml
 
 ROOT = Path(__file__).resolve().parent
 VERSIONES_NORMAS = ("original", "b", "c")
@@ -22,110 +34,92 @@ SALIDA = ROOT / "curado" / "conversaciones_sinteticas.jsonl"
 CONFIG = ROOT / "curado" / "sinteticas_config.json"
 RESUMEN = ROOT / "curado" / "sinteticas_resumen.json"
 SEMILLA = 20261108
-CANTIDAD = 500
+CANTIDAD = 600
+
+# Costumbre del historial (costumbres.md): aviso al voluntariado para 76 años o más sin acompañante.
+EDAD_VOLUNTARIADO = 76
+
+# Plantillas de consulta: son las 14 que aparecen en las trazas de la cátedra.
+CONSULTA_REGISTRO = "registro del paciente y ubicación en el box"
+CONSULTA_PASAPORTE = "registro con pasaporte o cédula"
+CONSULTA_AMBULANCIA = "ingreso en ambulancia plazo del circuito"
+CONSULTA_RESERVADA = "número de afiliado con terminación reservada"
+CONSULTA_VERIFICACION = "consulta y verificación de la cobertura"
+CONSULTA_SIN_CREDENCIAL = "consulta de la cobertura sin credencial"
+CONSULTA_ART = "accidente de trabajo ART"
+CONSULTA_CIRCUITO = {
+    "ecg": "dolor torácico plazo",
+    "codigo_acv": "signos neurológicos focales de inicio súbito plazo",
+    "codigo_sepsis": "código sepsis plazo",
+}
 
 
-def normalizar(valor: Any) -> str:
-    texto = unicodedata.normalize("NFD", str(valor or "").strip().lower())
-    return "".join(c for c in texto if unicodedata.category(c) != "Mn")
-
-
-def digitos(valor: str) -> str:
+def digitos(valor: str | None) -> str:
     return "".join(c for c in str(valor or "") if c.isdigit())
 
 
-class Buscador:
-    """Recuperador pequeño y determinista para dar evidencia normativa al generador."""
-
-    k_entorno = 2
-
-    def __init__(self, version: str):
-        directorio = ROOT / "normas" / version
-        self.normas = {
-            p.stem: p.read_text(encoding="utf-8")
-            for p in directorio.glob("NOR-*.md")
-        }
-        with (directorio / "parametros.yaml").open(encoding="utf-8") as archivo:
-            self.parametros = {p["codigo"]: p for p in yaml.safe_load(archivo)["parametros"]}
-
-    def recuperar(self, consulta: str, k: int) -> list[str]:
-        q = normalizar(consulta)
-        if "registro" in q or "documento" in q:
-            seleccion = ["NOR-ADM-01", "NOR-ADM-02"] if "urgente" not in q else ["NOR-ADM-03", "NOR-ADM-01"]
-        elif "circuito" in q or "sepsis" in q or "ecg" in q or "acv" in q:
-            if "sepsis" in q:
-                seleccion = ["NOR-TDE-03", "NOR-TDE-04"]
-            elif "acv" in q:
-                seleccion = ["NOR-TDE-02", "NOR-TDE-04"]
-            elif "ecg" in q:
-                seleccion = ["NOR-TDE-01", "NOR-TDE-04"]
-            else:
-                seleccion = ["NOR-TDE-01", "NOR-TDE-02"]
-        elif "terminacion" in q or "reservado" in q or "inactiva" in q:
-            seleccion = ["NOR-COB-03", "NOR-COB-04"]
-        else:
-            seleccion = ["NOR-COB-01", "NOR-COB-02"]
-        fragmentos = []
-        for codigo in seleccion[:k]:
-            if codigo not in self.normas:
-                continue
-            texto = self.normas[codigo]
-            usados = sorted(set(re.findall(r"\bP-[A-Z]+-\d+\b", texto)))
-            valores = []
-            for parametro in usados:
-                dato = self.parametros.get(parametro)
-                if not dato:
-                    continue
-                unidad = {"anios": "años", "dias": "días", "digito": "dígito"}.get(dato["unidad"], dato["unidad"])
-                valores.append(f"{parametro} = {dato['valor']} {unidad}")
-            if valores:
-                texto += "\nValores: " + "; ".join(valores)
-            fragmentos.append(texto)
-        return fragmentos
+def cargar_parametros(version_o_ruta: str | Path) -> dict[str, int]:
+    ruta = Path(version_o_ruta)
+    if not ruta.is_dir():
+        ruta = ROOT / "normas" / str(version_o_ruta)
+    datos = yaml.safe_load((ruta / "parametros.yaml").read_text(encoding="utf-8"))
+    return {p["codigo"]: int(p["valor"]) for p in datos["parametros"]}
 
 
-def decidir(caso, params: dict[str, int]) -> dict[str, Any]:
+def circuito_del_caso(caso: Caso) -> str:
+    if caso.motivo == "dolor torácico":
+        return "ecg"
+    if caso.motivo == "signos neurológicos focales de inicio súbito":
+        return "codigo_acv"
+    if caso.sepsis != "no":
+        return "codigo_sepsis"
+    return "ninguno"
+
+
+def cobertura_a_verificar(caso: Caso) -> tuple[str, str, str] | None:
+    """(tipo, entidad, número) de la obra social o prepaga que corresponde verificar, fuera de la ART.
+
+    Con dos credenciales se elige la prepaga (costumbre del historial). Sin credencial,
+    vale lo que declara el paciente o su acompañante; si no puede responder nadie, None.
+    """
+    if caso.credenciales:
+        prepagas = [c for c in caso.credenciales if c[0] == "prepaga"]
+        return prepagas[0] if prepagas else caso.credenciales[0]
+    if caso.puede_responder or caso.acompanante:
+        return caso.declarada
+    return None
+
+
+def decidir(caso: Caso, params: dict[str, int], activa: bool | None) -> dict[str, Any]:
+    """La ficha según las normas y las costumbres. `activa` es lo que informó la verificación."""
     nivel = caso.nivel
     tiene_doc = bool(caso.documento_numero)
-    registro = "provisorio" if not tiene_doc else "definitivo"
+    registro = "definitivo" if tiene_doc else "provisorio"
     if tiene_doc and caso.documento_tipo in {"pasaporte", "cédula"} and nivel <= params["P-ADM-3"]:
-        registro = "provisorio"
-    box_antes = nivel <= params["P-ADM-1"] or caso.edad >= params["P-ADM-2"]
+        registro = "provisorio"  # NOR-ADM-03
+    box_antes = nivel <= params["P-ADM-1"] or caso.edad >= params["P-ADM-2"]  # NOR-ADM-01 §4, NOR-ADM-02
 
-    if caso.motivo == "dolor torácico":
-        circuito, plazo = "ecg", params["P-TDE-1"]
-    elif caso.motivo == "signos neurológicos focales de inicio súbito":
-        circuito, plazo = "codigo_acv", params["P-TDE-2"]
-    elif caso.sepsis != "no":
-        circuito = "codigo_sepsis"
-        plazo = params["P-TDE-3"] if caso.sepsis in {"probable", "con signos de shock"} else params["P-TDE-4"]
-    else:
-        circuito, plazo = "ninguno", None
-    if circuito != "ninguno" and caso.llegada == "en ambulancia":
-        plazo -= params["P-TDE-5"]
+    circuito = circuito_del_caso(caso)
+    plazo = {
+        "ecg": params["P-TDE-1"],
+        "codigo_acv": params["P-TDE-2"],
+        "codigo_sepsis": params["P-TDE-3"] if caso.sepsis in {"probable", "con signos de shock"} else params["P-TDE-4"],
+    }.get(circuito)
+    if plazo is not None and caso.llegada == "en ambulancia":
+        plazo -= params["P-TDE-5"]  # NOR-TDE-04
 
-    entidad = None
-    tipo = "sin_cobertura"
-    afiliado = None
-    if caso.trabajo:
-        entidad, afiliado = caso.art
-        tipo = "art"
+    if caso.trabajo:  # NOR-COB-02 §5: cubre la ART
+        tipo, entidad = "art", caso.art[0]
     else:
-        if caso.credenciales:
-            preferidas = [c for c in caso.credenciales if c[0] == "prepaga"]
-            cobertura = preferidas[0] if preferidas else caso.credenciales[0]
+        fuente = cobertura_a_verificar(caso)
+        if fuente is None:
+            tipo, entidad = "sin_cobertura", None
+        elif digitos(fuente[2]).endswith(str(params["P-COB-2"])):
+            tipo, entidad = "sin_cobertura", fuente[1]  # NOR-COB-04: sin cobertura, pero se notifica
+        elif activa:
+            tipo, entidad = fuente[0], fuente[1]
         else:
-            cobertura = caso.declarada
-        if cobertura:
-            tipo_cobertura, entidad, afiliado = cobertura
-            activa = caso.afiliaciones.get(f"{entidad}|{afiliado}", False)
-            reservada = digitos(afiliado).endswith(str(params["P-COB-2"]))
-            if reservada:
-                tipo, entidad = "sin_cobertura", entidad
-            elif activa:
-                tipo = tipo_cobertura
-            else:
-                tipo, entidad = "sin_cobertura", None
+            tipo, entidad = "sin_cobertura", None  # NOR-COB-03 §4
 
     return {
         "registro": registro,
@@ -135,109 +129,146 @@ def decidir(caso, params: dict[str, int]) -> dict[str, Any]:
         "plazo_circuito_min": plazo,
         "cobertura": tipo,
         "entidad_a_notificar": entidad,
-        "aviso_al_voluntariado": caso.edad >= 76 and not caso.acompanante,
+        "aviso_al_voluntariado": caso.edad >= EDAD_VOLUNTARIADO and not caso.acompanante,
     }
 
 
-def agregar_herramienta(mensajes: list[dict[str, str]], entorno: Entorno, herramienta: str, argumentos: dict[str, Any]) -> str:
-    mensajes.append({
-        "role": "assistant",
-        "content": json.dumps({"herramienta": herramienta, "argumentos": argumentos}, ensure_ascii=False, separators=(",", ":")),
-    })
-    resultado, _ = entorno.paso(herramienta, argumentos)
-    if herramienta != "registrar_decision":
-        mensajes.append({"role": "user", "content": f"Resultado de {herramienta}:\n{resultado}"})
-    return resultado
+def consulta_del_tema(caso: Caso) -> str:
+    """La consulta de cobertura y circuito, con la misma composición que las trazas de la cátedra."""
+    circuito = circuito_del_caso(caso)
+    if caso.trabajo:
+        prefijo = CONSULTA_ART
+    elif not caso.credenciales:
+        prefijo = CONSULTA_SIN_CREDENCIAL
+    else:
+        prefijo = ""
+    sufijo = CONSULTA_CIRCUITO.get(circuito, "")
+    return f"{prefijo} {sufijo}".strip() or CONSULTA_VERIFICACION
+
+
+def jugar_caso(caso: Caso, buscador, params: dict[str, int],
+               sistema: str | None = None) -> tuple[list[dict[str, str]], Entorno]:
+    """Juega un caso con la política y devuelve la conversación y el entorno (con su log y su ficha)."""
+    entorno = Entorno(caso, buscador)
+    mensajes = [
+        {"role": "system", "content": sistema if sistema is not None else mensaje_de_sistema()},
+        {"role": "user", "content": primer_mensaje(caso.paciente_id)},
+    ]
+
+    def paso(herramienta: str, argumentos: dict[str, Any]) -> str:
+        mensajes.append({"role": "assistant", "content": json.dumps(
+            {"herramienta": herramienta, "argumentos": argumentos}, ensure_ascii=False, separators=(",", ":"))})
+        resultado, _ = entorno.paso(herramienta, argumentos)
+        if herramienta != "registrar_decision":
+            mensajes.append({"role": "user", "content": f"Resultado de {herramienta}:\n{resultado}"})
+        return resultado
+
+    pid = caso.paciente_id
+    paso("leer_triage", {"paciente_id": pid})
+    paso("buscar_normativa", {"consulta": CONSULTA_REGISTRO})
+    if caso.documento_tipo in {"pasaporte", "cédula"}:
+        paso("buscar_normativa", {"consulta": CONSULTA_PASAPORTE})
+    paso("buscar_normativa", {"consulta": consulta_del_tema(caso)})
+    if caso.llegada == "en ambulancia" and circuito_del_caso(caso) != "ninguno":
+        paso("buscar_normativa", {"consulta": CONSULTA_AMBULANCIA})
+
+    quien = "paciente" if caso.puede_responder else ("acompanante" if caso.acompanante else None)
+    if not caso.credenciales and quien:
+        paso("preguntar", {"paciente_id": pid, "a_quien": quien, "tema": "cobertura"})
+    if caso.trabajo and quien:
+        paso("preguntar", {"paciente_id": pid, "a_quien": quien, "tema": "art"})
+
+    activa = None
+    if caso.trabajo:
+        entidad, numero = caso.art
+        paso("verificar_afiliacion", {"entidad": entidad, "numero_afiliado": numero})
+    else:
+        fuente = cobertura_a_verificar(caso)
+        if fuente is not None:
+            paso("buscar_normativa", {"consulta": CONSULTA_RESERVADA})
+            resultado = paso("verificar_afiliacion", {"entidad": fuente[1], "numero_afiliado": fuente[2]})
+            activa = "activa" in resultado and "inactiva" not in resultado
+
+    ficha = decidir(caso, params, activa)
+    ficha["fundamentos"] = fundamentos(caso, ficha, params)
+    paso("registrar_decision", ficha)
+    return mensajes, entorno
+
+
+def fundamentos(caso: Caso, ficha: dict[str, Any], params: dict[str, int]) -> list[str]:
+    """Secciones que justifican la ficha (optativo en el contrato; no se corrige)."""
+    secciones = ["NOR-ADM-01"]
+    if caso.edad >= params["P-ADM-2"]:
+        secciones.append("NOR-ADM-02")
+    if caso.documento_tipo in {"pasaporte", "cédula"}:
+        secciones.append("NOR-ADM-03")
+    secciones.append("NOR-COB-01")
+    if ficha["cobertura"] in {"obra_social", "prepaga", "art"}:
+        secciones.append("NOR-COB-02")
+    if ficha["cobertura"] == "sin_cobertura":
+        secciones.append("NOR-COB-03")
+    if ficha["cobertura"] == "sin_cobertura" and ficha["entidad_a_notificar"]:
+        secciones.append("NOR-COB-04")
+    seccion_circuito = {"ecg": "NOR-TDE-01", "codigo_acv": "NOR-TDE-02", "codigo_sepsis": "NOR-TDE-03"}
+    if ficha["circuito"] in seccion_circuito:
+        secciones.append(seccion_circuito[ficha["circuito"]])
+        if caso.llegada == "en ambulancia":
+            secciones.append("NOR-TDE-04")
+    return secciones
 
 
 def main() -> None:
-    casos = generar(semilla=SEMILLA, n=CANTIDAD, prefijo="sint")
-    parametros_por_version = {}
-    buscadores = {}
-    for version in VERSIONES_NORMAS:
-        with (ROOT / "normas" / version / "parametros.yaml").open(encoding="utf-8") as archivo:
-            parametros_por_version[version] = {p["codigo"]: int(p["valor"]) for p in yaml.safe_load(archivo)["parametros"]}
-        buscadores[version] = Buscador(version)
-    SALIDA.parent.mkdir(parents=True, exist_ok=True)
-    circuitos = Counter()
-    coberturas = Counter()
-    conteo_versiones = Counter()
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--semilla", type=int, default=SEMILLA)
+    parser.add_argument("--cantidad", type=int, default=CANTIDAD)
+    parser.add_argument("--salida", type=Path, default=SALIDA)
+    args = parser.parse_args()
 
-    with SALIDA.open("w", encoding="utf-8", newline="") as archivo:
+    casos = generar(semilla=args.semilla, n=args.cantidad, prefijo="sint")
+    parametros = {v: cargar_parametros(v) for v in VERSIONES_NORMAS}
+    buscadores = {v: construir_buscador(ROOT / "normas" / v) for v in VERSIONES_NORMAS}
+    for v in VERSIONES_NORMAS:  # la carpeta tiene que cargar con el cargador oficial
+        cargar_normas(ROOT / "normas" / v)
+
+    args.salida.parent.mkdir(parents=True, exist_ok=True)
+    circuitos, coberturas, versiones, consultas = Counter(), Counter(), Counter(), Counter()
+    with args.salida.open("w", encoding="utf-8", newline="") as archivo:
         for indice, caso in enumerate(casos):
+            # Reparto en rueda: cada versión de normas recibe un tercio de los casos.
             version = VERSIONES_NORMAS[indice % len(VERSIONES_NORMAS)]
-            params = parametros_por_version[version]
-            buscador = buscadores[version]
-            conteo_versiones[version] += 1
-            entorno = Entorno(caso, buscador)
-            mensajes = [
-                {"role": "system", "content": mensaje_de_sistema()},
-                {"role": "user", "content": primer_mensaje(caso.paciente_id)},
-            ]
-            agregar_herramienta(mensajes, entorno, "leer_triage", {"paciente_id": caso.paciente_id})
-            agregar_herramienta(mensajes, entorno, "buscar_normativa", {"consulta": "registro documento box edad"})
-            if caso.documento_tipo in {"pasaporte", "cédula"} and caso.nivel <= params["P-ADM-3"]:
-                agregar_herramienta(mensajes, entorno, "buscar_normativa", {"consulta": "registro urgente pasaporte cédula"})
-            circuito_query = "circuito sepsis" if caso.sepsis != "no" else (
-                "circuito acv" if "neurológicos" in caso.motivo else "circuito ecg" if "torácico" in caso.motivo else "circuito tiempo"
-            )
-            agregar_herramienta(mensajes, entorno, "buscar_normativa", {"consulta": circuito_query})
-            agregar_herramienta(mensajes, entorno, "buscar_normativa", {"consulta": "cobertura afiliación verificación ART"})
-            agregar_herramienta(mensajes, entorno, "buscar_normativa", {"consulta": "cobertura sin cobertura terminación reservada"})
-
-            quien = "paciente" if caso.puede_responder else "acompanante"
-            if caso.trabajo:
-                if not caso.credenciales and (caso.puede_responder or caso.acompanante):
-                    agregar_herramienta(mensajes, entorno, "preguntar", {"paciente_id": caso.paciente_id, "a_quien": quien, "tema": "cobertura"})
-                agregar_herramienta(mensajes, entorno, "preguntar", {"paciente_id": caso.paciente_id, "a_quien": quien, "tema": "art"})
-            elif not caso.credenciales and (caso.puede_responder or caso.acompanante):
-                agregar_herramienta(mensajes, entorno, "preguntar", {"paciente_id": caso.paciente_id, "a_quien": quien, "tema": "cobertura"})
-
-            if caso.trabajo:
-                entidad_verificada, numero_verificado = caso.art
-                agregar_herramienta(mensajes, entorno, "verificar_afiliacion", {
-                    "entidad": entidad_verificada, "numero_afiliado": numero_verificado,
-                })
-            else:
-                if caso.credenciales:
-                    prepagas = [c for c in caso.credenciales if c[0] == "prepaga"]
-                    fuente = prepagas[0] if prepagas else caso.credenciales[0]
-                else:
-                    fuente = caso.declarada
-                if fuente:
-                    _, entidad_verificada, numero_verificado = fuente
-                    agregar_herramienta(mensajes, entorno, "verificar_afiliacion", {
-                        "entidad": entidad_verificada, "numero_afiliado": numero_verificado,
-                    })
-
-            decision = decidir(caso, params)
-            agregar_herramienta(mensajes, entorno, "registrar_decision", decision)
-            if entorno.decision is None:
-                raise RuntimeError(f"El simulador no aceptó la decisión sintética {caso.id}.")
-            ejemplo = {"id": caso.id, "normas": version, "messages": mensajes}
-            archivo.write(json.dumps(ejemplo, ensure_ascii=False) + "\n")
-            circuitos[decision["circuito"]] += 1
-            coberturas[decision["cobertura"]] += 1
+            mensajes, entorno = jugar_caso(caso, buscadores[version], parametros[version])
+            if entorno.decision is None or any(not e["valida"] for e in entorno.log):
+                raise RuntimeError(f"El simulador rechazó un paso del caso sintético {caso.id}.")
+            versiones[version] += 1
+            circuitos[entorno.decision["circuito"]] += 1
+            coberturas[entorno.decision["cobertura"]] += 1
+            consultas.update(e["argumentos"]["consulta"] for e in entorno.log if e["herramienta"] == "buscar_normativa")
+            archivo.write(json.dumps({"id": caso.id, "normas": version, "messages": mensajes},
+                                     ensure_ascii=False) + "\n")
 
     CONFIG.write_text(json.dumps({
-        "semilla": SEMILLA,
-        "cantidad": CANTIDAD,
+        "semilla": args.semilla,
+        "cantidad": args.cantidad,
         "generador": "admision.generador.generar",
-        "politica": "generar_sinteticas.py",
+        "politica": "generar_sinteticas.py (decidir y jugar_caso)",
+        "buscador": "parte2/rag_buscador.py (construir_buscador sobre normas/<version>)",
         "versiones_normas": list(VERSIONES_NORMAS),
+        "reparto": "en rueda por indice de caso",
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     RESUMEN.write_text(json.dumps({
         "conversaciones_sinteticas": len(casos),
-        "versiones_normas": dict(conteo_versiones),
+        "versiones_normas": dict(versiones),
         "circuitos": dict(circuitos),
         "coberturas": dict(coberturas),
+        "consultas": dict(consultas.most_common()),
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    if (ROOT / "curado" / "resumen.json").exists():
-        resumen = json.loads((ROOT / "curado" / "resumen.json").read_text(encoding="utf-8"))
+    resumen_curado = ROOT / "curado" / "resumen.json"
+    if resumen_curado.exists():
+        resumen = json.loads(resumen_curado.read_text(encoding="utf-8"))
         resumen["sinteticas"] = len(casos)
         resumen["configuracion_sinteticas"] = "curado/sinteticas_config.json"
-        (ROOT / "curado" / "resumen.json").write_text(json.dumps(resumen, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"Generadas {len(casos)} conversaciones sintéticas con semilla {SEMILLA}: {SALIDA.relative_to(ROOT)}")
+        resumen_curado.write_text(json.dumps(resumen, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"Generadas {len(casos)} conversaciones sintéticas con semilla {args.semilla}: {args.salida}")
 
 
 if __name__ == "__main__":
