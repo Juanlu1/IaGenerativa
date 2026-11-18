@@ -5,6 +5,8 @@ Para cada run del proyecto de W&B de `entrenar.yaml` (también los que fallaron 
 
   wandb_history.jsonl   todas las filas de `run.scan_history()`: pérdidas de train y val, tasa de aprendizaje,
                         `_runtime` (segundos desde el arranque), VRAM y paso subido a HF, una fila por registro;
+  wandb_system.jsonl    las métricas de sistema de la pestaña System (`run.history(stream="system")`): uso,
+                        memoria, potencia y temperatura de la GPU, CPU y RAM, una fila por muestra;
   wandb_config.json     `run.config` completo (configuración de entrenamiento, comando, datos y sha256);
   wandb_run.json        id, nombre, estado, link, fechas y `run.summary`.
 
@@ -51,12 +53,18 @@ def exportar_wandb() -> None:
         with (destino / "wandb_history.jsonl").open("w", encoding="utf-8") as salida:
             for fila in filas:
                 salida.write(json.dumps(fila, ensure_ascii=False, sort_keys=True, default=str) + "\n")
+        sistema = sorted(run.history(samples=100_000, stream="system", pandas=False),
+                         key=lambda fila: fila.get("_timestamp", 0))
+        with (destino / "wandb_system.jsonl").open("w", encoding="utf-8") as salida:
+            for fila in sistema:
+                salida.write(json.dumps(fila, ensure_ascii=False, sort_keys=True, default=str) + "\n")
         (destino / "wandb_config.json").write_text(_json(dict(run.config)), encoding="utf-8")
         (destino / "wandb_run.json").write_text(_json({
             "id": run.id, "nombre": run.name, "estado": run.state, "url": run.url,
             "creado": run.created_at, "actualizado": getattr(run, "updated_at", None),
             "summary": dict(run.summary)}), encoding="utf-8")
-        print(f"{run.id} {run.name} ({run.state}): {len(filas)} filas -> {destino.relative_to(RAIZ)}")
+        print(f"{run.id} {run.name} ({run.state}): {len(filas)} filas, {len(sistema)} de sistema"
+              f" -> {destino.relative_to(RAIZ)}")
 
 
 def exportar_hf() -> None:
