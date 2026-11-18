@@ -6,8 +6,17 @@ build-backend = "setuptools.build_meta"
 name = "kit-tp-admision"
 version = "1.1.0"
 description = "Kit del TP final de IA Generativa: la ficha de admisión de guardia"
-requires-python = ">=3.12"
-dependencies = ["pyyaml>=6.0"]
+requires-python = ">=3.12,<3.15"
+dependencies = [
+    "pyyaml>=6.0",
+    "python-dotenv==1.2.1",
+    "transformers==5.20.2",
+    # vLLM no tiene wheels para macOS: se instala solo en Linux (la A100 de Lightning).
+    "vllm==0.33.0; sys_platform == 'linux'",
+]
 
 [tool.setuptools]
 packages = ["admision"]
+
+[tool.uv]
+environments = ["sys_platform == 'darwin'", "sys_platform == 'linux' and platform_machine == 'x86_64'"]
