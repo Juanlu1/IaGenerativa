@@ -27,9 +27,11 @@ primera vez y después se reutiliza.
   mismo contenedor (`evaluar.py`).
 - `modal_entrenar.py` sube solo `entrenar.py`, `entrenar.yaml` y la carpeta `datos/`.
 
-Todas las corridas se lanzan igual: `modal run --detach` (la corrida sigue en Modal aunque se corte la Mac) adentro de
-`nohup ... &` con un log local en `corridas/` (la terminal queda libre y la salida queda guardada). `tail -f` sigue el
-log; `Ctrl+C` corta el `tail`, no la corrida.
+Todas las corridas se lanzan igual: `modal run --detach` adentro de `nohup caffeinate -is ... &` con un log local en
+`corridas/` (la terminal queda libre y la salida queda guardada). `tail -f` sigue el log; `Ctrl+C` corta el `tail`, no
+la corrida. `--detach` solo no alcanza: cuando la Mac se suspendió con la tapa cerrada, Modal canceló las corridas
+(INFORME.md, Parte 4, pasada 6). `caffeinate -is` impide que se suspenda mientras dura el comando; la Mac tiene que
+quedar enchufada y con la tapa abierta.
 
 ## 1. Preparar la Mac (una sola vez)
 
@@ -63,7 +65,7 @@ revisarlas.
 Prueba la imagen, los Volumes y la bajada de resultados con el modelo falso, en un contenedor sin GPU:
 
 ```bash
-nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prueba_falso --cantidad 3 --falso > corridas/prueba_falso.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_app.py::evaluar --etiqueta prueba_falso --cantidad 3 --falso > corridas/prueba_falso.log 2>&1 &
 tail -f corridas/prueba_falso.log
 ```
 
@@ -72,7 +74,7 @@ La primera vez arma la imagen (instala vLLM y torch), así que tarda varios minu
 ## 4. Prueba chica: 3 casos en la A100
 
 ```bash
-nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prueba_base --cantidad 3 > corridas/prueba_base.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_app.py::evaluar --etiqueta prueba_base --cantidad 3 --config config_base.yaml > corridas/prueba_base.log 2>&1 &
 tail -f corridas/prueba_base.log
 ```
 
@@ -81,11 +83,12 @@ La primera vez baja Gemma al Volume `tp-hf-cache`; las siguientes ya lo encuentr
 ## 5. Corrida completa: 50 casos
 
 ```bash
-nohup uv run modal run --detach modal_app.py::evaluar --etiqueta base > corridas/base.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_app.py::evaluar --etiqueta base --config config_base.yaml > corridas/base.log 2>&1 &
 tail -f corridas/base.log
 ```
 
-Usa `config.yaml`. Para otra configuración (otro prompt o un adaptador), se pasa un yaml de esta carpeta con
+`config_base.yaml` es el modelo sin entrenar con `prompt_base.txt`; `config.yaml` es la entrega final, con
+`prompt_optimizado.txt` y el adaptador (sección 14). Para otra configuración se pasa un yaml de esta carpeta con
 `--config` y otra etiqueta (secciones 7 y 14). Sin `--config` se usa la variable `CONFIG` de la Mac, y si no está,
 `config.yaml`. El yaml tiene que estar en esta carpeta porque se sube con el código. Si hay cambios sin commitear, la
 corrida se lanza igual pero queda marcada así en `corrida.json`.
@@ -143,14 +146,14 @@ MODELO_FALSO=1 uv run python optimizar_prompt.py --presupuesto prueba --salida c
 Prueba chica en Modal (presupuesto `prueba`: 6 casos de optimización, 6 de validación, unos minutos):
 
 ```bash
-nohup uv run modal run --detach modal_app.py::gepa --etiqueta gepa_prueba --args="--presupuesto prueba" > corridas/gepa_prueba.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_app.py::gepa --etiqueta gepa_prueba --args="--presupuesto prueba" > corridas/gepa_prueba.log 2>&1 &
 tail -f corridas/gepa_prueba.log
 ```
 
 Corrida real (presupuesto `completo`: 90 casos de optimización, 45 de validación, tope de 90 minutos):
 
 ```bash
-nohup uv run modal run --detach modal_app.py::gepa --etiqueta gepa1 > corridas/gepa1.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_app.py::gepa --etiqueta gepa1 > corridas/gepa1.log 2>&1 &
 tail -f corridas/gepa1.log
 ```
 
@@ -176,8 +179,8 @@ validación), `resumen.json` (casos, semilla, presupuesto, modelo de reflexión,
 Con los 50 casos de práctica y las normas original, b y c, igual que la base (sección 5):
 
 ```bash
-nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prompt_corto --config config_corto.yaml > corridas/prompt_corto.log 2>&1 &
-nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prompt_optimizado --config config_optimizado.yaml > corridas/prompt_optimizado.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_app.py::evaluar --etiqueta prompt_corto --config config_corto.yaml > corridas/prompt_corto.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_app.py::evaluar --etiqueta prompt_optimizado --config config_optimizado.yaml > corridas/prompt_optimizado.log 2>&1 &
 ```
 
 `config_optimizado.yaml` y `prompt_optimizado.txt` tienen que estar commiteados antes de lanzar, para que
@@ -244,7 +247,7 @@ uv run modal run --detach modal_entrenar.py::bajar_modelo
 Mide segundos por paso y VRAM con el modelo real antes de gastar horas:
 
 ```bash
-nohup uv run modal run --detach modal_entrenar.py --corrida prueba-gpu-01 --max-pasos 20 > corridas/prueba-gpu-01.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_entrenar.py --corrida prueba-gpu-01 --max-pasos 20 > corridas/prueba-gpu-01.log 2>&1 &
 tail -f corridas/prueba-gpu-01.log
 ```
 
@@ -258,10 +261,10 @@ antes de lanzar la corrida completa. Con `prueba-gpu-02` (27,5 s por paso) qued�
 
 ```bash
 # Prompt optimizado + entrenamiento (datos/, el default de entrenar.yaml).
-nohup uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1 > corridas/sft-prompt-v1.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1 > corridas/sft-prompt-v1.log 2>&1 &
 
 # Solo entrenamiento (prompt de admision/ejemplo.py).
-nohup uv run modal run --detach modal_entrenar.py --corrida sft-ejemplo-v1 \
+nohup caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-ejemplo-v1 \
     --datos datos/sin_prompt/train.jsonl --val datos/sin_prompt/val.jsonl > corridas/sft-ejemplo-v1.log 2>&1 &
 ```
 
@@ -304,7 +307,7 @@ Desde Hugging Face (lo normal: cada punto de control trae el estado del optimiza
 generadores aleatorios en `estado/`):
 
 ```bash
-nohup uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1-r1 \
+nohup caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1-r1 \
     --retomar hf:sft-prompt-v1-paso-300 > corridas/sft-prompt-v1-r1.log 2>&1 &
 ```
 
@@ -313,7 +316,7 @@ Desde el volumen, si la corrida se cortó antes de subir el último punto de con
 
 ```bash
 uv run modal volume ls tp-corridas /sft-prompt-v1/checkpoints
-nohup uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1-r1 \
+nohup caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1-r1 \
     --retomar sft-prompt-v1/checkpoints/checkpoint-300 > corridas/sft-prompt-v1-r1.log 2>&1 &
 ```
 
@@ -324,17 +327,21 @@ cortes.
 
 ## 14. Evaluar los adaptadores entrenados
 
-Se crea un yaml en esta carpeta a partir de `config.yaml` (o de `config_optimizado.yaml` para la variante con el
-prompt optimizado), con `adaptador_lora: <HF_REPO>` y `adaptador_revision: <corrida>-final` (o el commit de esa
-etiqueta, que queda en `corridas/<corrida>/revisiones.json`). `max_lora_rank` queda en 32, el rank del adaptador. Se
-commitea y se evalúa como en la sección 5:
+Cada adaptador tiene su yaml en esta carpeta: `config.yaml` (prompt optimizado + `sft-prompt-v1-r1`) y
+`config_sft_base.yaml` (`prompt_base.txt` + `sft-ejemplo-v2`), con `adaptador_lora: <HF_REPO>` y
+`adaptador_revision: <commit>`. El commit es el del punto de control con menor pérdida de validación, que queda en
+`corridas/<corrida>/revisiones.json`; se fija el commit y no la etiqueta móvil `final`, que pisa cada corrida
+completa. `max_lora_rank` queda en 32, el rank del adaptador. Se commitea, se prueba con 3 casos (que vLLM cargue el
+adaptador) y se evalúa como en la sección 5:
 
 ```bash
-nohup uv run modal run --detach modal_app.py::evaluar --etiqueta eval-sft-prompt-v1 --config config_sft_prompt.yaml > corridas/eval-sft-prompt-v1.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_app.py::evaluar --etiqueta prueba_sft_prompt --cantidad 3 --config config.yaml > corridas/prueba_sft_prompt.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_app.py::evaluar --etiqueta sft_prompt --config config.yaml > corridas/sft_prompt.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_app.py::evaluar --etiqueta sft --config config_sft_base.yaml > corridas/sft.log 2>&1 &
 ```
 
-La etiqueta empieza con `eval-` para no pisar `corridas/<corrida>/`, la carpeta del entrenamiento. Después se baja
-como en la sección 6 y `uv run python tabla.py` lo suma a la tabla.
+Las etiquetas usan `_` y no coinciden con `corridas/<corrida>/`, la carpeta del entrenamiento. Después se bajan como
+en la sección 6 y `uv run python tabla.py` las suma a la tabla.
 
 ## 15. Guardar los resultados
 

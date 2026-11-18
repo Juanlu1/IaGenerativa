@@ -98,7 +98,7 @@ resultados a `corridas/` está en [`MODAL.md`](MODAL.md).
 | `datos/train.jsonl`, `datos/val.jsonl`, `datos/resumen.json` (prompt + entrenamiento) | `uv run python armar_dataset.py --prompt prompt_optimizado.txt` | semilla 20261117; historial correcto, `entrenamiento/trazas.jsonl` y sintéticas |
 | `datos/sin_prompt/` (solo entrenamiento, prompt de `admision/ejemplo.py`) | `uv run python armar_dataset.py --salida datos/sin_prompt` | lo mismo |
 | `prompt_optimizado.txt`, `config_optimizado.yaml` | candidato 9 de `optimizar_prompt.py` (GEPA, `corridas/gepa/gepa1/log.jsonl`) | ver `INFORME.md`, Parte 3, y `MODAL.md`, sección 7 |
-| `corridas/<etiqueta>/`, `corridas/tabla.md` (evaluaciones de la Parte 3) | `modal_app.py::evaluar` y `uv run python tabla.py` | el yaml de `--config` (`config.yaml`, `config_corto.yaml`, `config_optimizado.yaml`) |
+| `corridas/<etiqueta>/`, `corridas/tabla.md` (evaluaciones de la Parte 3) | `modal_app.py::evaluar` y `uv run python tabla.py` | el yaml de `--config` (`config_base.yaml`, `config_corto.yaml`, `config_optimizado.yaml`, `config.yaml`) |
 | Cada entrenamiento: adaptador en `HF_REPO` (etiquetas `<corrida>-paso-<N>`, `<corrida>-final` y `final`), corrida en W&B y `corridas/<corrida>/` | `uv run modal run --detach modal_entrenar.py --corrida <corrida>` (corre `entrenar.py`) | `entrenar.yaml` (semilla 20261117) y el archivo de datos, cuyo sha256 queda en W&B y en `corrida.json` del repo de HF |
 | `corridas/<version>/` (trazas, resultados y resumen de la evaluación) | `admision.correr` (sección 4) | `entrega.py` con `config.yaml` (o el yaml de `CONFIG`): prompt, adaptador y su revisión |
 | `revision_parte1.md` (cifras) | `uv run python revisar_parte1.py` | `historial/`, `curado/auditoria.csv` |
@@ -107,10 +107,10 @@ Los comandos de Modal (lanzar, ver logs, bajar resultados y retomar) para la
 evaluación, la optimización de prompt y el entrenamiento están en
 [`MODAL.md`](MODAL.md), en el orden en que se corren.
 
-Hoy `config.yaml` usa `prompt_base.txt` y ningún adaptador (el modelo sin
-entrenar); el diagrama de la sección 6 muestra la entrega final, con
-`prompt_optimizado.txt` y el adaptador de `HF_REPO`, que se fijan en
-`config.yaml` cuando esté entrenado.
+`config.yaml` es la entrega final: `prompt_optimizado.txt` y el adaptador
+`sft-prompt-v1-r1-final` de `HF_REPO`, fijado por su commit (el diagrama de la
+sección 6). El modelo sin entrenar con el prompt base está en
+`config_base.yaml`.
 
 ## 6. Cómo se conecta el agente
 
