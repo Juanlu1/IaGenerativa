@@ -45,7 +45,7 @@ imagen = (
     .env({"HF_HOME": CACHE_HF, "PYTHONUNBUFFERED": "1", "PYTHONPATH": REMOTO})
     .workdir(REMOTO)
     .add_local_dir(RAIZ, REMOTO, ignore=[
-        ".env", ".venv", "**/__pycache__", "*.egg-info", ".git", "corridas", "historial", "entrenamiento", "curado",
+        ".env", ".venv", "**/__pycache__", "*.egg-info", ".git", "corridas", "entrenamiento", "curado",
         "datos",
     ])
 )
