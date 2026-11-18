@@ -133,12 +133,11 @@ flowchart LR
 
 ## Partes 1 y 2 en una línea
 
-- **Parte 1:** `curar.py` clasifica el historial (1.590 correctas, 240 errores,
-  170 ruido) y documenta dos costumbres: el aviso al voluntariado para mayores
-  sin acompañante y la prepaga cuando se presentan dos credenciales. La
-  revisión de [`revision_parte1.md`](revision_parte1.md) muestra que el corte de
-  edad es 75 y no 76, y que los avisos sin explicar son ruido de tres
-  operadores; la clasificación todavía no incorpora esa corrección.
+- **Parte 1:** `curar.py` clasifica el historial (1.600 correctas, 240 errores,
+  160 ruido) y documenta dos costumbres: el aviso al voluntariado para
+  pacientes de 75 años o más sin acompañante y la prepaga cuando se presentan
+  dos credenciales. Los desvíos de ambas son de tres operadores que hacen las
+  cosas a su manera ([`revision_parte1.md`](revision_parte1.md)).
 - **Parte 2:** el buscador da recall 1,000, precisión 0,567, 590 tokens por
   consulta y 60 de 60 consultas completas en `rag/consultas_dev.jsonl`, contra
   0,875, 0,492, 580 y 51 de 60 de la referencia BM25 de la cátedra.

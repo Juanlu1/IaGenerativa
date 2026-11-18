@@ -5,45 +5,47 @@ Los IDs enumerados se pueden reproducir con `python curar.py` a partir de `histo
 
 ## Aviso al voluntariado para pacientes mayores sin acompañante
 
-En el historial, el aviso al voluntariado se asocia a pacientes de 76 años o más que llegan sin acompañante: se observa en 196 de 215 filas de esa situación (91%). Fuera de esa situación hubo 143 avisos en 1.785 filas (8%). El patrón aparece entre operadores distintos. El corte observado es 76 años; no se deriva del parámetro de edad de box (P-ADM-2), que es una regla independiente.
+En el historial, el aviso al voluntariado se asocia a pacientes de 75 años o más que llegan sin acompañante: se observa en 207 de 226 filas de esa situación (92%). Fuera de esa situación hubo 132 avisos en 1.774 filas (7%). El corte observado es 75 años: los 11 pacientes de 75 años sin acompañante tienen todos el aviso (`H-0045`, `H-0576`, `H-0943`, `H-1269`, `H-1348`, `H-1592`, `H-1593`, `H-1613`, `H-1677`, `H-1786`, `H-1884`) y, salvo los tres operadores de abajo, no hay avisos de 74 años para abajo. No se deriva del parámetro de edad de box (P-ADM-2), que es una regla independiente.
 
-Filas que respaldan la costumbre (196): `H-0013`, `H-0016`, `H-0036`, `H-0044`, `H-0063`, `H-0088`, `H-0094`, `H-0100`, `H-0114`, `H-0146`, `H-0171`, `H-0194`,
-`H-0210`, `H-0213`, `H-0216`, `H-0217`, `H-0221`, `H-0230`, `H-0233`, `H-0277`, `H-0289`, `H-0316`, `H-0338`, `H-0344`,
-`H-0347`, `H-0364`, `H-0380`, `H-0385`, `H-0393`, `H-0395`, `H-0397`, `H-0413`, `H-0424`, `H-0426`, `H-0446`, `H-0451`,
-`H-0459`, `H-0465`, `H-0484`, `H-0486`, `H-0507`, `H-0534`, `H-0535`, `H-0545`, `H-0553`, `H-0571`, `H-0573`, `H-0579`,
-`H-0596`, `H-0602`, `H-0611`, `H-0620`, `H-0624`, `H-0632`, `H-0636`, `H-0639`, `H-0646`, `H-0648`, `H-0659`, `H-0667`,
-`H-0670`, `H-0674`, `H-0680`, `H-0685`, `H-0701`, `H-0718`, `H-0726`, `H-0739`, `H-0743`, `H-0750`, `H-0752`, `H-0769`,
-`H-0787`, `H-0793`, `H-0794`, `H-0796`, `H-0816`, `H-0817`, `H-0823`, `H-0825`, `H-0861`, `H-0888`, `H-0901`, `H-0903`,
-`H-0919`, `H-0927`, `H-0939`, `H-0950`, `H-0951`, `H-0961`, `H-0973`, `H-0977`, `H-0982`, `H-0989`, `H-1002`, `H-1048`,
-`H-1074`, `H-1076`, `H-1082`, `H-1085`, `H-1101`, `H-1119`, `H-1121`, `H-1130`, `H-1134`, `H-1152`, `H-1154`, `H-1163`,
-`H-1164`, `H-1166`, `H-1172`, `H-1183`, `H-1191`, `H-1194`, `H-1197`, `H-1204`, `H-1206`, `H-1212`, `H-1226`, `H-1231`,
-`H-1237`, `H-1238`, `H-1244`, `H-1246`, `H-1254`, `H-1262`, `H-1272`, `H-1279`, `H-1281`, `H-1285`, `H-1317`, `H-1319`,
-`H-1336`, `H-1346`, `H-1351`, `H-1356`, `H-1381`, `H-1383`, `H-1390`, `H-1393`, `H-1420`, `H-1421`, `H-1432`, `H-1433`,
-`H-1459`, `H-1468`, `H-1470`, `H-1471`, `H-1487`, `H-1501`, `H-1504`, `H-1511`, `H-1526`, `H-1533`, `H-1537`, `H-1538`,
-`H-1548`, `H-1556`, `H-1562`, `H-1569`, `H-1574`, `H-1578`, `H-1583`, `H-1596`, `H-1602`, `H-1616`, `H-1643`, `H-1649`,
-`H-1654`, `H-1658`, `H-1672`, `H-1676`, `H-1683`, `H-1691`, `H-1693`, `H-1704`, `H-1711`, `H-1712`, `H-1720`, `H-1739`,
-`H-1770`, `H-1776`, `H-1787`, `H-1796`, `H-1824`, `H-1833`, `H-1838`, `H-1846`, `H-1848`, `H-1859`, `H-1878`, `H-1951`,
-`H-1959`, `H-1963`, `H-1965`, `H-1970`.
+Las excepciones y los avisos fuera de la situación son todos de OP-04, OP-11 y OP-17, que deciden el aviso sin seguir la costumbre ni ninguna otra regla visible (avisan en 132 de 285 filas fuera de la situación). Entre los otros operadores la costumbre se cumple en 185 de 185 filas y no hay avisos fuera de ella. Por eso no se describe una tercera costumbre: esos desvíos son ruido de operador.
+
+Filas que respaldan la costumbre (207): `H-0013`, `H-0016`, `H-0036`, `H-0044`, `H-0045`, `H-0063`, `H-0088`, `H-0094`, `H-0100`, `H-0114`, `H-0146`, `H-0171`,
+`H-0194`, `H-0210`, `H-0213`, `H-0216`, `H-0217`, `H-0221`, `H-0230`, `H-0233`, `H-0277`, `H-0289`, `H-0316`, `H-0338`,
+`H-0344`, `H-0347`, `H-0364`, `H-0380`, `H-0385`, `H-0393`, `H-0395`, `H-0397`, `H-0413`, `H-0424`, `H-0426`, `H-0446`,
+`H-0451`, `H-0459`, `H-0465`, `H-0484`, `H-0486`, `H-0507`, `H-0534`, `H-0535`, `H-0545`, `H-0553`, `H-0571`, `H-0573`,
+`H-0576`, `H-0579`, `H-0596`, `H-0602`, `H-0611`, `H-0620`, `H-0624`, `H-0632`, `H-0636`, `H-0639`, `H-0646`, `H-0648`,
+`H-0659`, `H-0667`, `H-0670`, `H-0674`, `H-0680`, `H-0685`, `H-0701`, `H-0718`, `H-0726`, `H-0739`, `H-0743`, `H-0750`,
+`H-0752`, `H-0769`, `H-0787`, `H-0793`, `H-0794`, `H-0796`, `H-0816`, `H-0817`, `H-0823`, `H-0825`, `H-0861`, `H-0888`,
+`H-0901`, `H-0903`, `H-0919`, `H-0927`, `H-0939`, `H-0943`, `H-0950`, `H-0951`, `H-0961`, `H-0973`, `H-0977`, `H-0982`,
+`H-0989`, `H-1002`, `H-1048`, `H-1074`, `H-1076`, `H-1082`, `H-1085`, `H-1101`, `H-1119`, `H-1121`, `H-1130`, `H-1134`,
+`H-1152`, `H-1154`, `H-1163`, `H-1164`, `H-1166`, `H-1172`, `H-1183`, `H-1191`, `H-1194`, `H-1197`, `H-1204`, `H-1206`,
+`H-1212`, `H-1226`, `H-1231`, `H-1237`, `H-1238`, `H-1244`, `H-1246`, `H-1254`, `H-1262`, `H-1269`, `H-1272`, `H-1279`,
+`H-1281`, `H-1285`, `H-1317`, `H-1319`, `H-1336`, `H-1346`, `H-1348`, `H-1351`, `H-1356`, `H-1381`, `H-1383`, `H-1390`,
+`H-1393`, `H-1420`, `H-1421`, `H-1432`, `H-1433`, `H-1459`, `H-1468`, `H-1470`, `H-1471`, `H-1487`, `H-1501`, `H-1504`,
+`H-1511`, `H-1526`, `H-1533`, `H-1537`, `H-1538`, `H-1548`, `H-1556`, `H-1562`, `H-1569`, `H-1574`, `H-1578`, `H-1583`,
+`H-1592`, `H-1593`, `H-1596`, `H-1602`, `H-1613`, `H-1616`, `H-1643`, `H-1649`, `H-1654`, `H-1658`, `H-1672`, `H-1676`,
+`H-1677`, `H-1683`, `H-1691`, `H-1693`, `H-1704`, `H-1711`, `H-1712`, `H-1720`, `H-1739`, `H-1770`, `H-1776`, `H-1786`,
+`H-1787`, `H-1796`, `H-1824`, `H-1833`, `H-1838`, `H-1846`, `H-1848`, `H-1859`, `H-1878`, `H-1884`, `H-1951`, `H-1959`,
+`H-1963`, `H-1965`, `H-1970`.
 
 Excepciones dentro de esa situación, clasificadas como ruido cuando no existe otra infracción escrita (19): `H-0077`, `H-0127`, `H-0182`, `H-0353`, `H-0449`, `H-0617`, `H-0644`, `H-0907`, `H-1088`, `H-1093`, `H-1116`, `H-1452`,
 `H-1549`, `H-1584`, `H-1641`, `H-1742`, `H-1794`, `H-1834`, `H-1947`.
 
-Avisos fuera de la situación habitual, también candidatos a ruido (143): `H-0005`, `H-0006`, `H-0009`, `H-0045`, `H-0053`, `H-0056`, `H-0067`, `H-0093`, `H-0108`, `H-0110`, `H-0140`, `H-0142`,
-`H-0150`, `H-0163`, `H-0188`, `H-0196`, `H-0231`, `H-0241`, `H-0245`, `H-0255`, `H-0265`, `H-0288`, `H-0306`, `H-0322`,
-`H-0340`, `H-0357`, `H-0386`, `H-0398`, `H-0399`, `H-0416`, `H-0443`, `H-0444`, `H-0445`, `H-0450`, `H-0463`, `H-0489`,
-`H-0497`, `H-0515`, `H-0525`, `H-0537`, `H-0542`, `H-0562`, `H-0575`, `H-0576`, `H-0597`, `H-0607`, `H-0610`, `H-0612`,
-`H-0619`, `H-0622`, `H-0626`, `H-0627`, `H-0630`, `H-0652`, `H-0653`, `H-0710`, `H-0717`, `H-0741`, `H-0748`, `H-0749`,
-`H-0756`, `H-0761`, `H-0770`, `H-0778`, `H-0786`, `H-0808`, `H-0827`, `H-0856`, `H-0875`, `H-0883`, `H-0898`, `H-0904`,
-`H-0925`, `H-0933`, `H-0936`, `H-0943`, `H-0954`, `H-0958`, `H-0966`, `H-0970`, `H-0980`, `H-1020`, `H-1031`, `H-1040`,
-`H-1046`, `H-1052`, `H-1091`, `H-1102`, `H-1126`, `H-1143`, `H-1173`, `H-1234`, `H-1257`, `H-1258`, `H-1269`, `H-1276`,
-`H-1283`, `H-1295`, `H-1313`, `H-1348`, `H-1382`, `H-1391`, `H-1416`, `H-1427`, `H-1428`, `H-1434`, `H-1443`, `H-1466`,
-`H-1496`, `H-1554`, `H-1564`, `H-1568`, `H-1582`, `H-1592`, `H-1593`, `H-1613`, `H-1644`, `H-1665`, `H-1666`, `H-1669`,
-`H-1677`, `H-1682`, `H-1702`, `H-1708`, `H-1709`, `H-1722`, `H-1724`, `H-1752`, `H-1758`, `H-1778`, `H-1786`, `H-1800`,
-`H-1812`, `H-1821`, `H-1831`, `H-1843`, `H-1856`, `H-1860`, `H-1884`, `H-1905`, `H-1909`, `H-1973`, `H-1976`.
+Avisos fuera de la situación habitual, también candidatos a ruido (132): `H-0005`, `H-0006`, `H-0009`, `H-0053`, `H-0056`, `H-0067`, `H-0093`, `H-0108`, `H-0110`, `H-0140`, `H-0142`, `H-0150`,
+`H-0163`, `H-0188`, `H-0196`, `H-0231`, `H-0241`, `H-0245`, `H-0255`, `H-0265`, `H-0288`, `H-0306`, `H-0322`, `H-0340`,
+`H-0357`, `H-0386`, `H-0398`, `H-0399`, `H-0416`, `H-0443`, `H-0444`, `H-0445`, `H-0450`, `H-0463`, `H-0489`, `H-0497`,
+`H-0515`, `H-0525`, `H-0537`, `H-0542`, `H-0562`, `H-0575`, `H-0597`, `H-0607`, `H-0610`, `H-0612`, `H-0619`, `H-0622`,
+`H-0626`, `H-0627`, `H-0630`, `H-0652`, `H-0653`, `H-0710`, `H-0717`, `H-0741`, `H-0748`, `H-0749`, `H-0756`, `H-0761`,
+`H-0770`, `H-0778`, `H-0786`, `H-0808`, `H-0827`, `H-0856`, `H-0875`, `H-0883`, `H-0898`, `H-0904`, `H-0925`, `H-0933`,
+`H-0936`, `H-0954`, `H-0958`, `H-0966`, `H-0970`, `H-0980`, `H-1020`, `H-1031`, `H-1040`, `H-1046`, `H-1052`, `H-1091`,
+`H-1102`, `H-1126`, `H-1143`, `H-1173`, `H-1234`, `H-1257`, `H-1258`, `H-1276`, `H-1283`, `H-1295`, `H-1313`, `H-1382`,
+`H-1391`, `H-1416`, `H-1427`, `H-1428`, `H-1434`, `H-1443`, `H-1466`, `H-1496`, `H-1554`, `H-1564`, `H-1568`, `H-1582`,
+`H-1644`, `H-1665`, `H-1666`, `H-1669`, `H-1682`, `H-1702`, `H-1708`, `H-1709`, `H-1722`, `H-1724`, `H-1752`, `H-1758`,
+`H-1778`, `H-1800`, `H-1812`, `H-1821`, `H-1831`, `H-1843`, `H-1856`, `H-1860`, `H-1905`, `H-1909`, `H-1973`, `H-1976`.
 
 ## Priorizar la prepaga cuando se presentan ambas coberturas
 
-Cuando la persona presenta una obra social y una prepaga, los operadores suelen verificar la prepaga: ocurrió en 184 de 193 casos comparables (95%). La norma no establece una prioridad para elegir entre ambas. La excepción se clasifica como ruido solo si se eligió una cobertura presentada válida; una entidad ajena a las credenciales se evalúa como error normativo.
+Cuando la persona presenta una obra social y una prepaga, los operadores suelen verificar la prepaga: ocurrió en 184 de 193 casos comparables (95%). Cuando la prepaga resulta inactiva, se registra sin cobertura y no se verifica la obra social. La norma no establece una prioridad para elegir entre ambas. La excepción se clasifica como ruido solo si se eligió una cobertura presentada válida; una entidad ajena a las credenciales se evalúa como error normativo.
 
 Filas que respaldan la costumbre (184): `H-0010`, `H-0011`, `H-0021`, `H-0052`, `H-0056`, `H-0075`, `H-0086`, `H-0087`, `H-0088`, `H-0099`, `H-0114`, `H-0125`,
 `H-0153`, `H-0157`, `H-0161`, `H-0167`, `H-0178`, `H-0197`, `H-0209`, `H-0219`, `H-0246`, `H-0256`, `H-0275`, `H-0282`,
@@ -62,4 +64,4 @@ Filas que respaldan la costumbre (184): `H-0010`, `H-0011`, `H-0021`, `H-0052`, 
 `H-1792`, `H-1799`, `H-1800`, `H-1844`, `H-1847`, `H-1876`, `H-1878`, `H-1893`, `H-1898`, `H-1900`, `H-1914`, `H-1928`,
 `H-1968`, `H-1970`, `H-1975`, `H-1979`.
 
-Excepciones que eligieron la obra social presentada (9): `H-0334`, `H-0404`, `H-0408`, `H-0480`, `H-0792`, `H-0881`, `H-1190`, `H-1467`, `H-1520`.
+Excepciones que eligieron la obra social presentada (9), todas de OP-04, OP-11 y OP-17: `H-0334`, `H-0404`, `H-0408`, `H-0480`, `H-0792`, `H-0881`, `H-1190`, `H-1467`, `H-1520`.

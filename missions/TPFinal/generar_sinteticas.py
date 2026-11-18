@@ -36,8 +36,8 @@ RESUMEN = ROOT / "curado" / "sinteticas_resumen.json"
 SEMILLA = 20261108
 CANTIDAD = 600
 
-# Costumbre del historial (costumbres.md): aviso al voluntariado para 75 años o más sin acompañante
-# (costumbres.md dice 76; el historial y las esperadas de práctica muestran el corte en 75, ver revision_parte1.md).
+# Costumbre del historial (costumbres.md): aviso al voluntariado para 75 años o más sin acompañante.
+# Es el mismo corte que curar.py (EDAD_VOLUNTARIADO); ver revision_parte1.md.
 EDAD_VOLUNTARIADO = 75
 
 # Plantillas de consulta: son las 14 que aparecen en las trazas de la cátedra.

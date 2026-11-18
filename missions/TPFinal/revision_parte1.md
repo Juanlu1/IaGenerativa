@@ -1,14 +1,19 @@
 # Revisión de la Parte 1: voluntariado y auditoría
 
-Investigación hecha junto con la Parte 4, **sin modificar** `historial_clasificado.csv` ni
-`costumbres.md`. Las cifras salen de `historial/historial.csv`, `curado/auditoria.csv` y
-`practica/esperadas-*.jsonl`; los ids de cada hallazgo están en su seccion. Lo que propone
-cambiar queda para que el equipo lo decida y lo aplique en `curar.py`.
+Investigación hecha junto con la Parte 4. Las cifras salen de `historial/historial.csv`,
+`curado/auditoria.csv` y `practica/esperadas-*.jsonl`; los ids de cada hallazgo están en su
+sección.
+
+**Estado:** el punto 1 ya está aplicado. `curar.py` usa el corte de 75 años
+(`EDAD_VOLUNTARIADO`), y la clasificación, `costumbres.md`, `curado/auditoria.csv` y las
+conversaciones reales se regeneraron con él: las 10 filas del punto 1 pasaron de `ruido` a
+`correcta` (1.600 correctas, 240 errores y 160 ruido). Las cifras de abajo que hablan de
+la clasificación describen la primera pasada, con el corte en 76, que motivó la revisión.
 
 ## Resumen
 
-1. **El corte de la costumbre del voluntariado es 75 años, no 76.** `curar.py` usa 76 y por
-   eso marca como desvío a los 11 pacientes de 75 años sin acompañante, que tienen todos el
+1. **El corte de la costumbre del voluntariado es 75 años, no 76.** `curar.py` usaba 76 y por
+   eso marcaba como desvío a los 11 pacientes de 75 años sin acompañante, que tienen todos el
    aviso. Diez de esas filas quedaron `ruido` y probablemente son `correcta`.
 2. **No hay otra costumbre detras de los 143 avisos sin explicar.** Con el corte en 75 quedan
    132, y los 132 son de tres operadores: OP-04, OP-11 y OP-17. Los otros 17 operadores siguen
@@ -47,10 +52,10 @@ parámetros de las normas: es el mismo en las tres versiones.
 
 Filas de 75 años sin acompañante, todas con aviso: `H-0045`, `H-0576`, `H-0943`, `H-1269`, `H-1348`, `H-1592`, `H-1593`, `H-1613`, `H-1677`, `H-1786`, `H-1884`.
 
-- Quedaron `ruido` solo por este desvío (10): `H-0045`, `H-0576`, `H-0943`, `H-1269`, `H-1348`, `H-1592`, `H-1613`, `H-1677`, `H-1786`, `H-1884`. **Propuesta:** pasarlas a
-  `correcta`, cambiando el corte a 75 en `curar.py` (funciones `verificar_fila` y
-  `generar_costumbres`) y regenerando la clasificación y `costumbres.md`.
-- Quedaron `error` (1): `H-1593`, por otra norma (circuito o plazo); siguen siendo error.
+- Quedaban `ruido` solo por este desvío (10): `H-0045`, `H-0576`, `H-0943`, `H-1269`, `H-1348`, `H-1592`, `H-1613`, `H-1677`, `H-1786`, `H-1884`. **Aplicado:** pasaron a
+  `correcta` al cambiar el corte a 75 en `curar.py` y regenerar la clasificación y
+  `costumbres.md`.
+- Quedaba `error` (1): `H-1593`, por otra norma (circuito o plazo); siguen siendo error.
 
 Con el corte en 75 la costumbre queda respaldada por 207 de 226 filas, y todas las
 excepciones son de OP-04, OP-11 y OP-17.
@@ -107,11 +112,11 @@ su manera" del enunciado.
 
 **Consecuencias.**
 
-- La clasificación actual ya marca esas filas como `ruido` cuando no hay otro error: de las
-  170 filas `ruido`, 163 son de estos tres operadores (las otras 7 son del punto 1). No
-  hace falta cambiarlas.
+- La clasificación ya marcaba esas filas como `ruido` cuando no hay otro error: de las
+  170 filas `ruido` de la primera pasada, 163 eran de estos tres operadores y las otras 7,
+  del punto 1. Con el corte en 75 quedan 160 filas `ruido`, todas de estos tres operadores.
 - No conviene agregar una tercera costumbre: el patrón no se repite entre operadores.
-- Las filas `correcta` de estos operadores (119) coinciden con la costumbre por azar en el campo
+- Las filas `correcta` de estos operadores (119 en la primera pasada, 122 con el corte en 75) coinciden con la costumbre por azar en el campo
   del aviso. Siguen siendo correctas por definición, pero si se quiere un conjunto de
   entrenamiento más limpio se pueden excluir de las conversaciones reales (`armar_dataset.py`
   no lo hace hoy).
