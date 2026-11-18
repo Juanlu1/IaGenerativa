@@ -1,0 +1,119 @@
+Object ID,Description,Environment,Interval Start,Resource,Cost
+ap-1mx1Wf3sFNH25oDwdkbWjA,tp-admision,main,2026-11-18T00:00:00,A100-40GB,0.16159322
+ap-1mx1Wf3sFNH25oDwdkbWjA,tp-admision,main,2026-11-18T00:00:00,CPU,0.01223187
+ap-1mx1Wf3sFNH25oDwdkbWjA,tp-admision,main,2026-11-18T00:00:00,Network Egress,0.00093211
+ap-1mx1Wf3sFNH25oDwdkbWjA,tp-admision,main,2026-11-18T00:00:00,Memory,0.00193666
+ap-9ghcvr1kkluIMRw9eR6CJO,tp-admision,main,2026-11-18T00:00:00,A100-40GB,0.15983324
+ap-9ghcvr1kkluIMRw9eR6CJO,tp-admision,main,2026-11-18T00:00:00,CPU,0.00454732
+ap-9ghcvr1kkluIMRw9eR6CJO,tp-admision,main,2026-11-18T00:00:00,Network Egress,0.00000115
+ap-9ghcvr1kkluIMRw9eR6CJO,tp-admision,main,2026-11-18T00:00:00,Memory,0.00238743
+ap-BeFBlNLaKdJmFLdTcgJd5r,tp-admision,main,2026-11-18T00:00:00,A100-40GB,0.00116666
+ap-BeFBlNLaKdJmFLdTcgJd5r,tp-admision,main,2026-11-18T00:00:00,CPU,0.00000328
+ap-BeFBlNLaKdJmFLdTcgJd5r,tp-admision,main,2026-11-18T00:00:00,Memory,5.6E-7
+ap-RdIdfrz3cOUQaoGT4NorrS,tp-admision,main,2026-11-18T00:00:00,A100-40GB,0.19442227
+ap-RdIdfrz3cOUQaoGT4NorrS,tp-admision,main,2026-11-18T00:00:00,CPU,0.00941748
+ap-RdIdfrz3cOUQaoGT4NorrS,tp-admision,main,2026-11-18T00:00:00,Network Egress,0.02796593
+ap-RdIdfrz3cOUQaoGT4NorrS,tp-admision,main,2026-11-18T00:00:00,Memory,0.00321982
+ap-VOn0GMz4cVb8QRwugGMQz6,tp-admision,main,2026-11-18T00:00:00,CPU,0.00843204
+ap-VOn0GMz4cVb8QRwugGMQz6,tp-admision,main,2026-11-18T00:00:00,Network Egress,0.00077150
+ap-VOn0GMz4cVb8QRwugGMQz6,tp-admision,main,2026-11-18T00:00:00,Memory,0.00033497
+ap-Y252UmgM0nG1ZLj8N4JWEt,tp-admision,main,2026-11-18T00:00:00,CPU,0.00666670
+ap-Y252UmgM0nG1ZLj8N4JWEt,tp-admision,main,2026-11-18T00:00:00,Network Egress,0.00027868
+ap-Y252UmgM0nG1ZLj8N4JWEt,tp-admision,main,2026-11-18T00:00:00,Memory,0.00015636
+ap-vMN4nXb4TpaIqhb1bEeLYs,tp-admision,main,2026-11-18T00:00:00,A100-40GB,0.20883315
+ap-vMN4nXb4TpaIqhb1bEeLYs,tp-admision,main,2026-11-18T00:00:00,CPU,0.00508863
+ap-vMN4nXb4TpaIqhb1bEeLYs,tp-admision,main,2026-11-18T00:00:00,Network Egress,0.00000128
+ap-vMN4nXb4TpaIqhb1bEeLYs,tp-admision,main,2026-11-18T00:00:00,Memory,0.00316695
+ap-9ghcvr1kkluIMRw9eR6CJO,tp-admision,main,2026-11-18T01:00:00,A100-40GB,1.79852396
+ap-9ghcvr1kkluIMRw9eR6CJO,tp-admision,main,2026-11-18T01:00:00,CPU,0.01618565
+ap-9ghcvr1kkluIMRw9eR6CJO,tp-admision,main,2026-11-18T01:00:00,Network Egress,5.1E-7
+ap-9ghcvr1kkluIMRw9eR6CJO,tp-admision,main,2026-11-18T01:00:00,Memory,0.03057088
+ap-9uQTUVpaDbsv3SsgNYUOIG,tp-admision,main,2026-11-18T01:00:00,A100-40GB,0.17668580
+ap-9uQTUVpaDbsv3SsgNYUOIG,tp-admision,main,2026-11-18T01:00:00,CPU,0.00468113
+ap-9uQTUVpaDbsv3SsgNYUOIG,tp-admision,main,2026-11-18T01:00:00,Network Egress,0.00000102
+ap-9uQTUVpaDbsv3SsgNYUOIG,tp-admision,main,2026-11-18T01:00:00,Memory,0.00194865
+ap-AVSm17qZ4H9NOGeLXvpGoz,tp-admision,main,2026-11-18T01:00:00,A100-40GB,0.21553510
+ap-AVSm17qZ4H9NOGeLXvpGoz,tp-admision,main,2026-11-18T01:00:00,CPU,0.00453314
+ap-AVSm17qZ4H9NOGeLXvpGoz,tp-admision,main,2026-11-18T01:00:00,Network Egress,9.6E-7
+ap-AVSm17qZ4H9NOGeLXvpGoz,tp-admision,main,2026-11-18T01:00:00,Memory,0.00183662
+ap-3FyoC0XJ8UnntM9vEtFqCp,tp-admision-entrenar,main,2026-11-18T03:00:00,A100-40GB,0.02884359
+ap-3FyoC0XJ8UnntM9vEtFqCp,tp-admision-entrenar,main,2026-11-18T03:00:00,CPU,0.00957554
+ap-3FyoC0XJ8UnntM9vEtFqCp,tp-admision-entrenar,main,2026-11-18T03:00:00,Network Egress,0.00076624
+ap-3FyoC0XJ8UnntM9vEtFqCp,tp-admision-entrenar,main,2026-11-18T03:00:00,Memory,0.00030332
+ap-Twz5H5ZoQxEuSkpX7L46gt,tp-admision,main,2026-11-18T03:00:00,A100-40GB,0.16112503
+ap-Twz5H5ZoQxEuSkpX7L46gt,tp-admision,main,2026-11-18T03:00:00,CPU,0.00405871
+ap-Twz5H5ZoQxEuSkpX7L46gt,tp-admision,main,2026-11-18T03:00:00,Network Egress,0.00000116
+ap-Twz5H5ZoQxEuSkpX7L46gt,tp-admision,main,2026-11-18T03:00:00,Memory,0.00179805
+ap-UGJS3HZXSbTLUqni4KeZqS,tp-admision-entrenar,main,2026-11-18T03:00:00,A100-40GB,0.14235635
+ap-UGJS3HZXSbTLUqni4KeZqS,tp-admision-entrenar,main,2026-11-18T03:00:00,CPU,0.00403423
+ap-UGJS3HZXSbTLUqni4KeZqS,tp-admision-entrenar,main,2026-11-18T03:00:00,Network Egress,0.00134494
+ap-UGJS3HZXSbTLUqni4KeZqS,tp-admision-entrenar,main,2026-11-18T03:00:00,Memory,0.00133741
+ap-njPhE91ioqzcrJ2w3EqzMH,tp-admision,main,2026-11-18T03:00:00,A100-40GB,0.16216652
+ap-njPhE91ioqzcrJ2w3EqzMH,tp-admision,main,2026-11-18T03:00:00,CPU,0.01417235
+ap-njPhE91ioqzcrJ2w3EqzMH,tp-admision,main,2026-11-18T03:00:00,Network Egress,0.00081408
+ap-njPhE91ioqzcrJ2w3EqzMH,tp-admision,main,2026-11-18T03:00:00,Memory,0.00213803
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T04:00:00,A100-40GB,0.01983306
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T04:00:00,CPU,0.00041887
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T04:00:00,Network Egress,1.7E-7
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T04:00:00,Memory,0.00005483
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T04:00:00,A100-40GB,0.01866700
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T04:00:00,CPU,0.00039555
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T04:00:00,Network Egress,1.6E-7
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T04:00:00,Memory,0.00005238
+ap-UGJS3HZXSbTLUqni4KeZqS,tp-admision-entrenar,main,2026-11-18T04:00:00,A100-40GB,0.30574100
+ap-UGJS3HZXSbTLUqni4KeZqS,tp-admision-entrenar,main,2026-11-18T04:00:00,CPU,0.00906453
+ap-UGJS3HZXSbTLUqni4KeZqS,tp-admision-entrenar,main,2026-11-18T04:00:00,Network Egress,0.02947441
+ap-UGJS3HZXSbTLUqni4KeZqS,tp-admision-entrenar,main,2026-11-18T04:00:00,Memory,0.00359744
+ap-gBDYAfLdvfDSDxqpHCzB5K,tp-admision-entrenar,main,2026-11-18T04:00:00,A100-40GB,1.70464126
+ap-gBDYAfLdvfDSDxqpHCzB5K,tp-admision-entrenar,main,2026-11-18T04:00:00,CPU,0.04904153
+ap-gBDYAfLdvfDSDxqpHCzB5K,tp-admision-entrenar,main,2026-11-18T04:00:00,Network Egress,0.02923527
+ap-gBDYAfLdvfDSDxqpHCzB5K,tp-admision-entrenar,main,2026-11-18T04:00:00,Memory,0.01958339
+ap-njPhE91ioqzcrJ2w3EqzMH,tp-admision,main,2026-11-18T04:00:00,A100-40GB,0.00147366
+ap-njPhE91ioqzcrJ2w3EqzMH,tp-admision,main,2026-11-18T04:00:00,CPU,0.00001769
+ap-njPhE91ioqzcrJ2w3EqzMH,tp-admision,main,2026-11-18T04:00:00,Memory,7.0E-7
+ap-tUFHGYQ6GNPloKjzxNxc5n,tp-admision-entrenar,main,2026-11-18T04:00:00,A100-40GB,1.08915881
+ap-tUFHGYQ6GNPloKjzxNxc5n,tp-admision-entrenar,main,2026-11-18T04:00:00,CPU,0.03318748
+ap-tUFHGYQ6GNPloKjzxNxc5n,tp-admision-entrenar,main,2026-11-18T04:00:00,Network Egress,0.00133398
+ap-tUFHGYQ6GNPloKjzxNxc5n,tp-admision-entrenar,main,2026-11-18T04:00:00,Memory,0.01351322
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T05:00:00,A100-40GB,2.10000039
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T05:00:00,CPU,0.06447162
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T05:00:00,Network Egress,0.02960614
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T05:00:00,Memory,0.02821946
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T05:00:00,A100-40GB,2.10001707
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T05:00:00,CPU,0.06158292
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T05:00:00,Network Egress,0.02923270
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T05:00:00,Memory,0.02583915
+ap-9eU5OYEBEQptXyNuNsMGwV,tp-leer-repo,main,2026-11-18T06:00:00,CPU,0.00000445
+ap-9eU5OYEBEQptXyNuNsMGwV,tp-leer-repo,main,2026-11-18T06:00:00,Memory,7.5E-7
+ap-GqUFevMLNuPlyIioiJrx95,tp-admision,main,2026-11-18T06:00:00,A100-40GB,0.18131709
+ap-GqUFevMLNuPlyIioiJrx95,tp-admision,main,2026-11-18T06:00:00,CPU,0.00486571
+ap-GqUFevMLNuPlyIioiJrx95,tp-admision,main,2026-11-18T06:00:00,Network Egress,0.00055773
+ap-GqUFevMLNuPlyIioiJrx95,tp-admision,main,2026-11-18T06:00:00,Memory,0.00226372
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T06:00:00,A100-40GB,1.11999992
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T06:00:00,CPU,0.03390150
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T06:00:00,Network Egress,0.05917902
+ap-JeuobDXtnDFTSGNwu37tar,tp-admision-entrenar,main,2026-11-18T06:00:00,Memory,0.01571313
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T06:00:00,A100-40GB,2.10002386
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T06:00:00,CPU,0.06080223
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T06:00:00,Network Egress,0.02939140
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T06:00:00,Memory,0.02866463
+ap-tLXG8GBf0kdSeprNqFnpKj,tp-admision,main,2026-11-18T06:00:00,A100-40GB,0.21706731
+ap-tLXG8GBf0kdSeprNqFnpKj,tp-admision,main,2026-11-18T06:00:00,CPU,0.00546315
+ap-tLXG8GBf0kdSeprNqFnpKj,tp-admision,main,2026-11-18T06:00:00,Network Egress,9.3E-7
+ap-tLXG8GBf0kdSeprNqFnpKj,tp-admision,main,2026-11-18T06:00:00,Memory,0.00291654
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T07:00:00,A100-40GB,0.38618849
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T07:00:00,CPU,0.01061745
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T07:00:00,Network Egress,0.05857006
+ap-KRT5eWlubMGIpY262ytfis,tp-admision-entrenar,main,2026-11-18T07:00:00,Memory,0.00538782
+ap-tuaoIwvE38lTe4q7dWmRcy,tp-admision,main,2026-11-18T07:00:00,A100-40GB,0.23076799
+ap-tuaoIwvE38lTe4q7dWmRcy,tp-admision,main,2026-11-18T07:00:00,CPU,0.00572983
+ap-tuaoIwvE38lTe4q7dWmRcy,tp-admision,main,2026-11-18T07:00:00,Network Egress,9.4E-7
+ap-tuaoIwvE38lTe4q7dWmRcy,tp-admision,main,2026-11-18T07:00:00,Memory,0.00288264
+ap-wyE1U33UTPtW6mjtqWPfet,tp-admision,main,2026-11-18T07:00:00,A100-40GB,0.20665902
+ap-wyE1U33UTPtW6mjtqWPfet,tp-admision,main,2026-11-18T07:00:00,CPU,0.00545022
+ap-wyE1U33UTPtW6mjtqWPfet,tp-admision,main,2026-11-18T07:00:00,Network Egress,0.00021228
+ap-wyE1U33UTPtW6mjtqWPfet,tp-admision,main,2026-11-18T07:00:00,Memory,0.00242317
+ap-ligTSEGFMYvq740PzUOFv0,tp-admision,main,2026-11-18T12:00:00,A100-40GB,0.27430946
+ap-ligTSEGFMYvq740PzUOFv0,tp-admision,main,2026-11-18T12:00:00,CPU,0.00590379
+ap-ligTSEGFMYvq740PzUOFv0,tp-admision,main,2026-11-18T12:00:00,Network Egress,9.2E-7
+ap-ligTSEGFMYvq740PzUOFv0,tp-admision,main,2026-11-18T12:00:00,Memory,0.00301939
