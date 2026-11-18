@@ -372,8 +372,8 @@ están dentro de lo que mueve el cambio de versión, así que estas comparacione
 
 ## Parte 4: Entrenamiento
 
-Los números que todavía no se midieron dicen **PENDIENTE**: se completan con
-los comandos indicados, nunca a mano. Los comandos de Modal están en
+Todos los números salen de las corridas versionadas en `corridas/`, nunca a
+mano. Los comandos de Modal están en
 [`MODAL.md`](MODAL.md), secciones 8 a 14.
 
 ### Estrategia
@@ -630,7 +630,7 @@ mensaje de sistema de `admision/ejemplo.py` tal cual.
 | Referencia de la cátedra, SFT con las 800 trazas | - | `admision/ejemplo.py` | 25 | 24 | 25 |
 | Sin entrenar | modelo base | `admision/ejemplo.py` (`prompt_base.txt`) | 12 | 5 | 8 |
 | Solo prompt | modelo base | `prompt_optimizado.txt` | 9 | 10 | 10 |
-| Solo entrenamiento | PENDIENTE (`sft-ejemplo-v2-final`) | `admision/ejemplo.py` | PENDIENTE | PENDIENTE | PENDIENTE |
+| Solo entrenamiento | `sft-ejemplo-v2-paso-300` (`67deca8`) | `admision/ejemplo.py` | 21 | 22 | 22 |
 | Prompt + entrenamiento | `sft-prompt-v1-r1-final` (`a5af001`) | `prompt_optimizado.txt` | 26 | 25 | 28 |
 
 "Prompt + entrenamiento" es `corridas/sft_prompt/`, con `config.yaml` (la
@@ -639,18 +639,28 @@ versiones (26, 25 y 28 contra 25, 24 y 25) y casi triplica la fila sin
 entrenar con el mismo prompt (9, 10 y 10). La puntuación parcial media sube de
 0,80 a 0,94 y el agente busca más: 2,9 búsquedas por caso contra 1,9.
 
+"Solo entrenamiento" es `corridas/sft/`, con `config_sft_base.yaml`: 21, 22 y
+22, casi el doble que sin entrenar (12, 5 y 8) pero por debajo de la
+referencia SFT de la cátedra y de prompt + entrenamiento. El entrenamiento es
+lo que más suma (de 12, 5 y 8 a 21, 22 y 22); el prompt optimizado agrega
+entre 3 y 6 casos por versión sobre el adaptador (sin entrenar restaba 3 en
+original y sumaba 5 y 2 en b y c). Las dos corridas de entrenamiento tienen
+las mismas conversaciones, la misma semilla y los mismos pasos: solo cambia el
+mensaje de sistema. Con 50 casos por versión, diferencias de 1 a 3 casos son
+indicios, no mediciones finas (Parte 3).
+
 #### Las corridas de entrenamiento
 
 | Medida | `sft-prompt-v1` + `sft-prompt-v1-r1` | `sft-ejemplo-v2` |
 |---|---|---|
-| Datos | `datos/` (sha256 `63139319...`) | `datos/sin_prompt/` |
-| Pasos | 314 (1,76 épocas): 1 a 100 en `sft-prompt-v1`, 101 a 314 en `sft-prompt-v1-r1` | PENDIENTE |
-| Tiempo | 42 min hasta el paso 100 más 5.406 s (1,50 h) de la continuación: unas 2,2 h | PENDIENTE |
-| Pérdida de train | 0,00745 de media en los pasos 101 a 314; 0,00258 en el último registro (paso 310) | PENDIENTE |
-| Pérdida de val | 0,01494 (paso 100), 0,00557 (200), 0,00405 (300), 0,00402 (314) | PENDIENTE |
-| Precisión por token en val | 0,9986 (paso 314) | PENDIENTE |
-| VRAM máxima | 20,81 GB | PENDIENTE |
-| W&B | `68qllkha` (la continuación sigue el mismo run) | PENDIENTE |
+| Datos | `datos/` (sha256 `63139319...`) | `datos/sin_prompt/` (sha256 `16830998...`) |
+| Pasos | 314 (1,76 épocas): 1 a 100 en `sft-prompt-v1`, 101 a 314 en `sft-prompt-v1-r1` | 314 (1,76 épocas), sin cortes |
+| Tiempo | 42 min hasta el paso 100 más 5.406 s (1,50 h) de la continuación: unas 2,2 h | 7.778 s (2,16 h) |
+| Pérdida de train | 0,00745 de media en los pasos 101 a 314; 0,00258 en el último registro (paso 310) | 0,0380 de media en los 314 pasos (incluye el arranque); 0,00347 en el último registro (paso 310) |
+| Pérdida de val | 0,01494 (paso 100), 0,00557 (200), 0,00405 (300), 0,00402 (314) | 0,01685 (paso 100), 0,00695 (200), 0,00529 (300), 0,00530 (314) |
+| Precisión por token en val | 0,9986 (paso 314) | 0,9981 (pasos 300 y 314) |
+| VRAM máxima | 20,81 GB | 20,72 GB |
+| W&B | `68qllkha` (la continuación sigue el mismo run) | `g69gw15q` |
 
 Los números salen de `corridas/<corrida>/resumen.json` y del log de la corrida.
 
@@ -660,6 +670,11 @@ debajo del paso 300 (0,00405): la pérdida bajó en todas las evaluaciones, sin
 señales de sobreajuste. `config.yaml` fija el commit `a5af001800f7...` de la
 etiqueta `sft-prompt-v1-r1-final` y no la etiqueta móvil `final`, que pisa cada
 corrida completa. La configuración sin entrenar queda en `config_base.yaml`.
+En `sft-ejemplo-v2` la menor es la del paso 300 (0,00529 contra 0,00530 del
+paso 314), así que `config_sft_base.yaml` fija el commit `67deca83dd20...` de
+`sft-ejemplo-v2-paso-300`. La diferencia es mínima: en los últimos 14 pasos la
+tasa de aprendizaje ya era casi cero (coseno) y la pérdida de validación quedó
+plana; se respetó el criterio en vez de elegir el final.
 
 ### Pasadas del desarrollo
 
