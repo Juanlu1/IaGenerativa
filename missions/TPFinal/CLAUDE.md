@@ -1,7 +1,7 @@
 # CLAUDE.md — TP Final: agente de admisión de guardia
 
 Reglas comunes: [`../../CLAUDE.md`](../../CLAUDE.md). Enunciado y manual oficial:
-[`mission.md`](mission.md) y [`README.md`](README.md).
+[`mission.md`](mission.md) y [`KIT.md`](KIT.md) (el manual del kit; `README.md` es el del grupo).
 
 ## Contrato del kit
 
