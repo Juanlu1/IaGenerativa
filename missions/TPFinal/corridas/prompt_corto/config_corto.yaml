@@ -1,0 +1,37 @@
+# Configuracion del agente que carga entrega.py.
+# Para evaluar otra variante sin editar este archivo: CONFIG=config_optimizado.yaml
+# Las rutas relativas (prompt) se resuelven desde la carpeta de este archivo.
+
+# Modelo base en Hugging Face y su revision exacta (commit), para que la corrida sea reproducible.
+modelo: google/gemma-4-E4B-it
+revision: 4ecc2ba63bcac23ba4a767fc87025b1450f84c9c
+
+# Mensaje de sistema del agente.
+prompt: prompt_corto.txt
+
+# Adaptador LoRA en Hugging Face (repo y revision). Vacios = modelo sin entrenar.
+adaptador_lora: ""
+adaptador_revision: ""
+# Rango maximo de LoRA que reserva vLLM (8, 16, 32, 64...). Tiene que ser >= al rango del adaptador.
+max_lora_rank: 64
+
+# Generacion: determinista (greedy) para que la corrida sea reproducible.
+generacion:
+  temperature: 0.0
+  max_tokens: 1024
+  seed: 0
+
+# Agente (admision/ejemplo.py): tope de respuestas del modelo por caso y de respuestas seguidas sin JSON.
+max_turnos: 16
+max_sin_json: 3
+
+# Argumentos de vllm.LLM, pensados para una A100 de 40 GB.
+# Un modelo de hasta 8.000 millones de parametros ocupa a lo sumo 16 GB en bf16 (limite del enunciado);
+# el resto de la memoria reservada queda para la cache KV de los casos en lote. Valores sin medir todavia.
+# language_model_only: no carga las torres de imagen y audio, que el agente no usa.
+vllm:
+  dtype: bfloat16
+  max_model_len: 16384
+  gpu_memory_utilization: 0.90
+  language_model_only: true
+  seed: 0
