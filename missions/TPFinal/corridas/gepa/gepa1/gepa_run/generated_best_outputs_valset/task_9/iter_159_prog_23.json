@@ -1,0 +1,22 @@
+{
+    "caso": "hist-H-1571",
+    "version": "original",
+    "resuelto": true,
+    "parcial": 1.0,
+    "decision": {
+        "registro": "provisorio",
+        "numero_documento": null,
+        "box_antes_del_registro": true,
+        "circuito": "codigo_acv",
+        "plazo_circuito_min": 5,
+        "cobertura": "sin_cobertura",
+        "entidad_a_notificar": null,
+        "fundamentos": [
+            "NOR-COB-03 \u00a71",
+            "NOR-ADM-01 \u00a73",
+            "NOR-TDE-02 \u00a71",
+            "NOR-TDE-04 \u00a71"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

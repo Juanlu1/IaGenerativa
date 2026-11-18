@@ -1,0 +1,68 @@
+{
+  "entorno": {
+    "k_entorno": 2,
+    "consultas": 60,
+    "recall_evidencia": 0.817,
+    "precision": 0.458,
+    "chunks_por_consulta": 2.0,
+    "tokens_por_consulta": 590,
+    "consultas_con_toda_la_evidencia": 49,
+    "recall_por_tipo": {
+      "coloquial": 1.0,
+      "directa": 1.0,
+      "distractora": 1.0,
+      "dos_secciones": 0.75,
+      "numerica": 0.25
+    }
+  },
+  "presupuesto": [
+    {
+      "presupuesto_tokens": 256,
+      "consultas": 60,
+      "recall_evidencia": 0.542,
+      "precision": 0.433,
+      "chunks_por_consulta": 1.47,
+      "tokens_por_consulta": 255,
+      "consultas_con_toda_la_evidencia": 31,
+      "recall_por_tipo": {
+        "coloquial": 0.5,
+        "directa": 0.9,
+        "distractora": 0.875,
+        "dos_secciones": 0.188,
+        "numerica": 0.0
+      }
+    },
+    {
+      "presupuesto_tokens": 512,
+      "consultas": 60,
+      "recall_evidencia": 0.675,
+      "precision": 0.339,
+      "chunks_por_consulta": 2.37,
+      "tokens_por_consulta": 510,
+      "consultas_con_toda_la_evidencia": 38,
+      "recall_por_tipo": {
+        "coloquial": 0.667,
+        "directa": 0.9,
+        "distractora": 1.0,
+        "dos_secciones": 0.438,
+        "numerica": 0.25
+      }
+    },
+    {
+      "presupuesto_tokens": 1024,
+      "consultas": 60,
+      "recall_evidencia": 0.817,
+      "precision": 0.243,
+      "chunks_por_consulta": 4.1,
+      "tokens_por_consulta": 1020,
+      "consultas_con_toda_la_evidencia": 49,
+      "recall_por_tipo": {
+        "coloquial": 1.0,
+        "directa": 1.0,
+        "distractora": 1.0,
+        "dos_secciones": 0.75,
+        "numerica": 0.25
+      }
+    }
+  ]
+}

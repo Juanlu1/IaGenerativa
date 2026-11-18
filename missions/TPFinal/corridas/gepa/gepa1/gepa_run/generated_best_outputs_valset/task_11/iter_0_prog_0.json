@@ -1,0 +1,20 @@
+{
+    "caso": "hist-H-0681",
+    "version": "c",
+    "resuelto": true,
+    "parcial": 1.0,
+    "decision": {
+        "registro": "provisorio",
+        "numero_documento": null,
+        "box_antes_del_registro": true,
+        "circuito": "ecg",
+        "plazo_circuito_min": 14,
+        "cobertura": "prepaga",
+        "entidad_a_notificar": "Prepaga Sierra",
+        "fundamentos": [
+            "NOR-TDE-01",
+            "NOR-TDE-04"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

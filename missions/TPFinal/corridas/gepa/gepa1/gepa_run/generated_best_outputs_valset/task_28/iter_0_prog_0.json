@@ -1,0 +1,19 @@
+{
+    "caso": "hist-H-0552",
+    "version": "b",
+    "resuelto": false,
+    "parcial": 0.889,
+    "decision": {
+        "registro": "provisorio",
+        "numero_documento": "29.647.214",
+        "box_antes_del_registro": true,
+        "circuito": "codigo_sepsis",
+        "plazo_circuito_min": 45,
+        "cobertura": "sin_cobertura",
+        "entidad_a_notificar": null,
+        "fundamentos": [
+            "NOR-TDE-03"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

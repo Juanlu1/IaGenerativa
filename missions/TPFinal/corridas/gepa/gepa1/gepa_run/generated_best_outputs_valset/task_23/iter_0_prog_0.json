@@ -1,0 +1,19 @@
+{
+    "caso": "hist-H-1024",
+    "version": "c",
+    "resuelto": false,
+    "parcial": 0.556,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": "27.798.293",
+        "box_antes_del_registro": false,
+        "circuito": "ninguno",
+        "plazo_circuito_min": null,
+        "cobertura": "sin_cobertura",
+        "entidad_a_notificar": null,
+        "fundamentos": [
+            "NOR-COB-03"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

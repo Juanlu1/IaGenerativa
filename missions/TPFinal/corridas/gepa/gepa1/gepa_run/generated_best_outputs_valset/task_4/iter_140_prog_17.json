@@ -1,0 +1,19 @@
+{
+    "caso": "hist-H-0758",
+    "version": "b",
+    "resuelto": true,
+    "parcial": 1.0,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": "33.089.515",
+        "box_antes_del_registro": true,
+        "circuito": "ninguno",
+        "plazo_circuito_min": null,
+        "cobertura": "art",
+        "entidad_a_notificar": "Andina ART",
+        "fundamentos": [
+            "NOR-COB-02 \u00a75"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

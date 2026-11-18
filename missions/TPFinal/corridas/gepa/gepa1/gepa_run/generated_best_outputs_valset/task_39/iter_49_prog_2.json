@@ -1,0 +1,19 @@
+{
+    "caso": "hist-H-0935",
+    "version": "original",
+    "resuelto": false,
+    "parcial": 0.889,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": "YGB896429",
+        "box_antes_del_registro": false,
+        "circuito": "ninguno",
+        "plazo_circuito_min": null,
+        "cobertura": "art",
+        "entidad_a_notificar": "Andina ART",
+        "fundamentos": [
+            "NOR-COB-02 \u00a75"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

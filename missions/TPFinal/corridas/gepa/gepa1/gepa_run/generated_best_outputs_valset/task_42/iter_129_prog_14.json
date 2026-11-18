@@ -1,0 +1,20 @@
+{
+    "caso": "hist-H-0293",
+    "version": "original",
+    "resuelto": true,
+    "parcial": 1.0,
+    "decision": {
+        "registro": "provisorio",
+        "numero_documento": null,
+        "box_antes_del_registro": true,
+        "circuito": "ecg",
+        "plazo_circuito_min": 10,
+        "cobertura": "sin_cobertura",
+        "entidad_a_notificar": null,
+        "fundamentos": [
+            "NOR-TDE-01",
+            "NOR-ADM-01"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

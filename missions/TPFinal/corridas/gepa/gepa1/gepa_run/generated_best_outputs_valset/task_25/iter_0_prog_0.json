@@ -1,0 +1,19 @@
+{
+    "caso": "hist-H-0722",
+    "version": "b",
+    "resuelto": true,
+    "parcial": 1.0,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": "43.020.172",
+        "box_antes_del_registro": false,
+        "circuito": "ninguno",
+        "plazo_circuito_min": null,
+        "cobertura": "sin_cobertura",
+        "entidad_a_notificar": null,
+        "fundamentos": [
+            "NOR-COB-03"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}
