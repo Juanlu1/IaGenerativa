@@ -12,7 +12,8 @@ Cada corrida:
   - sube cada punto de control a HF_REPO (repo privado de modelo): el
     adaptador en la raíz, para que vLLM lo cargue tal cual, y el estado del
     optimizador en `estado/`, para poder retomar. Cada subida es un commit con
-    su etiqueta `<corrida>-paso-<N>`; al terminar, `<corrida>-final` y `final`;
+    su etiqueta `<corrida>-paso-<N>`; al terminar, `<corrida>-final` y, si no se
+    cortó con --max-pasos, `final`;
   - verifica que el adaptador sea cargable por el soporte LoRA de vLLM.
 
 Uso (en GPU corre dentro de Modal, ver modal_entrenar.py y modal_entrenamiento.md):
@@ -446,9 +447,12 @@ def main() -> None:
     paso = trainer.state.global_step
     subida = armar_subida(final, salida / "subida", metadatos(paso) | {"final": True})
     revision = publicador.subir(subida, f"{corrida}-final", f"{corrida}: adaptador final (paso {paso})")
-    publicador.etiquetar(revision, cfg["hf"]["etiqueta_final"], mover=True)
+    # Solo una corrida completa mueve la etiqueta móvil: una prueba con --max-pasos no pisa el adaptador final.
+    etiqueta_movil = None if args.max_pasos and not args.prueba else cfg["hf"]["etiqueta_final"]
+    if etiqueta_movil:
+        publicador.etiquetar(revision, etiqueta_movil, mover=True)
     revisiones.append({"paso": paso, "revision": revision, "etiqueta": f"{corrida}-final",
-                       "etiqueta_movil": cfg["hf"]["etiqueta_final"]})
+                       "etiqueta_movil": etiqueta_movil})
     resumen = {"corrida": corrida, "pasos": paso, "segundos": round(duracion, 1),
                "train_loss": resultado.training_loss, "eval": metricas_eval, "revisiones": revisiones,
                "vllm": vllm, "wandb": run.url if run else None, "datos": datos_info, "semilla": semilla,
