@@ -1,6 +1,6 @@
 {
   "semilla": 20261117,
-  "prompt": "admision/ejemplo.py:mensaje_de_sistema()",
+  "prompt": "prompt_optimizado.txt",
   "busquedas": "buscador",
   "conversaciones": 3000,
   "conversaciones_por_origen": {
@@ -24,17 +24,17 @@
     "original": 200
   },
   "metodo_tokens": "estimacion: caracteres de los mensajes / 4, como admision.evaluar_rag",
-  "tokens_totales": 7992888,
-  "tokens_train": 7599855,
-  "tokens_val": 393033,
+  "tokens_totales": 8140628,
+  "tokens_train": 7740202,
+  "tokens_val": 400426,
   "tokens_por_conversacion": {
-    "medio": 2664.3,
-    "p50": 2699,
-    "p95": 3432,
-    "maximo": 3729,
+    "medio": 2713.5,
+    "p50": 2748,
+    "p95": 3481,
+    "maximo": 3779,
     "conversacion_mas_larga": "E-177"
   },
-  "tokens_mensaje_de_sistema": 558,
+  "tokens_mensaje_de_sistema": 607,
   "busquedas_rehechas": {
     "busquedas": 7316,
     "busquedas_mismas_secciones": 5478,
@@ -44,14 +44,14 @@
     "train": {
       "ruta": "datos/train.jsonl",
       "lineas": 2850,
-      "sha256": "16830998562d978367220e329a3595673287a0889dcf886c14ad89cd88bcd072",
-      "mb": 31.69
+      "sha256": "63139319143e32c98dd1ba4015a1ac78bacb9499eda1bf9efb38e95803650f65",
+      "mb": 32.24
     },
     "val": {
       "ruta": "datos/val.jsonl",
       "lineas": 150,
-      "sha256": "cda255c7fe628807ced3e97899cf839018b90cd210261492183dd055e2be88b9",
-      "mb": 1.64
+      "sha256": "5f606a520f3e85366afc05d19cd59eef608f792308713631934a38fc8f0a201b",
+      "mb": 1.67
     }
   },
   "limite_git_mb": 50,
