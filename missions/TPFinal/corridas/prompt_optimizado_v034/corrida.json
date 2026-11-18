@@ -1,0 +1,30 @@
+{
+  "etiqueta": "prompt_optimizado_v034",
+  "fecha": "2026-11-18T03:55:22Z",
+  "commit": "22acf20b3167b67b088ce1f60b45d85adbc97f24",
+  "config": "config_optimizado.yaml",
+  "prompt": "prompt_optimizado.txt",
+  "modelo": "google/gemma-4-E4B-it",
+  "revision": "4ecc2ba63bcac23ba4a767fc87025b1450f84c9c",
+  "adaptador_lora": null,
+  "adaptador_revision": null,
+  "casos": 50,
+  "construir_agente_segundos": 220.994,
+  "versiones": {
+    "original": {
+      "resueltos": 9,
+      "casos": 50,
+      "error": null
+    },
+    "b": {
+      "resueltos": 10,
+      "casos": 50,
+      "error": null
+    },
+    "c": {
+      "resueltos": 10,
+      "casos": 50,
+      "error": null
+    }
+  }
+}

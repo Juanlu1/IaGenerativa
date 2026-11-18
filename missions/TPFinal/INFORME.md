@@ -134,8 +134,9 @@ el contexto y el tiempo con el agente completo están en las Partes 3 y 4. El
 Todo se hizo con Gemma 4 E4B sin entrenar (`google/gemma-4-E4B-it`, revisión
 `4ecc2ba63bcac23ba4a767fc87025b1450f84c9c`), servido con vLLM 0.33.0 (transformers 5.20.2) en una A100 de 40 GB de
 Modal. Después, para entrenar y servir el adaptador con la misma pila, el repositorio pasó a vLLM 0.34.0
-(transformers 5.22.2, el mismo torch 2.14.0; ver Parte 4, Configuración). Los números de esta parte son los de
-vLLM 0.33.0 y no se volvieron a medir.
+(transformers 5.22.2, el mismo torch 2.14.0; ver Parte 4, Configuración). Las evaluaciones de esta parte son las de
+vLLM 0.33.0; la base y el prompt optimizado se repitieron con vLLM 0.34.0 al final de la sección (Repetición con
+vLLM 0.34.0).
 
 ### Qué se optimiza
 
@@ -339,6 +340,36 @@ argumentos y el formato JSON. Es 13 % más largo (693 tokens).
 - La mejora de 8 a 15 en validación no se sostuvo con la misma fuerza en la práctica: con 45 casos y 24 candidatos,
   parte de esa diferencia era azar.
 
+### Repetición con vLLM 0.34.0
+
+Las corridas `base` y `prompt_optimizado` se repitieron con la pila final (vLLM 0.34.0, transformers 5.22.2), con
+las mismas configuraciones (`config.yaml` y `config_optimizado.yaml`), desde el commit `22acf20`. Etiquetas
+`base_v034` y `prompt_optimizado_v034`; fuente: `corridas/tabla.md`.
+
+| Prompt | vLLM | original | b | c | Total |
+|---|---|---:|---:|---:|---:|
+| `prompt_base.txt` | 0.33.0 (`corridas/base/`) | 11 | 8 | 9 | 28 |
+| `prompt_base.txt` | 0.34.0 (`corridas/base_v034/`) | 12 | 5 | 8 | 25 |
+| `prompt_optimizado.txt` | 0.33.0 (`corridas/prompt_optimizado/`) | 8 | 10 | 10 | 28 |
+| `prompt_optimizado.txt` | 0.34.0 (`corridas/prompt_optimizado_v034/`) | 9 | 10 | 10 | 29 |
+
+Caso por caso (`resultados.jsonl` de cada versión):
+
+- **Base:** cambia la ficha registrada en 8, 8 y 9 de los 50 casos (original, b y c). En original gana un caso y no
+  pierde ninguno; en b pierde 3 y no gana ninguno; en c gana 1 y pierde 2. Sumando los 50 casos de b, aprueba 2
+  controles menos de `box_antes_del_registro`, 2 menos de verificación y 1 menos de `cobertura` y de
+  `entidad_a_notificar`.
+- **Prompt optimizado:** cambia la ficha en 6, 4 y 1 casos. Gana un caso en original y no cambia los resueltos en b
+  ni en c.
+- El contexto por caso, las búsquedas por caso y los segundos por caso quedan prácticamente iguales (por ejemplo, la
+  base: 1,30 búsquedas y unos 18.800 caracteres por caso en las tres versiones).
+
+Lectura: con generación greedy, el cambio de versión mueve algunas fichas, como ya pasaba con el lote en GPU entre
+corridas. El prompt optimizado resultó más estable (casi las mismas fichas y un caso más) que el base, que pierde 3
+casos en b. Con vLLM 0.34.0 el prompt optimizado queda por encima de la base en total (29 contra 25) y en b y c (10 y
+10 contra 5 y 8), y sigue por debajo en original (9 contra 12). Con 50 casos por versión, diferencias de 1 a 3 casos
+están dentro de lo que mueve el cambio de versión, así que estas comparaciones son indicios, no mediciones finas.
+
 ## Parte 4: Entrenamiento
 
 Los números que todavía no se midieron dicen **PENDIENTE**: se completan con
@@ -384,10 +415,11 @@ conjunto de datos los hace variar (ver abajo).
   defecto), y "solo entrenamiento" con el mensaje de sistema de
   `admision/ejemplo.py`, en `datos/sin_prompt/`. Solo cambia el mensaje de
   sistema; las conversaciones son las mismas. Se eligió
-  `prompt_optimizado.txt` para la variante principal porque en la Parte 3
-  empata en total con el prompt base (28 casos) pero gana en las normas b y c
-  (10 y 10 contra 8 y 9), que se parecen más al test, donde cambian los
-  números.
+  `prompt_optimizado.txt` para la variante principal porque en la Parte 3,
+  con vLLM 0.33.0, empata en total con el prompt base (28 casos) pero gana en
+  las normas b y c (10 y 10 contra 8 y 9), que se parecen más al test, donde
+  cambian los números. Repetido con vLLM 0.34.0 la ventaja se mantiene (29
+  contra 25 en total; 10 y 10 contra 5 y 8 en b y c).
 
 ### Conjunto de datos
 
@@ -557,17 +589,18 @@ uv run modal run --detach modal_entrenar.py --corrida sft-ejemplo-v1 \
 Casos resueltos de los 50 de práctica, con las normas completas. La evaluación
 corre `admision.correr practica` con `entrega.py` (sección 4 del
 [`README.md`](README.md)); cada celda debe citar el punto de control y el
-prompt que la producen. Las dos filas sin entrenar son las corridas de la
-Parte 3 (`corridas/base/` y `corridas/prompt_optimizado/`, en
-`corridas/tabla.md`), medidas con vLLM 0.33.0; `prompt_base.txt` es el
+prompt que la producen. Las dos filas sin entrenar son las corridas
+`corridas/base_v034/` y `corridas/prompt_optimizado_v034/` (en
+`corridas/tabla.md`), con vLLM 0.34.0, la misma pila con la que se evalúan los
+adaptadores; las de vLLM 0.33.0 están en la Parte 3. `prompt_base.txt` es el
 mensaje de sistema de `admision/ejemplo.py` tal cual.
 
 | Variante | Punto de control | Prompt | original | b | c |
 |---|---|---|---:|---:|---:|
 | Referencia de la cátedra, sin entrenar | - | `admision/ejemplo.py` | 12 | 15 | 12 |
 | Referencia de la cátedra, SFT con las 800 trazas | - | `admision/ejemplo.py` | 25 | 24 | 25 |
-| Sin entrenar | modelo base | `admision/ejemplo.py` (`prompt_base.txt`) | 11 | 8 | 9 |
-| Solo prompt | modelo base | `prompt_optimizado.txt` | 8 | 10 | 10 |
+| Sin entrenar | modelo base | `admision/ejemplo.py` (`prompt_base.txt`) | 12 | 5 | 8 |
+| Solo prompt | modelo base | `prompt_optimizado.txt` | 9 | 10 | 10 |
 | Solo entrenamiento | PENDIENTE (`sft-ejemplo-v1-final`) | `admision/ejemplo.py` | PENDIENTE | PENDIENTE | PENDIENTE |
 | Prompt + entrenamiento | PENDIENTE (`sft-prompt-v1-final`) | `prompt_optimizado.txt` | PENDIENTE | PENDIENTE | PENDIENTE |
 

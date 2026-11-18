@@ -1,0 +1,19 @@
+# Candidato 9 de corridas/gepa/gepa1 (el de más casos resueltos en validación); ver INFORME.md, Parte 3. Solo cambia el prompt.
+modelo: google/gemma-4-E4B-it
+revision: 4ecc2ba63bcac23ba4a767fc87025b1450f84c9c
+prompt: prompt_optimizado.txt
+adaptador_lora: ''
+adaptador_revision: ''
+max_lora_rank: 32
+generacion:
+  temperature: 0.0
+  max_tokens: 1024
+  seed: 0
+max_turnos: 16
+max_sin_json: 3
+vllm:
+  dtype: bfloat16
+  max_model_len: 16384
+  gpu_memory_utilization: 0.9
+  language_model_only: true
+  seed: 0
