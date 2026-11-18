@@ -1,0 +1,30 @@
+{
+  "etiqueta": "base",
+  "fecha": "2026-11-18T00:42:11Z",
+  "commit": "d222a92aff2d10e0cd40371a233f2812848bd2a4",
+  "config": "config.yaml",
+  "prompt": "prompt_base.txt",
+  "modelo": "google/gemma-4-E4B-it",
+  "revision": "4ecc2ba63bcac23ba4a767fc87025b1450f84c9c",
+  "adaptador_lora": null,
+  "adaptador_revision": null,
+  "casos": 50,
+  "construir_agente_segundos": 230.845,
+  "versiones": {
+    "original": {
+      "resueltos": 11,
+      "casos": 50,
+      "error": null
+    },
+    "b": {
+      "resueltos": 8,
+      "casos": 50,
+      "error": null
+    },
+    "c": {
+      "resueltos": 9,
+      "casos": 50,
+      "error": null
+    }
+  }
+}
