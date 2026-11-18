@@ -36,10 +36,15 @@ uv run modal secret list
 
 ## 2. Prueba sin GPU
 
+Todas las corridas se lanzan igual: `modal run --detach` (la corrida sigue en Modal aunque se corte la Mac) adentro de
+`nohup ... &` con un log local en `corridas/` (la terminal queda libre y la salida queda guardada). `tail -f` sigue el
+log; `Ctrl+C` corta el `tail`, no la corrida.
+
 Prueba la imagen, los Volumes y la bajada de resultados con el modelo falso, en un contenedor sin GPU:
 
 ```bash
-uv run modal run --detach modal_app.py::evaluar --etiqueta prueba_falso --cantidad 3 --falso
+nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prueba_falso --cantidad 3 --falso > corridas/prueba_falso.log 2>&1 &
+tail -f corridas/prueba_falso.log
 ```
 
 La primera vez arma la imagen (instala vLLM y torch), así que tarda varios minutos. Sus números no significan nada:
@@ -48,7 +53,8 @@ el modelo falso registra siempre la misma ficha.
 ## 3. Prueba chica: 3 casos en la A100
 
 ```bash
-uv run modal run --detach modal_app.py::evaluar --etiqueta prueba_base --cantidad 3
+nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prueba_base --cantidad 3 > corridas/prueba_base.log 2>&1 &
+tail -f corridas/prueba_base.log
 ```
 
 La primera vez baja Gemma al Volume `tp-hf-cache`; las siguientes ya lo encuentran ahí.
@@ -56,10 +62,9 @@ La primera vez baja Gemma al Volume `tp-hf-cache`; las siguientes ya lo encuentr
 ## 4. Corrida completa: 50 casos
 
 ```bash
-uv run modal run --detach modal_app.py::evaluar --etiqueta base
+nohup uv run modal run --detach modal_app.py::evaluar --etiqueta base > corridas/base.log 2>&1 &
+tail -f corridas/base.log
 ```
-
-Con `--detach` la corrida sigue en Modal aunque se cierre la terminal o se apague la Mac.
 
 ## 5. Otras variantes
 
@@ -67,7 +72,7 @@ Para evaluar el prompt optimizado o un adaptador entrenado, se crea un yaml en e
 `adaptador_lora` y `adaptador_revision`), se commitea y se pasa con `--config`, con otra etiqueta:
 
 ```bash
-uv run modal run --detach modal_app.py::evaluar --etiqueta prompt_optimizado --config config_optimizado.yaml
+nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prompt_optimizado --config config_optimizado.yaml > corridas/prompt_optimizado.log 2>&1 &
 ```
 
 Sin `--config` se usa la variable `CONFIG` de la Mac, y si no está, `config.yaml`. El yaml tiene que estar en esta
@@ -114,22 +119,71 @@ referencia de la cátedra.
 Las pruebas (`prueba_falso`, `prueba_base`) no son resultados para el informe: no se bajan, o se borran después de
 revisarlas.
 
-## 8. Optimización de prompt (GEPA)
+## 8. Parte 3: optimización de prompt (GEPA)
 
 `gepa` corre `optimizar_prompt.py` en la A100 con la misma imagen, el mismo secret y los mismos Volumes. Le pasa
-`--salida /vol/corridas/gepa/<etiqueta>` y lo que vaya en `--args`, con la configuración en la variable `CONFIG`:
+`--salida /vol/corridas/gepa/<etiqueta> --sin-copiar-a-raiz` y lo que vaya en `--args`, con la configuración de
+`--config` en la variable `CONFIG` (de ahí sale el prompt de partida). Qué hace y con qué casos: ver
+`informe_parte3.md`.
+
+Prueba chica (presupuesto `prueba`: 6 casos de optimización, 6 de validación, unos minutos):
 
 ```bash
-uv run modal run --detach modal_app.py::gepa --etiqueta gepa1 --args "<argumentos de optimizar_prompt.py>"
+nohup uv run modal run --detach modal_app.py::gepa --etiqueta gepa_prueba --args="--presupuesto prueba" > corridas/gepa_prueba.log 2>&1 &
+tail -f corridas/gepa_prueba.log
 ```
 
-Los logs se ven igual que en la sección 6, y la salida queda también en `/corridas/gepa/<etiqueta>/modal.log`. Para
-bajarla:
+Corrida real (presupuesto `completo`: 90 casos de optimización, 45 de validación, tope de 90 minutos):
+
+```bash
+nohup uv run modal run --detach modal_app.py::gepa --etiqueta gepa1 > corridas/gepa1.log 2>&1 &
+tail -f corridas/gepa1.log
+```
+
+Otros argumentos de `optimizar_prompt.py` van en `--args`, por ejemplo
+`--args="--penalizacion 0.05 --semilla 1"`. Para partir del prompt corto: `--config config_corto.yaml`. El modelo de
+reflexión es la misma Gemma, porque el secret `tp-secrets` no tiene claves de modelos pagos.
+
+Al terminar, se baja la salida y se copian el prompt y la configuración optimizados a esta carpeta:
 
 ```bash
 mkdir -p corridas/gepa
 uv run modal volume get --force tp-corridas /corridas/gepa/gepa1 corridas/gepa
+cp corridas/gepa/gepa1/prompt_optimizado.txt corridas/gepa/gepa1/config_optimizado.yaml .
 ```
+
+`corridas/gepa/gepa1/` queda con `log.jsonl` (cada candidato con su texto, su largo en tokens y su puntaje en
+validación), `resumen.json` (casos, semilla, presupuesto, modelo de reflexión, prompt inicial y mejor),
+`modal.log` y `gepa_run/` (estado interno de GEPA).
+
+### Evaluar el prompt corto y el optimizado
+
+Con los 50 casos de práctica y las normas original, b y c, igual que la base (sección 5):
+
+```bash
+nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prompt_corto --config config_corto.yaml > corridas/prompt_corto.log 2>&1 &
+nohup uv run modal run --detach modal_app.py::evaluar --etiqueta prompt_optimizado --config config_optimizado.yaml > corridas/prompt_optimizado.log 2>&1 &
+```
+
+`config_optimizado.yaml` y `prompt_optimizado.txt` tienen que estar commiteados antes de lanzar, para que
+`corrida.json` registre un commit limpio. Después se bajan como en la sección 7 y `uv run python tabla.py` los pone al
+lado de la base.
+
+`evaluar_todo.sh` hace lo mismo en la máquina local con `CONFIG`; en la Mac solo sirve con el modelo falso:
+
+```bash
+CONFIG=config_corto.yaml MODELO_FALSO=1 ./evaluar_todo.sh prueba_corto 3
+CONFIG=config_optimizado.yaml MODELO_FALSO=1 ./evaluar_todo.sh prueba_optimizado 3
+```
+
+### Probar en la Mac sin GPU
+
+```bash
+MODELO_FALSO=1 uv run python optimizar_prompt.py --presupuesto prueba --salida corridas/gepa/prueba_mac --sin-copiar-a-raiz
+```
+
+Con el modelo falso la Gemma no corre: el agente sigue un guion fijo y la reflexión saca el último párrafo del
+prompt. Sirve para probar el circuito; sus números no significan nada.
 
 ## 9. Guardar los resultados
 
