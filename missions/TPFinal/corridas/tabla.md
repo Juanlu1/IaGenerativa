@@ -13,6 +13,7 @@ Generado por `uv run python tabla.py` a partir de `corridas/<etiqueta>/<version>
 | prompt_corto | 6/50 | 5/50 | 3/50 |
 | prompt_optimizado | 8/50 | 10/50 | 10/50 |
 | prompt_optimizado_v034 | 9/50 | 10/50 | 10/50 |
+| sft_prompt | 26/50 | 25/50 | 28/50 |
 
 ## Detalle por corrida
 
@@ -37,3 +38,6 @@ Generado por `uv run python tabla.py` a partir de `corridas/<etiqueta>/<version>
 | prompt_optimizado_v034 | original | 9/50 | 0,813 | 0 | 1,84 | 0,344 | 25.048 | 221,0 |  |
 | prompt_optimizado_v034 | b | 10/50 | 0,798 | 0 | 1,88 | 0,285 | 25.291 | 221,0 |  |
 | prompt_optimizado_v034 | c | 10/50 | 0,805 | 0 | 1,90 | 0,284 | 25.882 | 221,0 |  |
+| sft_prompt | original | 26/50 | 0,942 | 0 | 2,94 | 0,465 | 44.046 | 291,6 |  |
+| sft_prompt | b | 25/50 | 0,936 | 0 | 2,94 | 0,495 | 44.423 | 291,6 |  |
+| sft_prompt | c | 28/50 | 0,945 | 0 | 2,96 | 0,450 | 44.320 | 291,6 |  |
