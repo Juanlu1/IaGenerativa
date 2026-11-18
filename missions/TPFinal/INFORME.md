@@ -160,6 +160,13 @@ medida para la penalización por largo; si no puede cargar el tokenizer, usa car
 | `prompt_corto.txt` | 467 | 1.634 |
 | `prompt_optimizado.txt` | 693 | 2.429 |
 
+Los 615 y 693 tokens quedan en `corridas/gepa/gepa1/log.jsonl` (candidatos 0 y 9). Los 467 de `prompt_corto.txt` no
+quedaron en ningún archivo de corrida; se recalcularon (y dan 615, 467 y 693) con:
+
+```bash
+uv run python -c "from transformers import AutoTokenizer as T; t=T.from_pretrained('google/gemma-4-E4B-it', revision='4ecc2ba63bcac23ba4a767fc87025b1450f84c9c'); [print(f, len(t.encode(open(f).read(), add_special_tokens=False))) for f in ('prompt_base.txt','prompt_corto.txt','prompt_optimizado.txt')]"
+```
+
 ### Prompt corto, a mano
 
 `prompt_corto.txt` es `prompt_base.txt` acortado a mano sin sacar ninguna regla: las cinco herramientas con todos sus
@@ -234,8 +241,13 @@ Controles:
 3. **Consistencia con el operador:** con las normas originales, la ficha calculada tiene que ser igual a la que
    registró el operador, y su verificación tiene que aprobar el control calculado. Si no, la fila se descarta.
 
-Pasan las 1.590 filas correctas, sin descartes (`uv run python casos_optimizacion.py`). Por circuito: 509 sepsis,
-494 sin circuito, 340 ECG y 247 ACV; por cobertura: 756 sin cobertura, 311 prepaga, 306 ART y 217 obra social.
+En el commit desde el que se lanzó `gepa1` (`44c8299`, con la clasificación de la primera pasada) pasan las 1.590
+filas correctas, sin descartes (`uv run python casos_optimizacion.py`; `"disponibles": 1590` en
+`corridas/gepa/gepa1/resumen.json`). Por circuito: 509 sepsis, 494 sin circuito, 340 ECG y 247 ACV; por cobertura:
+756 sin cobertura, 311 prepaga, 306 ART y 217 obra social (verificado volviendo a correr el script en ese commit).
+Con la clasificación actual (corte del voluntariado en 75 años, Parte 1) el mismo comando da 1.600 casos: 511 sepsis,
+499 sin circuito, 342 ECG y 248 ACV; 761 sin cobertura, 311 prepaga, 310 ART y 218 obra social. GEPA no se volvió a
+correr con esos 10 casos de más.
 
 Límite: el control 3 no es independiente de la Parte 1. Una fila es `correcta` justamente porque cumple las normas y
 las costumbres, así que el etiquetador y la clasificación comparten la misma lectura de las normas. El control
@@ -279,6 +291,13 @@ uv run python tabla.py
 Cada evaluación deja en `corridas/<etiqueta>/` el commit, la configuración y el prompt usados (`corrida.json`) y las
 conversaciones completas, con cada mensaje que entró al modelo y cada uno que salió (`<version>/trazas.jsonl`).
 
+**Para repetir `base` hoy hay que pasar `--config config_base.yaml`.** Cuando se corrió, `config.yaml` todavía era
+el modelo sin entrenar con `prompt_base.txt`; desde `c23fbcc` es la entrega final (con el adaptador), y
+`config_base.yaml` quedó con el contenido anterior (idéntico, sin contar comentarios, al de `22acf20`; en `d222a92`
+solo cambiaba `max_lora_rank`, 64, que `entrega.py` usa únicamente si hay adaptador). `corrida.json` registra
+`"adaptador_lora": null`, así que la corrida guardada es la del modelo sin entrenar. Lo mismo vale para `base_v034`
+(Repetición con vLLM 0.34.0).
+
 ### Resultados
 
 Casos resueltos sobre los 50 de práctica, con el modelo sin entrenar. Fuente: `corridas/tabla.md`.
@@ -290,13 +309,26 @@ Casos resueltos sobre los 50 de práctica, con el modelo sin entrenar. Fuente: `
 | `prompt_corto.txt` | 467 | 6 | 5 | 3 | `corridas/prompt_corto/` |
 | `prompt_optimizado.txt` | 693 | 8 | 10 | 10 | `corridas/prompt_optimizado/` |
 
+De dónde sale cada fila. Todas usan `google/gemma-4-E4B-it` en la revisión `4ecc2ba63bcac23ba4a767fc87025b1450f84c9c`
+sin adaptador (no hay punto de control propio en esta parte), vLLM 0.33.0 y los 50 casos de `practica/casos.jsonl`.
+Ni la evaluación ni GEPA registran en W&B (solo `entrenar.py` lo hace), así que estas filas no tienen corrida de W&B:
+la auditoría está en las trazas y en `corrida.json`.
+
+| Fila | Comando (`modal_app.py::evaluar`, sección 5 de `MODAL.md`) | Prompt | Commit evaluado | Archivos |
+|---|---|---|---|---|
+| `prompt_base.txt` | `--etiqueta base` (hoy: `--config config_base.yaml`, ver arriba) | `prompt_base.txt` | `d222a92` | `corridas/base/corrida.json`, `<version>/resumen.json`, `resultados.jsonl`, `trazas.jsonl` |
+| `prompt_corto.txt` | `--etiqueta prompt_corto --config config_corto.yaml` | `prompt_corto.txt` | `87ea664` | `corridas/prompt_corto/` (los mismos archivos) |
+| `prompt_optimizado.txt` | `--etiqueta prompt_optimizado --config config_optimizado.yaml` | `prompt_optimizado.txt` | `87ea664` | `corridas/prompt_optimizado/` (los mismos archivos) |
+
 La línea de base (`corridas/base/`, commit `d222a92`, 50 casos, búsquedas 1,3 por caso) queda por debajo de la
 referencia de la cátedra en las tres versiones, sobre todo en b (8 contra 15). Los controles que más fallan son
 `box_antes_del_registro` (60 a 62 % de aciertos), `registro` (68 a 74 %), `aviso_al_voluntariado` (72 %), `cobertura`
 (72 a 76 %) y la verificación (72 a 78 %); `numero_documento` y `circuito` casi no fallan. La generación es greedy, pero
 el lote en GPU puede mover algún caso entre corridas (ver Auditabilidad en `mission.md`).
 
-Optimización con GEPA (`corridas/gepa/gepa1/resumen.json` y `log.jsonl`):
+Optimización con GEPA (`corridas/gepa/gepa1/resumen.json` y `log.jsonl`; comando:
+`uv run modal run --detach modal_app.py::gepa --etiqueta gepa1`, commit `44c8299`, prompt inicial `prompt_base.txt`,
+sin W&B):
 
 | | Tokens | Puntaje | Controles aprobados medios (validación) | Resueltos (validación, de 45) |
 |---|---:|---:|---:|---:|
@@ -327,8 +359,9 @@ argumentos y el formato JSON. Es 13 % más largo (693 tokens).
 - **El prompt corto empeora en las tres versiones** (6, 5 y 3 contra 11, 8 y 9). Casi toda la caída está en
   `box_antes_del_registro`, que baja de 60 a 62 % de aciertos a 36 a 42 %, y en `plazo_circuito_min` (de 90 a 92 %
   a 78 a 80 %). Al sacar la redacción larga de los argumentos se perdió contexto que la Gemma sin entrenar usaba para
-  esos campos, aunque las reglas sigan escritas. Ahorra 148 tokens de prompt y unos 3.700 caracteres de contexto por
-  caso, que no compensan.
+  esos campos, aunque las reglas sigan escritas. Ahorra 148 tokens de prompt y entre 3.600 y 4.300 caracteres de
+  contexto por caso (3.623, 4.309 y 3.907 en original, b y c; `caracteres_de_contexto_por_caso` de cada
+  `resumen.json`), que no compensan.
 - **El prompt optimizado mejora en las normas b y c** (10 y 10 contra 8 y 9) y queda por debajo en las originales (8
   contra 11): 28 casos resueltos en total, igual que la base. Busca más en las normas (1,9 búsquedas por caso contra
   1,3), lo que sube `registro` (72 a 84 % contra 68 a 74 %), `circuito` (100 %) y `plazo_circuito_min`; con las
@@ -369,6 +402,29 @@ corridas. El prompt optimizado resultó más estable (casi las mismas fichas y u
 casos en b. Con vLLM 0.34.0 el prompt optimizado queda por encima de la base en total (29 contra 25) y en b y c (10 y
 10 contra 5 y 8), y sigue por debajo en original (9 contra 12). Con 50 casos por versión, diferencias de 1 a 3 casos
 están dentro de lo que mueve el cambio de versión, así que estas comparaciones son indicios, no mediciones finas.
+
+Comandos: `modal_app.py::evaluar --etiqueta base_v034 --config config_base.yaml` y
+`--etiqueta prompt_optimizado_v034 --config config_optimizado.yaml` (en `22acf20` `config.yaml` todavía era la base,
+ver Comandos). Sin adaptador, misma revisión del modelo, sin W&B; archivos en `corridas/base_v034/` y
+`corridas/prompt_optimizado_v034/`.
+
+### Lo que no funcionó en la Parte 3
+
+Todo sale de `corridas/` y de `git log`:
+
+1. **La prueba chica de GEPA en Modal no arrancó.** `casos_optimizacion.py` lee `historial/`, que la imagen de Modal
+   no subía: `FileNotFoundError`. Se arregló en `44c8299` (subir `historial/`, 18 MB) y desde ese commit se lanzó
+   `gepa1`. La salida de esa prueba no se bajó al repositorio (no hay `corridas/gepa/gepa_prueba/`).
+2. **GEPA no mejoró su propia métrica.** Los 23 candidatos que propuso quedaron por debajo del inicial en puntaje
+   (0,7156 a 0,8307 contra 0,8348), así que su salida fue `prompt_base.txt` sin cambios. La reflexión la hizo la
+   misma Gemma sin entrenar; no se probó con un modelo de reflexión más grande. En casos resueltos de
+   validación, en cambio, 7 de los 23 superaron al inicial (15, 12, 11, 11, 11, 10 y 10 contra 8), y de ahí sale el
+   candidato 9.
+3. **La mejora del candidato 9 en validación no se sostuvo en la práctica.** De 8 a 15 casos en validación pasó a
+   28 casos contra 28 de la base en la práctica (vLLM 0.33.0), con una caída en las normas originales (8 contra 11).
+4. **El prompt corto empeoró** en las tres versiones (6, 5 y 3 contra 11, 8 y 9): ver Lectura de los resultados.
+5. **La base perdió 3 casos en b al pasar a vLLM 0.34.0** (de 8 a 5) sin cambiar ni el prompt ni el modelo: ver
+   Repetición con vLLM 0.34.0.
 
 ## Parte 4: Entrenamiento
 
