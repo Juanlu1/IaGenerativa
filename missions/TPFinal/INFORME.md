@@ -497,7 +497,7 @@ se le parece.
 
 | Parámetro | Valor | Por qué |
 |---|---|---|
-| Modelo | `google/gemma-4-E4B-it`, bf16, SDPA | el del enunciado; ~16 GB en bf16 |
+| Modelo | `google/gemma-4-E4B-it`, bf16, SDPA (eager en la torre de audio) | el del enunciado; ~16 GB en bf16 |
 | LoRA | r = 32, alpha = 32, dropout 0,05 | rank aceptado por vLLM; ~1% de parámetros |
 | Módulos | q/k/v/o_proj, gate/up/down_proj del modelo de lenguaje | lo que carga vLLM |
 | Épocas | 3 | ~530 pasos; a confirmar con la prueba chica |
@@ -588,3 +588,10 @@ de cada corrida, de `corridas/<corrida>/resumen.json`: **PENDIENTE**.
    `train_sampling_strategy="group_by_length"`.
 4. **Etiqueta final.** Al planear la prueba chica en GPU se vio que movería la
    etiqueta `final` de HF; ahora solo la mueven las corridas completas.
+5. **Atención de la torre de audio.** La primera prueba chica en la A100
+   (`prueba-gpu-01`) no llegó a entrenar: con `attn_implementation: sdpa`,
+   transformers 5.22.2 no puede armar `Gemma4AudioModel`, que no admite SDPA.
+   La prueba de la Mac no lo había visto porque fuerza `eager` y el modelo
+   diminuto no tiene torre de audio. Ahora `entrenar.yaml` pide SDPA para el
+   modelo de lenguaje y la visión y eager para el audio; se comprobó armando
+   Gemma 4 E4B con su configuración real en el dispositivo `meta`.

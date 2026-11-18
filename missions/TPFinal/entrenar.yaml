@@ -16,8 +16,15 @@ modelo:
   # desbordamiento de fp16.
   dtype: bfloat16
   # SDPA de PyTorch: Gemma 4 no usa softcapping en la atención (solo en los
-  # logits finales), así que no hace falta la implementación eager.
-  attn_implementation: sdpa
+  # logits finales), así que no hace falta la implementación eager. Va por
+  # sub-config porque en transformers 5.22.2 la torre de audio
+  # (Gemma4AudioModel) no admite SDPA y con "sdpa" a secas el modelo no carga;
+  # el audio queda en eager (no se usa ni lleva LoRA).
+  attn_implementation:
+    "": sdpa
+    text_config: sdpa
+    vision_config: sdpa
+    audio_config: eager
 
 datos:
   # Salida de armar_dataset.py. El sha256 de cada archivo queda en W&B y en el
