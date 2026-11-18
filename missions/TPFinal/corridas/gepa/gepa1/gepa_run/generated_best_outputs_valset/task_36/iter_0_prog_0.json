@@ -1,0 +1,20 @@
+{
+    "caso": "hist-H-1704",
+    "version": "original",
+    "resuelto": false,
+    "parcial": 0.778,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": "32.863.182",
+        "box_antes_del_registro": true,
+        "circuito": "ninguno",
+        "plazo_circuito_min": null,
+        "cobertura": "art",
+        "entidad_a_notificar": "Riesgos del Sur ART",
+        "fundamentos": [
+            "NOR-COB-02",
+            "NOR-COB-01"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

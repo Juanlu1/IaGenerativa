@@ -1,0 +1,19 @@
+{
+    "caso": "hist-H-1766",
+    "version": "b",
+    "resuelto": true,
+    "parcial": 1.0,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": "30.051.494",
+        "box_antes_del_registro": true,
+        "circuito": "codigo_sepsis",
+        "plazo_circuito_min": 30,
+        "cobertura": "prepaga",
+        "entidad_a_notificar": "Prepaga Litoral",
+        "fundamentos": [
+            "NOR-TDE-03"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

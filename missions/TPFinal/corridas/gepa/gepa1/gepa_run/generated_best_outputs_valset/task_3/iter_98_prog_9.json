@@ -1,0 +1,21 @@
+{
+    "caso": "hist-H-0637",
+    "version": "original",
+    "resuelto": true,
+    "parcial": 1.0,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": "30.716.124",
+        "box_antes_del_registro": false,
+        "circuito": "ninguno",
+        "plazo_circuito_min": null,
+        "cobertura": "art",
+        "entidad_a_notificar": "Andina ART",
+        "fundamentos": [
+            "NOR-COB-01 \u00a75",
+            "NOR-COB-02 \u00a75",
+            "NOR-TDE-04 \u00a72"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

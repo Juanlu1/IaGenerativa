@@ -1,0 +1,21 @@
+{
+    "caso": "hist-H-1807",
+    "version": "c",
+    "resuelto": false,
+    "parcial": 0.889,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": "45.322.077",
+        "box_antes_del_registro": true,
+        "circuito": "ninguno",
+        "plazo_circuito_min": null,
+        "cobertura": "art",
+        "entidad_a_notificar": "Pampa Laboral ART",
+        "fundamentos": [
+            "NOR-ADM-01",
+            "NOR-COB-01",
+            "NOR-COB-02"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "caso": "hist-H-1694",
+    "version": "b",
+    "resuelto": false,
+    "parcial": 0.889,
+    "decision": {
+        "registro": "provisorio",
+        "numero_documento": "32.334.289",
+        "box_antes_del_registro": true,
+        "circuito": "ninguno",
+        "plazo_circuito_min": null,
+        "cobertura": "art",
+        "entidad_a_notificar": "Pampa Laboral ART",
+        "fundamentos": [
+            "NOR-COB-02"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

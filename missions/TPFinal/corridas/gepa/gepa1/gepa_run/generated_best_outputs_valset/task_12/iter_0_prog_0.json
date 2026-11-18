@@ -1,0 +1,21 @@
+{
+    "caso": "hist-H-1242",
+    "version": "original",
+    "resuelto": false,
+    "parcial": 0.889,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": "10.577.741",
+        "box_antes_del_registro": true,
+        "circuito": "ecg",
+        "plazo_circuito_min": 10,
+        "cobertura": "art",
+        "entidad_a_notificar": "Pampa Laboral ART",
+        "fundamentos": [
+            "NOR-ADM-01",
+            "NOR-COB-01",
+            "NOR-TDE-01"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

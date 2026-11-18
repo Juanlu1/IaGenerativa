@@ -1,0 +1,20 @@
+{
+    "caso": "hist-H-1516",
+    "version": "original",
+    "resuelto": true,
+    "parcial": 1.0,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": "12.776.476",
+        "box_antes_del_registro": true,
+        "circuito": "codigo_sepsis",
+        "plazo_circuito_min": 60,
+        "cobertura": "obra_social",
+        "entidad_a_notificar": "Obra Social Tilcara",
+        "fundamentos": [
+            "NOR-TDE-03",
+            "NOR-COB-02"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

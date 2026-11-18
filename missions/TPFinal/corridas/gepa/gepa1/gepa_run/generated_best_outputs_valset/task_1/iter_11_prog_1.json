@@ -1,0 +1,21 @@
+{
+    "caso": "hist-H-0829",
+    "version": "b",
+    "resuelto": false,
+    "parcial": 0.889,
+    "decision": {
+        "registro": "provisorio",
+        "numero_documento": "UDM210217",
+        "box_antes_del_registro": false,
+        "circuito": "ecg",
+        "plazo_circuito_min": 15,
+        "cobertura": "sin_cobertura",
+        "entidad_a_notificar": null,
+        "fundamentos": [
+            "NOR-COB-03 \u00a71",
+            "NOR-TDE-01 \u00a71",
+            "NOR-TDE-04 \u00a72"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

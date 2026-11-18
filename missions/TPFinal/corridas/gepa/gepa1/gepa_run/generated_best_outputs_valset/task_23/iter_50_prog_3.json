@@ -1,0 +1,21 @@
+{
+    "caso": "hist-H-1024",
+    "version": "c",
+    "resuelto": false,
+    "parcial": 0.889,
+    "decision": {
+        "registro": "provisorio",
+        "numero_documento": "27.798.293",
+        "box_antes_del_registro": true,
+        "circuito": "ecg",
+        "plazo_circuito_min": 20,
+        "cobertura": "sin_cobertura",
+        "entidad_a_notificar": null,
+        "fundamentos": [
+            "NOR-TDE-01 \u00a71",
+            "NOR-COB-03 \u00a71",
+            "NOR-COB-03 \u00a74"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

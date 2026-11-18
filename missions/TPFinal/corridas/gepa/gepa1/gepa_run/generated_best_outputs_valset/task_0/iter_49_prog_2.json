@@ -1,0 +1,19 @@
+{
+    "caso": "hist-H-1531",
+    "version": "original",
+    "resuelto": false,
+    "parcial": 0.889,
+    "decision": {
+        "registro": "definitivo",
+        "numero_documento": null,
+        "box_antes_del_registro": true,
+        "circuito": "ninguno",
+        "plazo_circuito_min": null,
+        "cobertura": "obra_social",
+        "entidad_a_notificar": "Obra Social Bermejo",
+        "fundamentos": [
+            "NOR-COB-02"
+        ],
+        "aviso_al_voluntariado": false
+    }
+}

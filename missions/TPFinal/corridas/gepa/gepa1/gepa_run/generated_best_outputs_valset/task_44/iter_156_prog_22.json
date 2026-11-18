@@ -1,0 +1,20 @@
+{
+    "caso": "hist-H-1511",
+    "version": "c",
+    "resuelto": true,
+    "parcial": 1.0,
+    "decision": {
+        "registro": "provisorio",
+        "numero_documento": null,
+        "box_antes_del_registro": true,
+        "circuito": "ninguno",
+        "plazo_circuito_min": null,
+        "cobertura": "sin_cobertura",
+        "entidad_a_notificar": null,
+        "fundamentos": [
+            "NOR-COB-03 \u00a71",
+            "NOR-COB-03 \u00a73"
+        ],
+        "aviso_al_voluntariado": true
+    }
+}
