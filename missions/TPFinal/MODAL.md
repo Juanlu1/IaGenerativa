@@ -255,18 +255,28 @@ Sube a `HF_REPO` las etiquetas `prueba-gpu-01-paso-20` y `prueba-gpu-01-final` y
 mueve la etiqueta `final`. Al terminar, `corridas/prueba-gpu-01/resumen.json` trae `segundos`, `pasos` y
 `vram_max_gb`. Una época son unos 178 pasos (2.850 conversaciones, 16 por paso): si
 `178 x epocas x segundos por paso` se va de 2 a 3 horas, ajustar `epocas` en `entrenar.yaml` y commitear el cambio
-antes de lanzar la corrida completa. Con `prueba-gpu-02` (27,5 s por paso) quedó en 1,75 épocas, unos 312 pasos.
+antes de lanzar la corrida completa. Con `prueba-gpu-02` (26,3 s por paso entre los pasos 10 y 20, según su historial de W&B) quedó en 1,75
+épocas, unos 312 pasos.
 
 ## 11. Parte 4: entrenamiento completo
 
-```bash
-# Prompt optimizado + entrenamiento (datos/, el default de entrenar.yaml).
-nohup caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1 > corridas/sft-prompt-v1.log 2>&1 &
+Las corridas que valen, las de los puntos de control de `config.yaml` y `config_sft_base.yaml`:
 
-# Solo entrenamiento (prompt de admision/ejemplo.py).
-nohup caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-ejemplo-v1 \
-    --datos datos/sin_prompt/train.jsonl --val datos/sin_prompt/val.jsonl > corridas/sft-ejemplo-v1.log 2>&1 &
+```bash
+# Prompt optimizado + entrenamiento (datos/, el default de entrenar.yaml). Se lanzó como sft-prompt-v1, se cortó
+# después del paso 100 (suspensión de la Mac) y se retomó desde su punto de control en HF (sección 13):
+nohup caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1 > corridas/sft-prompt-v1.log 2>&1 &
+nohup caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1-r1 \
+    --retomar hf:sft-prompt-v1-paso-100 > corridas/sft-prompt-v1-r1.log 2>&1 &
+
+# Solo entrenamiento (prompt de admision/ejemplo.py), de cero y sin cortes.
+nohup caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-ejemplo-v2 \
+    --datos datos/sin_prompt/train.jsonl --val datos/sin_prompt/val.jsonl > corridas/sft-ejemplo-v2.log 2>&1 &
 ```
+
+`sft-ejemplo-v1`, el primer lanzamiento de la variante sin prompt, se cortó en la misma suspensión antes de su primer
+punto de control y no se usa (run de W&B `3y5836ny`, `crashed`; ver `INFORME.md`, Corridas cortadas o fallidas).
+Para que no vuelva a pasar, cada lanzamiento va bajo `caffeinate -is`.
 
 Opciones de `modal_entrenar.py`: `--corrida` (obligatoria; también es el nombre en W&B y el prefijo de las etiquetas
 de HF), `--config` (por defecto `entrenar.yaml`), `--datos`, `--val`, `--max-pasos`, `--retomar` y
