@@ -1,0 +1,30 @@
+{
+  "etiqueta": "sft_prompt_rep",
+  "fecha": "2026-11-18T12:34:34Z",
+  "commit": "05535bc2b6f6f57e8b498a223945036bd2832e2c",
+  "config": "config.yaml",
+  "prompt": "prompt_optimizado.txt",
+  "modelo": "google/gemma-4-E4B-it",
+  "revision": "4ecc2ba63bcac23ba4a767fc87025b1450f84c9c",
+  "adaptador_lora": "Juanlu1/gemma-admision",
+  "adaptador_revision": "a5af001800f7da670f72d2a9461ec3a2d805f4f6",
+  "casos": 50,
+  "construir_agente_segundos": 315.064,
+  "versiones": {
+    "original": {
+      "resueltos": 26,
+      "casos": 50,
+      "error": null
+    },
+    "b": {
+      "resueltos": 25,
+      "casos": 50,
+      "error": null
+    },
+    "c": {
+      "resueltos": 28,
+      "casos": 50,
+      "error": null
+    }
+  }
+}

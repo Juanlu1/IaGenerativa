@@ -1,0 +1,77 @@
+{
+  "a": "sft_prompt",
+  "b": "sft_prompt_rep",
+  "versiones": {
+    "original": {
+      "casos": 50,
+      "resueltos": [
+        26,
+        26
+      ],
+      "conversaciones_distintas": 1,
+      "fichas_distintas": 0,
+      "gana": [],
+      "pierde": [],
+      "divergen_con_entrada_identica": 1,
+      "detalle": [
+        {
+          "caso": "pev-005",
+          "campos_que_cambian": [],
+          "controles_que_cambian": [],
+          "resuelto": [
+            true,
+            true
+          ],
+          "primera_diferencia": {
+            "indice": 16,
+            "rol": "assistant",
+            "turno_asistente": 8,
+            "entrada_identica": true
+          }
+        }
+      ]
+    },
+    "b": {
+      "casos": 50,
+      "resueltos": [
+        25,
+        25
+      ],
+      "conversaciones_distintas": 1,
+      "fichas_distintas": 0,
+      "gana": [],
+      "pierde": [],
+      "divergen_con_entrada_identica": 1,
+      "detalle": [
+        {
+          "caso": "pev-005",
+          "campos_que_cambian": [],
+          "controles_que_cambian": [],
+          "resuelto": [
+            false,
+            false
+          ],
+          "primera_diferencia": {
+            "indice": 8,
+            "rol": "assistant",
+            "turno_asistente": 4,
+            "entrada_identica": true
+          }
+        }
+      ]
+    },
+    "c": {
+      "casos": 50,
+      "resueltos": [
+        28,
+        28
+      ],
+      "conversaciones_distintas": 0,
+      "fichas_distintas": 0,
+      "gana": [],
+      "pierde": [],
+      "divergen_con_entrada_identica": 0,
+      "detalle": []
+    }
+  }
+}
