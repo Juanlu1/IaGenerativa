@@ -1,4 +1,4 @@
-"""Entrega del grupo: el contrato que llama la cátedra (ver README.md, "El contrato de la entrega").
+"""Entrega del grupo: el contrato que llama la cátedra (ver KIT.md, "El contrato de la entrega").
 
 - construir_buscador(ruta_normas): el buscador de la Parte 2 (parte2/rag_buscador.py), armado con la carpeta recibida.
 - construir_agente(): el AgenteJSON de admision/ejemplo.py con el mensaje de sistema de la configuración y un
