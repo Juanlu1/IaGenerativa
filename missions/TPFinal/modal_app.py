@@ -101,7 +101,8 @@ def gepa_gpu(etiqueta: str, argumentos: list[str], config: str, commit: str) -> 
     salida = Path(VOLUMEN) / "corridas" / "gepa" / etiqueta
     salida.mkdir(parents=True, exist_ok=True)
     (salida / "commit.txt").write_text(commit + "\n", encoding="utf-8")
-    comando = [sys.executable, "optimizar_prompt.py", "--salida", str(salida), *argumentos]
+    # prompt_optimizado.txt y config_optimizado.yaml quedan en el Volume; en la Mac se copian después de bajarlos.
+    comando = [sys.executable, "optimizar_prompt.py", "--salida", str(salida), "--sin-copiar-a-raiz", *argumentos]
     return _correr_y_guardar(comando, {"CONFIG": config, "COMMIT_EVALUADO": commit}, salida / "modal.log")
 
 
@@ -143,7 +144,7 @@ def evaluar(etiqueta: str, cantidad: int = 0, config: str = "", falso: bool = Fa
 
 @app.local_entrypoint()
 def gepa(etiqueta: str, args: str = "", config: str = ""):
-    """Corre optimizar_prompt.py --salida /vol/corridas/gepa/<etiqueta> <args> en la A100."""
+    """Corre optimizar_prompt.py --salida /vol/corridas/gepa/<etiqueta> --sin-copiar-a-raiz <args> en la A100."""
     config = _validar(etiqueta, config)
     if not (RAIZ / "optimizar_prompt.py").is_file():
         raise SystemExit("falta optimizar_prompt.py en esta carpeta")
