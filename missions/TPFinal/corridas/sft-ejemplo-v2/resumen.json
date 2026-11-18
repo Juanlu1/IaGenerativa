@@ -1,0 +1,87 @@
+{
+  "corrida": "sft-ejemplo-v2",
+  "pasos": 314,
+  "segundos": 7778.5,
+  "train_loss": 0.03795480677134292,
+  "eval": {
+    "eval_loss": 0.005299542564898729,
+    "eval_runtime": 47.5813,
+    "eval_samples_per_second": 3.152,
+    "eval_steps_per_second": 1.576,
+    "eval_entropy": 0.007568935810898741,
+    "eval_mean_token_accuracy": 0.9981362907091776,
+    "eval_num_tokens": 14836967.0,
+    "epoch": 1.7578947368421054
+  },
+  "revisiones": [
+    {
+      "paso": 100,
+      "revision": "d003d718e9d3e88eba2c4309bcde99ff9a751458",
+      "etiqueta": "sft-ejemplo-v2-paso-100"
+    },
+    {
+      "paso": 200,
+      "revision": "e84146070602e19f7360b39658b0bd149aa103c4",
+      "etiqueta": "sft-ejemplo-v2-paso-200"
+    },
+    {
+      "paso": 300,
+      "revision": "67deca83dd206515f99683fa46bb1b3db3eb8f1d",
+      "etiqueta": "sft-ejemplo-v2-paso-300"
+    },
+    {
+      "paso": 314,
+      "revision": "53d6d3599aab9d0ad1ecc42006406062f765697b",
+      "etiqueta": "sft-ejemplo-v2-paso-314"
+    },
+    {
+      "paso": 314,
+      "revision": "858d41673470ec8527de1f6e81304ba6e0af8478",
+      "etiqueta": "sft-ejemplo-v2-final",
+      "etiqueta_movil": "final"
+    }
+  ],
+  "vllm": {
+    "rank": 32,
+    "alpha": 32,
+    "modulos": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
+    "tensores": 516,
+    "max_lora_rank_vllm": 32,
+    "problemas": []
+  },
+  "wandb": "https://forge.coreweave.com/wandb/juanlu1-austral/tp-admision-guardia/runs/g69gw15q",
+  "datos": {
+    "train": {
+      "ruta": "datos/sin_prompt/train.jsonl",
+      "sha256": "16830998562d978367220e329a3595673287a0889dcf886c14ad89cd88bcd072",
+      "lineas": 2850,
+      "conversaciones_usadas": 2850,
+      "descartadas_por_largo": [],
+      "tokens": 8418002,
+      "tokens_en_perdida": 838716,
+      "largo_maximo": 4098,
+      "largo_medio": 2953.7
+    },
+    "val": {
+      "ruta": "datos/sin_prompt/val.jsonl",
+      "sha256": "cda255c7fe628807ced3e97899cf839018b90cd210261492183dd055e2be88b9",
+      "lineas": 150,
+      "conversaciones_usadas": 150,
+      "descartadas_por_largo": [],
+      "tokens": 436245,
+      "tokens_en_perdida": 43580,
+      "largo_maximo": 4064,
+      "largo_medio": 2908.3
+    }
+  },
+  "semilla": 20261117,
+  "vram_max_gb": 20.72
+}

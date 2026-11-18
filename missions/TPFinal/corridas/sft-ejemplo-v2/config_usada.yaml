@@ -1,0 +1,38 @@
+semilla: 20261117
+modelo:
+  id: google/gemma-4-E4B-it
+  dtype: bfloat16
+  attn_implementation:
+    ? ''
+    : sdpa
+    text_config: sdpa
+    vision_config: sdpa
+    audio_config: eager
+datos:
+  train: datos/sin_prompt/train.jsonl
+  val: datos/sin_prompt/val.jsonl
+lora:
+  r: 32
+  alpha: 32
+  dropout: 0.05
+entrenamiento:
+  epocas: 1.75
+  lr: 0.0001
+  scheduler: cosine
+  warmup: 0.03
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  batch_por_dispositivo: 2
+  acumulacion_gradiente: 8
+  gradient_checkpointing: true
+  largo_maximo: 6144
+  agrupar_por_largo: true
+  pasos_guardado: 100
+  pasos_evaluacion: 100
+  pasos_log: 10
+  checkpoints_locales: 2
+wandb:
+  proyecto: tp-admision-guardia
+  entidad: null
+hf:
+  etiqueta_final: final
