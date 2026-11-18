@@ -600,10 +600,18 @@ uv run python armar_dataset.py --prompt prompt_optimizado.txt   # datos/ (prompt
 uv run python armar_dataset.py --salida datos/sin_prompt         # datos/sin_prompt/ (solo entrenamiento)
 uv run python entrenar.py --prueba                    # Mac, modelo diminuto
 uv run modal run --detach modal_entrenar.py --corrida prueba-gpu-01 --max-pasos 20
-uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1
-uv run modal run --detach modal_entrenar.py --corrida sft-ejemplo-v1 \
+uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1    # cortada en el paso 106 (pasada 6)
+caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1-r1 \
+    --retomar hf:sft-prompt-v1-paso-100
+caffeinate -is uv run modal run --detach modal_entrenar.py --corrida sft-ejemplo-v2 \
     --datos datos/sin_prompt/train.jsonl --val datos/sin_prompt/val.jsonl
 ```
+
+Las evaluaciones de los adaptadores son las de la sección 5 de
+[`MODAL.md`](MODAL.md) con `--config config.yaml` (etiqueta `sft_prompt`) y
+`--config config_sft_base.yaml` (etiqueta `sft`). Antes de cada una se corrió
+la prueba de 3 casos (`--cantidad 3`) para confirmar que vLLM carga el
+adaptador.
 
 ### Resultados
 
@@ -622,11 +630,36 @@ mensaje de sistema de `admision/ejemplo.py` tal cual.
 | Referencia de la cátedra, SFT con las 800 trazas | - | `admision/ejemplo.py` | 25 | 24 | 25 |
 | Sin entrenar | modelo base | `admision/ejemplo.py` (`prompt_base.txt`) | 12 | 5 | 8 |
 | Solo prompt | modelo base | `prompt_optimizado.txt` | 9 | 10 | 10 |
-| Solo entrenamiento | PENDIENTE (`sft-ejemplo-v1-final`) | `admision/ejemplo.py` | PENDIENTE | PENDIENTE | PENDIENTE |
-| Prompt + entrenamiento | PENDIENTE (`sft-prompt-v1-final`) | `prompt_optimizado.txt` | PENDIENTE | PENDIENTE | PENDIENTE |
+| Solo entrenamiento | PENDIENTE (`sft-ejemplo-v2-final`) | `admision/ejemplo.py` | PENDIENTE | PENDIENTE | PENDIENTE |
+| Prompt + entrenamiento | `sft-prompt-v1-r1-final` (`a5af001`) | `prompt_optimizado.txt` | 26 | 25 | 28 |
 
-Del entrenamiento: tiempo, pasos, pérdida final de train y val y VRAM máxima
-de cada corrida, de `corridas/<corrida>/resumen.json`: **PENDIENTE**.
+"Prompt + entrenamiento" es `corridas/sft_prompt/`, con `config.yaml` (la
+entrega final). Supera a la referencia SFT de la cátedra en las tres
+versiones (26, 25 y 28 contra 25, 24 y 25) y casi triplica la fila sin
+entrenar con el mismo prompt (9, 10 y 10). La puntuación parcial media sube de
+0,80 a 0,94 y el agente busca más: 2,9 búsquedas por caso contra 1,9.
+
+#### Las corridas de entrenamiento
+
+| Medida | `sft-prompt-v1` + `sft-prompt-v1-r1` | `sft-ejemplo-v2` |
+|---|---|---|
+| Datos | `datos/` (sha256 `63139319...`) | `datos/sin_prompt/` |
+| Pasos | 314 (1,76 épocas): 1 a 100 en `sft-prompt-v1`, 101 a 314 en `sft-prompt-v1-r1` | PENDIENTE |
+| Tiempo | 42 min hasta el paso 100 más 5.406 s (1,50 h) de la continuación: unas 2,2 h | PENDIENTE |
+| Pérdida de train | 0,00745 de media en los pasos 101 a 314; 0,00258 en el último registro (paso 310) | PENDIENTE |
+| Pérdida de val | 0,01494 (paso 100), 0,00557 (200), 0,00405 (300), 0,00402 (314) | PENDIENTE |
+| Precisión por token en val | 0,9986 (paso 314) | PENDIENTE |
+| VRAM máxima | 20,81 GB | PENDIENTE |
+| W&B | `68qllkha` (la continuación sigue el mismo run) | PENDIENTE |
+
+Los números salen de `corridas/<corrida>/resumen.json` y del log de la corrida.
+
+**Punto de control elegido.** Para cada corrida se usa el de menor pérdida de
+validación. En `sft-prompt-v1-r1` es el final (paso 314, 0,00402), apenas por
+debajo del paso 300 (0,00405): la pérdida bajó en todas las evaluaciones, sin
+señales de sobreajuste. `config.yaml` fija el commit `a5af001800f7...` de la
+etiqueta `sft-prompt-v1-r1-final` y no la etiqueta móvil `final`, que pisa cada
+corrida completa. La configuración sin entrenar queda en `config_base.yaml`.
 
 ### Pasadas del desarrollo
 
@@ -649,3 +682,11 @@ de cada corrida, de `corridas/<corrida>/resumen.json`: **PENDIENTE**.
    diminuto no tiene torre de audio. Ahora `entrenar.yaml` pide SDPA para el
    modelo de lenguaje y la visión y eager para el audio; se comprobó armando
    Gemma 4 E4B con su configuración real en el dispositivo `meta`.
+6. **Corte por suspensión de la Mac.** `modal run --detach` no alcanzó: al
+   cerrarse la tapa de la Mac, Modal canceló las dos corridas
+   (`Function call was cancelled`). `sft-prompt-v1` iba por el paso 106 y ya
+   había subido `sft-prompt-v1-paso-100`: se retomó desde ahí como
+   `sft-prompt-v1-r1`, que siguió en el paso 101 con el mismo run de W&B.
+   `sft-ejemplo-v1` iba por el paso 73, sin ningún punto de control, así que
+   se relanzó de cero como `sft-ejemplo-v2`. Desde entonces cada lanzamiento
+   corre bajo `caffeinate -is`, que impide que la Mac se suspenda.
