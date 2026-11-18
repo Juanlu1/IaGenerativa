@@ -51,14 +51,14 @@ README del kit y separa 5% de cada origen para validación. Cifras de
 
 | Origen | Conversaciones | Train | Val |
 |---|---:|---:|---:|
-| Historial, filas `correcta` de `historial_clasificado.csv` (normas originales) | 1.590 | 1.510 | 80 |
+| Historial, filas `correcta` de `historial_clasificado.csv` (normas originales) | 1.600 | 1.520 | 80 |
 | Trazas de la cátedra, `entrenamiento/trazas.jsonl` (valores variables) | 800 | 760 | 40 |
 | Sintéticas, `curado/conversaciones_sinteticas.jsonl` (200 por versión: original, b y c) | 600 | 570 | 30 |
-| **Total** | **2.990** | **2.840** | **150** |
+| **Total** | **3.000** | **2.850** | **150** |
 
-- Tokens totales: 7.967.992 (train 7.574.785, val 393.207), estimados como
+- Tokens totales: 7.992.888 (train 7.599.855, val 393.033), estimados como
   caracteres / 4, igual que `admision.evaluar_rag`. Por conversación: media
-  2.665, mediana 2.699, percentil 95 3.432 y máximo 3.729 (`E-177`). El
+  2.664, mediana 2.699, percentil 95 3.432 y máximo 3.729 (`E-177`). El
   mensaje de sistema de `admision/ejemplo.py` son 558 de esos tokens por
   conversación. Los tokens reales del tokenizador de Gemma quedan en
   `corridas/<corrida>/datos.json` y en W&B. En la prueba de la Mac, las
@@ -66,12 +66,15 @@ README del kit y separa 5% de cada origen para validación. Cifras de
   tokenizador del modelo diminuto, contra 42.194 estimados. Ese tokenizador
   no es idéntico al de Gemma 4 E4B (otro sha256 de `tokenizer.json`), así que
   la relación real sale de la prueba en GPU: PENDIENTE.
-- `datos/train.jsonl` pesa 31,6 MB y `datos/val.jsonl` 1,6 MB: van en git.
+- `datos/train.jsonl` pesa 31,7 MB y `datos/val.jsonl` 1,6 MB: van en git.
   Si una variante pasa los 50 MB, se publica con `armar_dataset.py
   --subir-hf` en un repo de dataset de HF (ver `modal_entrenamiento.md`).
 - sha256 de `datos/train.jsonl`:
-  `a1e640db2662e99a89fcc76719fc83612d7c1a2a065c6ac98f7bcb233289b790`. Dos
-  corridas seguidas de `armar_dataset.py` dieron el mismo hash.
+  `16830998562d978367220e329a3595673287a0889dcf886c14ad89cd88bcd072`. Dos
+  corridas seguidas de `armar_dataset.py` dieron el mismo hash. La versión
+  anterior, armada con la clasificación de la primera pasada (corte del
+  voluntariado en 76 años, 1.590 filas correctas), tenía 2.990 conversaciones
+  y el hash `a1e640db...` y no se usó para entrenar.
 
 ### Las búsquedas muestran los números de cada traza
 
@@ -96,8 +99,8 @@ versiones (`diff` de `normas/original`, `b` y `c` solo difiere en
 
 Si el buscador citara un parámetro que varía entre versiones y que la traza
 nunca mostró, esa búsqueda conserva el resultado original. Resultados en este
-conjunto: 7.290 búsquedas rehechas, **0** con resultado original y 5.458 que
-devolvieron las mismas secciones que la traza; en esas 5.458 el texto nuevo
+conjunto: 7.316 búsquedas rehechas, **0** con resultado original y 5.478 que
+devolvieron las mismas secciones que la traza; en esas 5.478 el texto nuevo
 coincide carácter por carácter con el original, lo que confirma que los
 valores reconstruidos son los de cada traza. Con `--busquedas originales` se
 puede armar la variante que copia los resultados de la traza, para comparar.
@@ -120,6 +123,8 @@ práctica con el comparador oficial (`uv run python validar_politica.py`):
 
 El único fallo de la primera pasada fue `pev-006` (75 años, sin acompañante):
 el historial muestra el corte en 75 (ver [`revision_parte1.md`](revision_parte1.md)).
+Esa corrección se aplicó también a la clasificación del historial, lo que suma
+10 conversaciones reales.
 
 **Cuidado al leer la tabla final:** como las sintéticas usan las normas b y c
 para que el modelo no memorice los números de `original`, la evaluación de

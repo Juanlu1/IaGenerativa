@@ -2,15 +2,15 @@
   "semilla": 20261117,
   "prompt": "admision/ejemplo.py:mensaje_de_sistema()",
   "busquedas": "buscador",
-  "conversaciones": 2990,
+  "conversaciones": 3000,
   "conversaciones_por_origen": {
     "catedra": 800,
-    "historial": 1590,
+    "historial": 1600,
     "sinteticas": 600
   },
   "train_por_origen": {
     "catedra": 760,
-    "historial": 1510,
+    "historial": 1520,
     "sinteticas": 570
   },
   "val_por_origen": {
@@ -24,11 +24,11 @@
     "original": 200
   },
   "metodo_tokens": "estimacion: caracteres de los mensajes / 4, como admision.evaluar_rag",
-  "tokens_totales": 7967992,
-  "tokens_train": 7574785,
-  "tokens_val": 393207,
+  "tokens_totales": 7992888,
+  "tokens_train": 7599855,
+  "tokens_val": 393033,
   "tokens_por_conversacion": {
-    "medio": 2664.9,
+    "medio": 2664.3,
     "p50": 2699,
     "p95": 3432,
     "maximo": 3729,
@@ -36,21 +36,21 @@
   },
   "tokens_mensaje_de_sistema": 558,
   "busquedas_rehechas": {
-    "busquedas": 7290,
-    "busquedas_mismas_secciones": 5458,
+    "busquedas": 7316,
+    "busquedas_mismas_secciones": 5478,
     "busquedas_con_resultado_original": 0
   },
   "archivos": {
     "train": {
       "ruta": "datos/train.jsonl",
-      "lineas": 2840,
-      "sha256": "a1e640db2662e99a89fcc76719fc83612d7c1a2a065c6ac98f7bcb233289b790",
-      "mb": 31.58
+      "lineas": 2850,
+      "sha256": "16830998562d978367220e329a3595673287a0889dcf886c14ad89cd88bcd072",
+      "mb": 31.69
     },
     "val": {
       "ruta": "datos/val.jsonl",
       "lineas": 150,
-      "sha256": "29e40e866eea5e280ad635e7c1511532945a8031b4dd1cc2d1036d7180b109be",
+      "sha256": "cda255c7fe628807ced3e97899cf839018b90cd210261492183dd055e2be88b9",
       "mb": 1.64
     }
   },
