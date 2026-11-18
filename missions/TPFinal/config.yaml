@@ -12,8 +12,8 @@ prompt: prompt_base.txt
 # Adaptador LoRA en Hugging Face (repo y revision). Vacios = modelo sin entrenar.
 adaptador_lora: ""
 adaptador_revision: ""
-# Rango maximo de LoRA que reserva vLLM (8, 16, 32, 64...). Tiene que ser >= al rango del adaptador.
-max_lora_rank: 64
+# Rango maximo de LoRA que reserva vLLM: 32, el rank del adaptador (lora.r en entrenar.yaml).
+max_lora_rank: 32
 
 # Generacion: determinista (greedy) para que la corrida sea reproducible.
 generacion:

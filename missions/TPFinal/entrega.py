@@ -100,7 +100,7 @@ class ModeloVLLM:
             revision = (config.get("adaptador_revision") or "").strip() or None
             ruta = snapshot_download(adaptador, revision=revision)
             self.lora = LoRARequest("adaptador", 1, ruta)
-            argumentos.update(enable_lora=True, max_lora_rank=int(config.get("max_lora_rank", 64)), max_loras=1)
+            argumentos.update(enable_lora=True, max_lora_rank=int(config.get("max_lora_rank", 32)), max_loras=1)
 
         self.llm = LLM(model=config["modelo"], revision=config.get("revision") or None,
                        tokenizer_revision=config.get("revision") or None, **argumentos)
