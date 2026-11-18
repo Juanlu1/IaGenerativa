@@ -1,8 +1,9 @@
 """Arma corridas/tabla.md con los resultados de todas las corridas de evaluar_todo.sh.
 
-Lee corridas/<etiqueta>/<version>/resumen.json y tiempos.json (los escribe admision.correr) y pone, por etiqueta y
-version de las normas, los casos resueltos, el tiempo y el contexto promedio por caso, al lado de la referencia de la
-catedra (mission.md, "Como se corrige").
+Lee corridas/<etiqueta>/<version>/resumen.json y tiempos.json (los escribe admision.correr) y
+corridas/<etiqueta>/corrida.json (lo escribe evaluar.py), y pone, por etiqueta y version de las normas, los casos
+resueltos, el tiempo y el contexto promedio por caso, al lado de la referencia de la catedra (mission.md, "Como se
+corrige"). Solo mira las carpetas original, b y c; corridas/rag/ y corridas/gepa/ quedan afuera.
 
     uv run python tabla.py
 """
@@ -26,8 +27,11 @@ def cargar() -> dict[str, dict[str, dict]]:
     corridas: dict[str, dict[str, dict]] = {}
     for resumen in sorted(CORRIDAS.glob("*/*/resumen.json")):
         carpeta = resumen.parent
+        if carpeta.name not in VERSIONES:
+            continue
         corridas.setdefault(carpeta.parent.name, {})[carpeta.name] = {
-            "resumen": leer(resumen), "tiempos": leer(carpeta / "tiempos.json")}
+            "resumen": leer(resumen), "tiempos": leer(carpeta / "tiempos.json"),
+            "corrida": leer(carpeta.parent / "corrida.json")}
     return corridas
 
 
@@ -54,19 +58,22 @@ def tabla(corridas: dict[str, dict[str, dict]]) -> str:
     lineas += ["", "## Detalle por corrida", "",
                "- Segundos por caso: `jugar_lote` entero dividido por la cantidad de casos (los casos corren en lote).",
                "- Contexto por caso: caracteres que se le pasaron al modelo en todo el caso, según `admision.correr`.",
+               "- Carga del modelo: `construir_agente`, una vez por etiqueta (corrida.json); el modelo se reutiliza "
+               "en las tres versiones.",
                "",
                "| Etiqueta | Versión | Resueltos | Parcial medio | Sin ficha | Búsquedas por caso "
-               "| Segundos por caso | Contexto por caso (caracteres) | construir_agente (s) | Error |",
+               "| Segundos por caso | Contexto por caso (caracteres) | Carga del modelo (s) | Error |",
                "|---|---|---:|---:|---:|---:|---:|---:|---:|---|"]
     for etiqueta, por_version in corridas.items():
         for version in sorted(por_version, key=lambda v: (VERSIONES + (v,)).index(v)):
-            r, t = por_version[version]["resumen"], por_version[version]["tiempos"]
+            r, t, meta = (por_version[version][k] for k in ("resumen", "tiempos", "corrida"))
+            carga = meta.get("construir_agente_segundos", t.get("construir_agente"))
             error = r.get("error") or t.get("error")
             lineas.append(" | ".join([
                 f"| {etiqueta}", version, f"{r['resueltos']}/{r['casos']}", numero(r.get("parcial_medio"), 3),
                 str(r.get("sin_decision", "-")), numero(r.get("busquedas_por_caso"), 2),
                 numero(t.get("jugar_lote_por_caso"), 3), numero(r.get("caracteres_de_contexto_por_caso")),
-                numero(t.get("construir_agente"), 1), (str(error).replace("|", "/") if error else "")]) + " |")
+                numero(carga, 1), (str(error).replace("|", "/") if error else "")]) + " |")
     return "\n".join(lineas) + "\n"
 
 
