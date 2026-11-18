@@ -738,6 +738,70 @@ versiones (26, 25 y 28 contra 25, 24 y 25) y casi triplica la fila sin
 entrenar con el mismo prompt (9, 10 y 10). La puntuación parcial media sube de
 0,80 a 0,94 y el agente busca más: 2,9 búsquedas por caso contra 1,9.
 
+#### Repetición de la evaluación final
+
+Para medir cuánto mueve la evaluación en lote en GPU, la entrega final se
+evaluó otra vez, sin cambiar nada: `nohup caffeinate -is uv run modal run
+--detach modal_app.py::evaluar --etiqueta sft_prompt_rep --config
+config.yaml` (sección 14 de [`MODAL.md`](MODAL.md)). Mismo modelo
+(`4ecc2ba`), mismo adaptador (`Juanlu1/gemma-admision` @
+`a5af001800f7da670f72d2a9461ec3a2d805f4f6`), mismo prompt
+(`prompt_optimizado.txt`), temperatura 0 y semilla 0. La corrida se lanzó
+desde `05535bc` y `sft_prompt` desde `979e4d2`; entre los dos commits no
+cambia ningún archivo que use la evaluación (`git diff 979e4d2 05535bc --
+entrega.py evaluar.py modal_app.py config.yaml prompt_optimizado.txt parte2/
+admision/ normas/ practica/ pyproject.toml uv.lock` sale vacío). No hay run
+de W&B: la evaluación no registra.
+
+Comparación caso por caso con `uv run python comparar_corridas.py sft_prompt
+sft_prompt_rep` (resultado en
+`corridas/sft_prompt_rep/comparacion_sft_prompt.json`):
+
+| Versión | Resueltos `sft_prompt` | Resueltos `sft_prompt_rep` | Fichas que cambian | Conversaciones que cambian |
+|---|---:|---:|---:|---:|
+| original | 26 | 26 | 0 de 50 | 1 (`pev-005`) |
+| b | 25 | 25 | 0 de 50 | 1 (`pev-005`) |
+| c | 28 | 28 | 0 de 50 | 0 |
+
+**No cambia ninguna ficha ni ningún control**: los mismos casos resueltos,
+uno por uno, y la misma puntuación parcial media (0,942, 0,936 y 0,945). Lo
+que cambia es el camino en dos conversaciones del mismo caso:
+
+- **`pev-005`, normas original:** en el turno 8 del asistente, la repetición
+  registró `"circuito": null`; el entorno lo rechazó ("circuito tiene que ser
+  uno de: codigo_acv, codigo_sepsis, ecg, ninguno") y en el turno siguiente
+  registró `"ninguno"`, con la misma ficha que `sft_prompt` había registrado
+  de entrada. Resuelto en las dos.
+- **`pev-005`, normas b:** en el turno 4 del asistente, `sft_prompt` buscó
+  "dolor abdominal plazo" y siguió con una pregunta al paciente, otra
+  búsqueda y el mismo `null` corregido a `"ninguno"`; la repetición buscó
+  "dolor abdominal" y fue directo a verificar y registrar. Las dos registran
+  la misma ficha y el caso queda sin resolver en las dos.
+
+**Por qué cambia:** en los dos casos, todos los mensajes que entraron al
+modelo hasta el turno que difiere son idénticos (`entrada_identica` en la
+comparación), así que la diferencia la produjo el modelo con la misma
+entrada. Con generación greedy, eso pasa cuando dos tokens tienen logits casi
+empatados: los 50 casos se juegan en lote en vLLM, la composición de cada
+lote depende de en qué turno está cada conversación, y las sumas en punto
+flotante de la GPU no dan exactamente lo mismo con lotes de distinta forma.
+Una diferencia en el último decimal alcanza para elegir otro token, y desde
+ahí la conversación sigue por otro camino. Esta es la explicación conocida
+de vLLM para la falta de determinismo en lote; los datos son consistentes
+con ella (mismo código, misma entrada, divergencia en un token de baja
+importancia: `null` contra `"ninguno"`, o una palabra de más en la consulta),
+pero la comparación no lo prueba token por token.
+
+Los números de contexto y tiempo sí se mueven un poco
+(`corridas/sft_prompt_rep/<version>/resumen.json` y `tiempos.json`):
+búsquedas por caso 2,94, 2,92 y 2,96 contra 2,94, 2,94 y 2,96; caracteres de
+contexto por caso 44.363, 43.652 y 44.320 contra 44.046, 44.423 y 44.320;
+segundos por caso 0,543, 0,455 y 0,456 contra 0,465, 0,495 y 0,450; carga
+del modelo 315,1 s contra 291,6 s. Conclusión: con la entrega final, la
+variación entre corridas en la A100 no cambió ningún resultado; las
+diferencias de 1 a 3 casos que se vieron con el modelo sin entrenar (Parte
+3, Repetición con vLLM 0.34.0) incluían además un cambio de versión de vLLM.
+
 "Solo entrenamiento" es `corridas/sft/`, con `config_sft_base.yaml`: 21, 22 y
 22, casi el doble que sin entrenar (12, 5 y 8) pero por debajo de la
 referencia SFT de la cátedra y de prompt + entrenamiento. El entrenamiento es
@@ -818,10 +882,9 @@ en `.gitignore`.
 No se evaluaron sobre la práctica los puntos de control intermedios (los de
 los pasos 100 a 314 que no se eligieron): no había presupuesto ni tiempo
 para una evaluación por cada uno, así que se eligió solo por menor pérdida
-de validación (Punto de control elegido). Tampoco se repitió ninguna
-evaluación de los adaptadores para medir la variación del lote en GPU; el
-motivo de esto último no quedó registrado: PENDIENTE que lo complete el
-equipo.
+de validación (Punto de control elegido). La entrega final se evaluó dos
+veces para medir la variación del lote en GPU (Repetición de la evaluación
+final); el adaptador de solo entrenamiento no se repitió.
 
 ### Pasadas del desarrollo
 
