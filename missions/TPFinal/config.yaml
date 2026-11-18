@@ -1,4 +1,5 @@
-# Configuracion del agente que carga entrega.py.
+# Configuracion del agente que carga entrega.py: la entrega final, prompt optimizado + adaptador LoRA.
+# El modelo sin entrenar con el prompt base esta en config_base.yaml.
 # Para evaluar otra variante sin editar este archivo: CONFIG=config_optimizado.yaml
 # Las rutas relativas (prompt) se resuelven desde la carpeta de este archivo.
 
@@ -7,11 +8,12 @@ modelo: google/gemma-4-E4B-it
 revision: 4ecc2ba63bcac23ba4a767fc87025b1450f84c9c
 
 # Mensaje de sistema del agente.
-prompt: prompt_base.txt
+prompt: prompt_optimizado.txt
 
 # Adaptador LoRA en Hugging Face (repo y revision). Vacios = modelo sin entrenar.
-adaptador_lora: ""
-adaptador_revision: ""
+# Commit de la etiqueta sft-prompt-v1-r1-final (paso 314, menor loss de validacion; ver INFORME.md, Parte 4).
+adaptador_lora: Juanlu1/gemma-admision
+adaptador_revision: a5af001800f7da670f72d2a9461ec3a2d805f4f6
 # Rango maximo de LoRA que reserva vLLM: 32, el rank del adaptador (lora.r en entrenar.yaml).
 max_lora_rank: 32
 
