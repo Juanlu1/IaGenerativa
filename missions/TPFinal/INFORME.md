@@ -920,32 +920,210 @@ final); el adaptador de solo entrenamiento no se repitió.
 
 ## Parte 5: Recursos y producción
 
-PENDIENTE: lo escribe otra integrante del grupo.
+Todo corrió en Modal, en una A100 de 40 GB (`GPU = "A100-40GB"` en
+`modal_app.py` y `gpu="A100-40GB"` en `modal_entrenar.py`), la misma que usa
+la cátedra. Los costos salen de `corridas/modal_billing_2026-11.csv`, el
+reporte de Modal por app, hora y recurso:
 
-Lo que pide `mission.md` (Parte 5 y "El informe"): tiempo de entrenamiento,
-VRAM usada, costo y tiempo por caso en la A100 de 40 GB, casos que se
-procesan a la vez al entrenar y al evaluar, cuántos casos simultáneos tolera
-en producción, la proyección de consumo, cómo escalaría y los trabajos
-futuros. Como en el resto del informe, cada número tiene que citar el
-comando, el punto de control y el prompt que lo producen.
+```bash
+COLUMNS=1000 uv run modal billing report --start 2026-11-15 --end 2026-11-22 \
+  --resolution h --show-resources --csv > corridas/modal_billing_2026-11.csv
+```
 
-De dónde sacar los datos (todo está en el repositorio salvo W&B):
+(Sin `COLUMNS` la CLI corta las líneas al ancho de la terminal. El reporte por
+hora admite 7 días como máximo; todo el gasto del TP cae el 18 de noviembre,
+entre las 00:00 y las 13:00 UTC.)
 
-| Dato | Archivo |
-|---|---|
-| Tiempo de juego por versión y por caso (`jugar_lote`, `jugar_lote_por_caso`) | `corridas/*/*/tiempos.json` (21 archivos: 7 etiquetas x original, b y c) |
-| Casos resueltos, búsquedas por caso, caracteres de contexto por caso, llamadas por caso | `corridas/*/*/resumen.json` (y el detalle caso por caso en `resultados.jsonl`) |
-| Carga del modelo (`construir_agente_segundos`), commit, config, prompt, adaptador y revisión de cada evaluación | `corridas/<etiqueta>/corrida.json` |
-| Tabla con todo lo anterior junto | `corridas/tabla.md` (`uv run python tabla.py`) |
-| Concurrencia de vLLM (tamaño de la caché KV en tokens y "Maximum concurrency" para 16.384 tokens por pedido) | `corridas/<etiqueta>/modal.log` y `corridas/gepa/gepa1/modal.log` |
-| Parámetros de servicio (`max_model_len`, `gpu_memory_utilization`, `max_lora_rank`) | `config.yaml` (entrega final) y las demás `config_*.yaml` |
-| Tiempo de entrenamiento (`segundos`), VRAM máxima (`vram_max_gb`), pérdidas finales | `corridas/sft-prompt-v1-r1/resumen.json`, `corridas/sft-ejemplo-v2/resumen.json`, `corridas/prueba-gpu-02/resumen.json` |
-| Tokens reales de train y val, tokens en la pérdida | `corridas/<corrida>/datos.json` |
-| Batch, acumulación, largo máximo y épocas usadas | `corridas/<corrida>/config_usada.yaml` y `entrenar.yaml` |
-| Tiempo de la optimización de prompt (`segundos`, casos jugados) | `corridas/gepa/gepa1/resumen.json` |
-| Pérdidas, `_runtime` (segundos desde el arranque) y VRAM por registro, cada 10 pasos; configuración completa del run | `corridas/<corrida>/wandb_history.jsonl` y `wandb_config.json` (`uv run python exportar_registros.py`), runs `68qllkha` (`sft-prompt-v1` + `-r1`, en `corridas/sft-prompt-v1-r1/`), `g69gw15q` (`sft-ejemplo-v2`), `2r5rmemo` (`prueba-gpu-02`) y `3y5836ny` (`sft-ejemplo-v1`, cortada) |
-| Métricas de sistema de la GPU (uso, memoria, potencia) | solo en W&B, proyecto `juanlu1-austral/tp-admision-guardia`, pestaña System de cada run: `exportar_registros.py` baja el historial de entrenamiento, no el de sistema |
+**Tarifa.** Las tres filas de A100 que cubren una hora entera valen $2,10
+(`ap-KRT5...` a las 05:00 y 06:00, `ap-Jeuob...` a las 05:00): **$2,10 por
+hora, $0,000583 por segundo**. Con esa tarifa se convierten a dinero los
+segundos de `tiempos.json` y `resumen.json`, y los segundos de GPU de cada app
+(costo de A100 / tarifa) se pueden cruzar con la duración de cada corrida.
 
-Ojo: los segundos por paso que se pueden citar salen de `_runtime` en
-`wandb_history.jsonl` (una fila cada 10 pasos) y de `segundos` en
-`resumen.json`; la Parte 4 ya usa esas dos fuentes.
+### Costo del desarrollo
+
+Total: **$16,13** de cómputo (A100 $15,47, CPU $0,45, memoria $0,21), lo mismo
+que muestra el panel *Usage & billing* de Modal. El CSV suma además $0,30 de
+salida de red, que el panel no cuenta. Se pagó entero con los créditos del
+plan Starter ($30 por mes): el gasto real fue $0.
+
+| App de Modal | Corrida | Segundos de A100 (CSV) | Duración registrada | Costo (sin red) |
+|---|---|---:|---|---:|
+| `ap-3FyoC...` (`tp-admision-entrenar`) | `prueba-gpu-01`, falló al armar el modelo | 49 | sin run en W&B | $0,04 |
+| `ap-UGJS3...` | `prueba-gpu-02`, 20 pasos | 768 | 643,6 s (`resumen.json`), 706 s de `_runtime` | $0,47 |
+| `ap-gBDYA...` | `sft-prompt-v1`, pasos 1 a 100, cancelada | 2.922 | 2.596,5 s hasta la evaluación del paso 100 | $1,77 |
+| `ap-tUFHG...` | `sft-ejemplo-v1`, cancelada en el paso 73 | 1.867 | 1.748,5 s de `_runtime` | $1,14 |
+| `ap-KRT5e...` | `sft-ejemplo-v2`, 314 pasos | 7.894 | 7.778,5 s (`resumen.json`) | $4,80 |
+| `ap-Jeuob...` | `sft-prompt-v1-r1`, pasos 101 a 314 | 5.554 | 5.406,2 s (`resumen.json`) | $3,38 |
+| **Entrenamiento** (6 apps) | | | | **$11,59 (72%)** |
+| `ap-9ghcv...` (`tp-admision`) | GEPA, `gepa1` | 3.357 | 3.347 s (`corridas/gepa/gepa1/resumen.json`) | $2,01 |
+| las otras 16 apps de `tp-admision` | evaluaciones de las Partes 3 y 4 y pruebas cortas | | | $2,52 |
+| **Evaluación y optimización de prompt** (17 apps) | | | | **$4,53 (28%)** |
+
+Las corridas se identifican por la hora de la app en el CSV, la fecha del run
+(`corridas/<corrida>/wandb_run.json`) y los segundos de GPU. Los segundos de
+GPU son un poco más que la duración registrada porque incluyen el arranque del
+contenedor y la carga del modelo antes de `wandb.init`.
+
+Lo que no sirvió costó $2,95: `prueba-gpu-01` ($0,04) y las dos corridas que
+Modal canceló al suspenderse la Mac (Parte 4, pasada 6). De `sft-prompt-v1`
+($1,77) se aprovechó el punto de control del paso 100, del que siguió
+`sft-prompt-v1-r1`. `sft-ejemplo-v1` ($1,14) se perdió entera.
+
+La entrega final, de punta a punta, costó **$5,15 de entrenamiento**
+(`sft-prompt-v1` + `sft-prompt-v1-r1`) **más $2,01 de GEPA**.
+
+### Entrenamiento: tiempo, VRAM y paralelismo
+
+| Medida | `sft-prompt-v1-r1` (final) | `sft-ejemplo-v2` | Fuente |
+|---|---:|---:|---|
+| Tiempo | 2.596,5 s + 5.406,2 s (2,2 h) | 7.778,5 s (2,16 h) | Parte 4, `resumen.json` |
+| Conversaciones por paso | 16 (batch 2 × acumulación 8) | 16 | `config_usada.yaml` |
+| Segundos por paso (pasos 101 a 314) | 25,3 (5.406,2 s / 214 pasos) | 24,8 (7.778,5 s / 314, con la carga) | `resumen.json` |
+| VRAM máxima de PyTorch | 20,81 GB | 20,72 GB | `resumen.json` (`vram_max_gb`) |
+| Memoria de la GPU ocupada (media / máxima) | 59,7% / 64,2% (25,7 / 27,6 GB) | 56,7% / 56,9% (24,4 GB) | `wandb_system.jsonl` |
+| Uso de cómputo de la GPU (media) | 96,8% | 96,3% | `wandb_system.jsonl` |
+| Potencia (media / máxima) | 317 W / 411 W | 298 W / 367 W | `wandb_system.jsonl` |
+
+Las métricas de sistema salen de la pestaña System de cada run de W&B
+(`68qllkha` y `g69gw15q`), bajada con `uv run python exportar_registros.py
+--solo-wandb` a `corridas/<corrida>/wandb_system.jsonl`, una muestra cada
+15 s aproximadamente. Las dos medidas de VRAM no se contradicen:
+`vram_max_gb` es la memoria de los tensores de PyTorch
+(`torch.cuda.max_memory_allocated`), y W&B mide toda la memoria tomada en la
+GPU, que suma la caché del asignador de PyTorch y el contexto de CUDA.
+
+**Lectura.** La GPU estuvo casi todo el tiempo al 100% de cómputo, así que el
+entrenamiento la aprovechó. La memoria no fue el límite: quedó libre ~40%. Con
+`gradient_checkpointing: true` y un largo máximo de 6.144 tokens, el batch de
+2 conversaciones entra con holgura. Subir el batch o sacar el checkpointing
+cambiaría memoria por velocidad: el checkpointing recalcula activaciones, así
+que sacarlo debería bajar los segundos por paso. Eso no se midió (Trabajos
+futuros).
+
+### Evaluación: paralelismo y tiempo por caso
+
+**Paralelismo.** `entrega.py` (`jugar_lote`, líneas 73 a 78) juega todos los
+casos a la vez: en cada vuelta manda las conversaciones activas de los 50
+casos en una sola llamada a `LLM.chat` de vLLM. Las tres versiones de las
+normas (original, b y c) corren una después de la otra con el modelo ya
+cargado (`construir_agente` una vez por etiqueta, `corrida.json`).
+
+| | Sin entrenar (`base`) | Entrega final (`sft_prompt`) | Fuente |
+|---|---:|---:|---|
+| Casos resueltos (original / b / c) | 11 / 8 / 9 | 26 / 25 / 28 | `corridas/tabla.md` |
+| Lote de 50 casos (s) | 14,7 / 11,9 / 11,2 | 23,2 / 24,7 / 22,5 | `corridas/<etiqueta>/<versión>/tiempos.json` (`jugar_lote`) |
+| Segundos por caso, en lote | 0,29 / 0,24 / 0,22 | 0,46 / 0,49 / 0,45 | ídem (`jugar_lote_por_caso`) |
+| Costo de GPU por caso | $0,00017 / $0,00014 / $0,00013 | $0,00027 / $0,00029 / $0,00026 | `jugar_lote` × $0,000583 / 50 |
+| **Costo de GPU por caso resuelto** | $0,00078 / $0,00087 / $0,00072 | **$0,00052 / $0,00058 / $0,00047** | `jugar_lote` × $0,000583 / resueltos |
+| Búsquedas por caso | 1,30 / 1,34 / 1,30 | 2,94 / 2,94 / 2,96 | `resumen.json` |
+| Contexto por caso (caracteres) | 18.713 / 19.418 / 18.810 | 44.046 / 44.423 / 44.320 | `resumen.json` |
+| Carga del modelo (s) | 230,8 | 291,6 | `corrida.json` (`construir_agente_segundos`) |
+
+Prompt y punto de control: `base` usa `config_base.yaml` (`prompt_base.txt`,
+sin adaptador). `sft_prompt` usa `config.yaml` (`prompt_optimizado.txt` y
+`Juanlu1/gemma-admision@a5af001`, `sft-prompt-v1-r1-final`). Los comandos
+están en la Parte 4 (Comandos).
+
+**Antes y después.** El modelo final tarda y cuesta 1,6 a 2,1 veces más por
+caso: hace más del doble de búsquedas y lee 2,3 veces más contexto. Pero
+resuelve 2,4 a 3,1 veces más casos, así que **cada caso resuelto cuesta un
+tercio menos** ($0,00052 contra $0,00078 en la versión original). En los tres
+casos el costo es de una fracción de centavo de dólar, y el número que pesa en
+producción no es ese sino el de tener la GPU prendida (Proyección).
+
+La evaluación completa de la entrega final (150 casos más la carga del modelo)
+costó **$0,28** (`ap-ligTS...`, `sft_prompt_rep`, 470 s de A100). De esos
+segundos, 315 son la carga (`corrida.json`) y unos 70 los tres lotes.
+
+Los segundos por caso son **de lote**: el tiempo de los 50 casos dividido 50.
+No son la latencia de un caso solo, que no se midió: un paciente que llega
+solo espera las vueltas de su conversación sin compartirlas con nadie.
+
+### Cuántos casos simultáneos tolera en producción
+
+vLLM reserva la memoria que le deja `gpu_memory_utilization: 0.90`
+(`config.yaml`) y la reparte entre los pesos y la caché KV. Al arrancar
+informa cuánta caché le quedó (`corridas/<etiqueta>/modal.log`):
+
+| Configuración | Caché KV | Pedidos simultáneos de 16.384 tokens | Fuente |
+|---|---:|---:|---|
+| Con el adaptador (`max_lora_rank: 32`), entrega final | 232.612 tokens | 14,2 | `corridas/sft_prompt/modal.log`, `corridas/sft_prompt_rep/modal.log` |
+| Sin adaptador (`base`, `prompt_optimizado`, `gepa1`) | 280.194 tokens | 17,1 | `corridas/base/modal.log`, `corridas/prompt_optimizado/modal.log` |
+
+**14 casos simultáneos es el piso garantizado**: es lo que entra si cada
+conversación ocupa el máximo de `max_model_len: 16384` tokens. Las
+conversaciones reales son más cortas, y por eso la evaluación juega los 50
+casos en el mismo lote sin errores (`Sin ficha` en 0 en `corridas/tabla.md`).
+Si se pasan de la caché, vLLM no falla: encola o desaloja pedidos y los
+retoma, y el lote tarda más. El adaptador cuesta 47.582 tokens de caché
+(17%), la memoria que vLLM reserva para LoRA: con la misma versión de vLLM y
+la misma configuración, la única diferencia entre `base` y `sft` es el
+adaptador. Con vLLM 0.34.0 (`base_v034`, Parte 3) la caché sin adaptador es
+de 260.689 tokens (15,9 pedidos).
+
+En capacidad medida, una A100 resuelve un lote de 50 casos en 22,5 a 24,7 s:
+unos **2 casos por segundo, 7.300 a 8.000 por hora**, si los casos llegan juntos.
+
+### Proyección de consumo
+
+El cómputo por caso es despreciable ($0,00027). Lo que domina el costo de
+producción es **cuánto tiempo está prendida la GPU**, y eso depende de cómo se
+sirva:
+
+| Forma de servir | Costo | Tiempo de respuesta | Fuente del número |
+|---|---|---|---|
+| Contenedor siempre prendido | $2,10/h, ~$50/día, ~$1.530/mes | inmediato | tarifa del CSV |
+| Apagar cuando no hay demanda (escala a cero) | solo los segundos de uso + $0,17 a $0,18 por arranque | +291 a 315 s de carga en cada arranque | `construir_agente_segundos` × tarifa |
+| Prendido solo en horario pico (por ejemplo 12 h/día) | ~$25/día, ~$765/mes | inmediato en el pico, arranque en frío fuera de él | tarifa del CSV |
+
+Con 1.000 admisiones por día, el cómputo es 1.000 × $0,00027 = **$0,27 por
+día**. Una sola A100 encendida tiene capacidad para unas 175.000 por día. Para
+una guardia, una GPU sobra por mucho, y lo que se paga es la disponibilidad. Un
+arranque en frío de ~5 minutos no es aceptable en una guardia, así que la
+opción realista es al menos un contenedor prendido en las horas de atención.
+
+**Mantenimiento.** Reentrenar con datos nuevos cuesta lo que una corrida
+completa: $3,38 a $4,80 y 1,5 a 2,2 h de A100. Revalidar el modelo sobre los
+150 casos de práctica cuesta $0,28. Repetir la optimización de prompt cuesta
+$2,01.
+
+### Cómo escalaría si sube la demanda
+
+1. **Más casos por GPU.** Primero se aprovecha el lote: vLLM agrupa las
+   conversaciones que llegan juntas. Se tolera un mínimo de 14 casos
+   simultáneos y en la práctica 50 entran sin errores.
+2. **Más réplicas.** Cuando una GPU no alcanza, se agregan contenedores en
+   Modal (`max_containers`, o `min_containers` para tener réplicas calientes).
+   Cada réplica suma ~7.300 casos por hora en lote y $2,10 por hora.
+3. **Que la carga no frene el escalado.** Cada réplica nueva tarda ~5 minutos
+   en cargar el modelo, así que hay que escalar antes de que haga falta (una
+   réplica de reserva en el pico) o acortar la carga (siguiente apartado).
+
+### Trabajos futuros
+
+- **Medir la latencia de un caso solo** y bajo carga (casos que llegan de a
+  uno), que es lo que ve el operador. Hoy solo hay tiempo de lote.
+- **Bajar el costo por hora de servicio.** El modelo entra con holgura en la
+  A100: los pesos y la caché KV caben con margen. Probar una GPU más chica y
+  más barata, o cuantizar el modelo, bajaría el número que domina la
+  proyección. Hay que medir si se mantienen los casos resueltos.
+- **Fusionar el adaptador en los pesos** para servir sin LoRA. Recupera los
+  47.582 tokens de caché (de 14,2 a 17,1 pedidos simultáneos garantizados) y
+  ahorra el cálculo del adaptador en cada token.
+- **Acortar la carga del modelo** (291 a 315 s). Por ejemplo, con los pesos ya
+  bajados en un volumen de Modal o con un snapshot de memoria del contenedor,
+  para que escalar y arrancar en frío sean viables.
+- **Contexto por caso más corto.** El modelo final lee 44.000 caracteres por
+  caso, contra 18.700 del base. Un buscador que traiga menos texto bajaría el
+  tiempo por caso.
+- **Entrenamiento más rápido.** Sin `gradient_checkpointing` o con un batch
+  mayor, aprovechando el ~40% de memoria libre de la GPU. Medirlo con la
+  misma semilla y comparar segundos por paso y pérdida.
+- **Evaluar los puntos de control intermedios** sobre la práctica (Parte 4).
+  Si el del paso 200 resolviera lo mismo, el entrenamiento costaría un tercio
+  menos.
+- **Que ninguna corrida dependa de la Mac.** Las dos cancelaciones por
+  suspensión costaron $2,91. Hay que lanzar desde un entorno que no se
+  suspenda, o hacer que el entrenamiento retome solo desde el último punto de
+  control.
