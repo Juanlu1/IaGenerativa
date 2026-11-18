@@ -32,7 +32,8 @@ de `curado/auditoria.csv` y resolver ambigüedades con el equipo.
 - Partes 1 a 4: HECHAS. La entrega final es `config.yaml` (`prompt_optimizado.txt` y el adaptador
   `sft-prompt-v1-r1-final`, `Juanlu1/gemma-admision@a5af001`): 26, 25 y 28 casos de práctica (original, b y c).
 - Parte 5 (recursos y producción): PENDIENTE, la escribe otra integrante. `INFORME.md` le deja la lista de fuentes.
-- Único PENDIENTE de la Parte 4: el motivo por el que no se repitió ninguna evaluación de los adaptadores.
+- Parte 4 sin PENDIENTE. La entrega final se evaluó dos veces (`sft_prompt` y `sft_prompt_rep`): mismas fichas en
+  los 150 casos; `comparar_corridas.py` compara dos etiquetas caso por caso.
 - El historial y la configuración de los 4 runs de W&B y las etiquetas de HF ya están en `corridas/`
   (`exportar_registros.py`).
 
