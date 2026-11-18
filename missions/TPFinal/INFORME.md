@@ -30,6 +30,9 @@ particular las que tienen más de un motivo o una elección interpretativa.
    avisos en 1.785 filas (8%). La señal se ve en distintos operadores y no se
    deduce de la edad de box definida por P-ADM-2. La lista de evidencia y las
    excepciones está en `costumbres.md`.
+   La revisión posterior de [`revision_parte1.md`](revision_parte1.md) muestra
+   que el corte es 75 años y que los 143 avisos fuera del patrón son ruido de
+   OP-04, OP-11 y OP-17; la clasificación todavía no incorpora esa corrección.
 2. **Prioridad de la prepaga cuando se presentan una obra social y una prepaga.**
    Se verificó la prepaga en 184 de 193 casos comparables (95%). Las normas no
    fijan una prioridad entre ambas; las 9 excepciones y la evidencia están en
@@ -40,11 +43,16 @@ particular las que tienen más de un motivo o una elección interpretativa.
 - `curado/conversaciones_reales.jsonl`: 1.590 conversaciones construidas desde
   las trazas clasificadas como correctas, con el mensaje de sistema y el formato
   de herramientas de `admision/ejemplo.py`.
-- `curado/conversaciones_sinteticas.jsonl`: 500 conversaciones generadas por
+- `curado/conversaciones_sinteticas.jsonl`: 600 conversaciones generadas por
   `admision.generador` y resueltas por una política determinista que usa las
-  normas y costumbres anteriores. La generación reparte las versiones
-  `original`, `b` y `c`, con sus parámetros correspondientes. La semilla es
-  `20261108`; la configuración está en `curado/sinteticas_config.json`.
+  normas y costumbres anteriores, con el buscador del grupo y las consultas de
+  las trazas de la cátedra. La generación reparte las versiones `original`,
+  `b` y `c` (200 cada una), con sus parámetros correspondientes. La semilla es
+  `20261108`; la configuración está en `curado/sinteticas_config.json`. La
+  política resuelve 50/50 casos de práctica en las tres versiones
+  (`validar_politica.py`; la primera pasada, con 500 conversaciones, un
+  buscador de palabras clave y el corte del voluntariado en 76 años, daba
+  49/50).
 - Las 800 trazas de referencia de la cátedra permanecen separadas en
   `entrenamiento/trazas.jsonl`.
 
@@ -110,3 +118,8 @@ sirve para detectar regresiones, no para puntuar al agente.
 **Pendiente:** conectar `construir_buscador` con el `entrega.py` del grupo y
 medir casos resueltos, contexto, costo y tiempo con un agente ejecutable.
 El 60/60 corresponde al set de desarrollo del RAG; no estima el test secreto.
+
+## Parte 4 — Entrenamiento
+
+El apartado completo (estrategia, conjunto de datos, configuración, comandos
+y la tabla de casos resueltos) está en [`informe_parte4.md`](informe_parte4.md).
