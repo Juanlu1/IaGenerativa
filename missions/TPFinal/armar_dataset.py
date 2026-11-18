@@ -319,7 +319,7 @@ def main() -> None:
 
     if peso_train_mb > LIMITE_GIT_MB:
         print(f"\ntrain.jsonl pesa {peso_train_mb:.1f} MB (> {LIMITE_GIT_MB} MB): no lo commitees; "
-              "subilo con --subir-hf <usuario>/<repo> (ver lightning_entrenamiento.md).")
+              "subilo con --subir-hf <usuario>/<repo> (ver modal_entrenamiento.md).")
     if args.subir_hf:
         subir_a_hf(args.subir_hf, args.salida, resumen)
 
