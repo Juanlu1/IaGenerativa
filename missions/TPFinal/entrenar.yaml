@@ -1,0 +1,87 @@
+# Configuración del SFT con LoRA de la Parte 4 (la lee entrenar.py).
+# Pensada para una A100 de 40 GB y de 2 a 4 horas de entrenamiento. La duración
+# es una estimación a confirmar: la prueba chica en Modal (--max-pasos 20, ver
+# modal_entrenamiento.md) mide segundos por paso y VRAM máxima, y con eso se
+# ajustan las épocas antes de la corrida completa.
+
+# Semilla de todo: orden de los datos, inicialización de LoRA y dropout.
+semilla: 20261117
+
+modelo:
+  # Modelo base del enunciado. 8.000 millones de parámetros en total (con los
+  # embeddings por capa y las torres de visión y audio), unos 16 GB en bf16:
+  # entra en la A100 de 40 GB y deja ~20 GB para activaciones.
+  id: google/gemma-4-E4B-it
+  # bf16 en la A100: la mitad de memoria que fp32 y sin el riesgo de
+  # desbordamiento de fp16.
+  dtype: bfloat16
+  # SDPA de PyTorch: Gemma 4 no usa softcapping en la atención (solo en los
+  # logits finales), así que no hace falta la implementación eager.
+  attn_implementation: sdpa
+
+datos:
+  # Salida de armar_dataset.py. El sha256 de cada archivo queda en W&B y en el
+  # repo de HF. Para la variante con prompt optimizado se pasa --datos.
+  train: datos/train.jsonl
+  val: datos/val.jsonl
+
+lora:
+  # Rank 32: el adaptador ronda los 70 millones de parámetros (~1% del modelo),
+  # suficiente para un oficio acotado (el protocolo JSON, el orden de las
+  # herramientas y las costumbres). Tiene que ser uno de los ranks que acepta
+  # vLLM (1, 8, 16, 32, 64, 128, 256, 320, 512); entrega.py lo carga con
+  # max_lora_rank=32.
+  r: 32
+  # alpha = r: escala 1 sobre la actualización, estable con este lr.
+  alpha: 32
+  # Algo de dropout: hay ~2.800 conversaciones muy parecidas entre sí y 3 épocas.
+  dropout: 0.05
+  # Los módulos objetivo no se configuran: entrenar.py usa q/k/v/o_proj y
+  # gate/up/down_proj del modelo de lenguaje, que es lo que vLLM sabe cargar.
+
+entrenamiento:
+  # 3 épocas sobre ~7,6 millones de tokens de train (estimación de
+  # armar_dataset.py, caracteres/4) son ~23 millones de tokens procesados. A
+  # 2.000-3.000 tokens por segundo con LoRA y gradient checkpointing en la A100
+  # da entre 2 y 3,2 horas. El ritmo real lo da la prueba chica.
+  epocas: 3
+  # lr típico de LoRA (10 veces el de un fine-tuning completo).
+  lr: 1.0e-4
+  # Coseno con 3% de calentamiento: arranca suave y baja hasta 0 al final.
+  scheduler: cosine
+  warmup: 0.03
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  # 2 conversaciones por paso hacia adelante: el vocabulario de Gemma tiene
+  # 262.144 tokens y los logits de 2 x ~3.000 tokens en fp32 ya ocupan ~6 GB.
+  batch_por_dispositivo: 2
+  # 2 x 8 = 16 conversaciones por paso de optimización: ~178 pasos por época,
+  # ~533 en total.
+  acumulacion_gradiente: 8
+  # Recalcula activaciones en el paso hacia atrás: ~30% más lento, pero baja la
+  # memoria de activaciones de 42 capas a casi nada.
+  gradient_checkpointing: true
+  # La conversación más larga ronda 3.700 tokens estimados; 6.144 deja margen
+  # para la diferencia con el tokenizador real. Las que lo superan se descartan
+  # (truncar cortaría registrar_decision) y quedan contadas en W&B.
+  largo_maximo: 6144
+  # Ordena los lotes por largo para no gastar cómputo en relleno.
+  agrupar_por_largo: true
+  # Un punto de control cada 100 pasos (~6 por corrida) sube a HF con su
+  # etiqueta; es también el punto desde donde se puede retomar.
+  pasos_guardado: 100
+  pasos_evaluacion: 100
+  pasos_log: 10
+  # Puntos de control que quedan en el Volume de Modal (los demás están en HF).
+  checkpoints_locales: 2
+
+wandb:
+  # Se puede reemplazar con la variable WANDB_PROJECT (y WANDB_ENTITY).
+  proyecto: tp-admision-guardia
+  entidad: null
+
+hf:
+  # HF_REPO sale del entorno (secret tp-secrets en Modal). Al terminar, el
+  # adaptador final lleva <corrida>-final y esta etiqueta, que se mueve a la
+  # última corrida terminada; entrega.py debería fijar la revisión exacta.
+  etiqueta_final: final
