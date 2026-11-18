@@ -47,11 +47,13 @@ lora:
   # gate/up/down_proj del modelo de lenguaje, que es lo que vLLM sabe cargar.
 
 entrenamiento:
-  # 3 épocas sobre ~7,6 millones de tokens de train (estimación de
-  # armar_dataset.py, caracteres/4) son ~23 millones de tokens procesados. A
-  # 2.000-3.000 tokens por segundo con LoRA y gradient checkpointing en la A100
-  # da entre 2 y 3,2 horas. El ritmo real lo da la prueba chica.
-  epocas: 3
+  # Medido en la prueba chica en la A100 (corridas/prueba-gpu-02, 20 pasos):
+  # 27,5 s por paso (pasos 5 a 20; 29,1 s de promedio con el arranque) y 178
+  # pasos por época. 3 épocas serían ~4,1 h y 2, ~2,85 h, muy cerca del tope
+  # de 3 h. 1,75 épocas son ~312 pasos: ~2,4 h entrenando más la carga, las
+  # evaluaciones y las subidas, unas 2,5 h. El Trainer acepta épocas
+  # fraccionarias: el coseno termina igual en 0 en el último paso.
+  epocas: 1.75
   # lr típico de LoRA (10 veces el de un fine-tuning completo).
   lr: 1.0e-4
   # Coseno con 3% de calentamiento: arranca suave y baja hasta 0 al final.
@@ -63,7 +65,7 @@ entrenamiento:
   # 262.144 tokens y los logits de 2 x ~3.000 tokens en fp32 ya ocupan ~6 GB.
   batch_por_dispositivo: 2
   # 2 x 8 = 16 conversaciones por paso de optimización: ~178 pasos por época,
-  # ~533 en total.
+  # ~312 en total con 1,75 épocas.
   acumulacion_gradiente: 8
   # Recalcula activaciones en el paso hacia atrás: ~30% más lento, pero baja la
   # memoria de activaciones de 42 capas a casi nada.
@@ -74,7 +76,7 @@ entrenamiento:
   largo_maximo: 6144
   # Ordena los lotes por largo para no gastar cómputo en relleno.
   agrupar_por_largo: true
-  # Un punto de control cada 100 pasos (~6 por corrida) sube a HF con su
+  # Un punto de control cada 100 pasos (3 por corrida, más el final) sube a HF con su
   # etiqueta; es también el punto desde donde se puede retomar.
   pasos_guardado: 100
   pasos_evaluacion: 100

@@ -1,0 +1,13 @@
+[
+  {
+    "paso": 20,
+    "revision": "6d13f855fe77e8b22577adf67d4aae1a769e305d",
+    "etiqueta": "prueba-gpu-02-paso-20"
+  },
+  {
+    "paso": 20,
+    "revision": "427aae909639f0b4c261ce71c1cc6daff61eb8f3",
+    "etiqueta": "prueba-gpu-02-final",
+    "etiqueta_movil": null
+  }
+]

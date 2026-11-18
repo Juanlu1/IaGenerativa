@@ -450,8 +450,13 @@ Tokens estimados como caracteres / 4, igual que `admision.evaluar_rag`:
 - Los tokens reales del tokenizador de Gemma quedan en
   `corridas/<corrida>/datos.json` y en W&B. El tokenizador del modelo
   diminuto de la prueba de la Mac no es idéntico al de Gemma 4 E4B (otro
-  sha256 de `tokenizer.json`), así que la relación real entre tokens y
-  caracteres sale de la prueba en GPU: PENDIENTE.
+  sha256 de `tokenizer.json`), así que la relación real sale de la prueba en
+  GPU (`corridas/prueba-gpu-02/datos.json`, variante `datos/`): con el
+  tokenizador de Gemma 4 E4B, train son 8.640.302 tokens (estimados:
+  7.740.202, un 11,6% menos) y val 447.945 (estimados: 400.426). De los de
+  train, 838.716 (9,7%) entran en la pérdida. La conversación más larga tiene
+  4.176 tokens reales, por debajo del máximo de 6.144: no se descarta
+  ninguna.
 - Los dos `train.jsonl` pesan menos de 50 MB y van en git. Si una variante
   pasa ese límite, se publica con `armar_dataset.py --subir-hf` en un repo de
   dataset de HF (ver [`MODAL.md`](MODAL.md), sección 8).
@@ -532,7 +537,7 @@ se le parece.
 | Modelo | `google/gemma-4-E4B-it`, bf16, SDPA (eager en la torre de audio) | el del enunciado; ~16 GB en bf16 |
 | LoRA | r = 32, alpha = 32, dropout 0,05 | rank aceptado por vLLM; ~1% de parámetros |
 | Módulos | q/k/v/o_proj, gate/up/down_proj del modelo de lenguaje | lo que carga vLLM |
-| Épocas | 3 | ~530 pasos; a confirmar con la prueba chica |
+| Épocas | 1,75 | ~312 pasos; ~2,5 horas según la prueba chica (ver abajo) |
 | lr | 1e-4, coseno, 3% de calentamiento | habitual en LoRA |
 | Batch | 2 por paso x 8 de acumulación = 16 conversaciones | logits de 262.144 tokens de vocabulario |
 | Largo máximo | 6.144 tokens (se descartan, no se truncan) | la más larga ronda 3.700 estimados |
@@ -540,9 +545,25 @@ se le parece.
 | Semilla | 20261117 | datos, LoRA y dropout |
 | Puntos de control | cada 100 pasos, a `HF_REPO` | con estado para retomar |
 
-La duración de 2 a 4 horas es una estimación (unos 23 millones de tokens
-procesados a 2.000 o 3.000 tokens por segundo), no una medición. La prueba
-chica en GPU mide segundos por paso y VRAM; con eso se ajustan las épocas.
+Las épocas salen de la prueba chica en la A100 (`corridas/prueba-gpu-02/`,
+20 pasos con `datos/`, W&B `2r5rmemo`):
+
+| Medida | Valor |
+|---|---|
+| Segundos por paso | 27,5 (pasos 5 a 20); 29,1 de promedio con el arranque |
+| Pasos por época | 178 (2.850 conversaciones / 16) |
+| VRAM máxima | 20,75 GB de 40, sin errores de memoria |
+| Pérdida de train | 0,4416 en el paso 10 y 0,1433 en el paso 20 (media de la corrida: 0,2924) |
+| Pérdida de val (paso 20) | 0,1273 (precisión por token 0,968) |
+| Evaluación sobre val | 49 s |
+| Puntos de control en HF | `prueba-gpu-02-paso-20` (`6d13f85`) y `prueba-gpu-02-final` (`427aae9`); compatibles con vLLM (rank 32, 7 módulos) |
+
+Con 27,5 s por paso, 3 épocas (534 pasos) tardarían unas 4,1 horas y 2
+épocas (356 pasos) unas 2,85, demasiado cerca del tope de 3 horas para una
+medida de 20 pasos. Con 1,75 épocas (unos 312 pasos) son unas 2,4 horas de
+entrenamiento más la carga del modelo, 4 evaluaciones y las subidas: unas
+2,5 horas. Es una estimación a partir de esos 20 pasos; el tiempo real queda
+en `corridas/<corrida>/resumen.json`.
 
 Dependencias: una sola pila para entrenar y para evaluar, con versión exacta
 en `pyproject.toml` y `uv.lock`: vllm 0.34.0 (solo en Linux), torch 2.14.0,

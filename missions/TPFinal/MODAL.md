@@ -250,9 +250,9 @@ tail -f corridas/prueba-gpu-01.log
 
 Sube a `HF_REPO` las etiquetas `prueba-gpu-01-paso-20` y `prueba-gpu-01-final` y registra la corrida en W&B, pero no
 mueve la etiqueta `final`. Al terminar, `corridas/prueba-gpu-01/resumen.json` trae `segundos`, `pasos` y
-`vram_max_gb`. La corrida completa tiene unos 530 pasos (2.850 conversaciones, 16 por paso, 3 épocas): si
-`530 x segundos / pasos` se va de 2 a 4 horas, ajustar `epocas` en `entrenar.yaml` y commitear el cambio antes de
-lanzarla.
+`vram_max_gb`. Una época son unos 178 pasos (2.850 conversaciones, 16 por paso): si
+`178 x epocas x segundos por paso` se va de 2 a 3 horas, ajustar `epocas` en `entrenar.yaml` y commitear el cambio
+antes de lanzar la corrida completa. Con `prueba-gpu-02` (27,5 s por paso) quedó en 1,75 épocas, unos 312 pasos.
 
 ## 11. Parte 4: entrenamiento completo
 

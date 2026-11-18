@@ -1,0 +1,72 @@
+{
+  "corrida": "prueba-gpu-02",
+  "pasos": 20,
+  "segundos": 643.6,
+  "train_loss": 0.29242977499961853,
+  "eval": {
+    "eval_loss": 0.12729597091674805,
+    "eval_runtime": 48.8479,
+    "eval_samples_per_second": 3.071,
+    "eval_steps_per_second": 1.535,
+    "eval_entropy": 0.19836866855621338,
+    "eval_mean_token_accuracy": 0.9677043453852335,
+    "eval_num_tokens": 1103797.0,
+    "epoch": 0.11228070175438597
+  },
+  "revisiones": [
+    {
+      "paso": 20,
+      "revision": "6d13f855fe77e8b22577adf67d4aae1a769e305d",
+      "etiqueta": "prueba-gpu-02-paso-20"
+    },
+    {
+      "paso": 20,
+      "revision": "427aae909639f0b4c261ce71c1cc6daff61eb8f3",
+      "etiqueta": "prueba-gpu-02-final",
+      "etiqueta_movil": null
+    }
+  ],
+  "vllm": {
+    "rank": 32,
+    "alpha": 32,
+    "modulos": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
+    "tensores": 516,
+    "max_lora_rank_vllm": 32,
+    "problemas": []
+  },
+  "wandb": "https://forge.coreweave.com/wandb/juanlu1-austral/tp-admision-guardia/runs/2r5rmemo",
+  "datos": {
+    "train": {
+      "ruta": "datos/train.jsonl",
+      "sha256": "63139319143e32c98dd1ba4015a1ac78bacb9499eda1bf9efb38e95803650f65",
+      "lineas": 2850,
+      "conversaciones_usadas": 2850,
+      "descartadas_por_largo": [],
+      "tokens": 8640302,
+      "tokens_en_perdida": 838716,
+      "largo_maximo": 4176,
+      "largo_medio": 3031.7
+    },
+    "val": {
+      "ruta": "datos/val.jsonl",
+      "sha256": "5f606a520f3e85366afc05d19cd59eef608f792308713631934a38fc8f0a201b",
+      "lineas": 150,
+      "conversaciones_usadas": 150,
+      "descartadas_por_largo": [],
+      "tokens": 447945,
+      "tokens_en_perdida": 43580,
+      "largo_maximo": 4142,
+      "largo_medio": 2986.3
+    }
+  },
+  "semilla": 20261117,
+  "vram_max_gb": 20.75
+}
