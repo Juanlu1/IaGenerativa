@@ -2,7 +2,7 @@
 
 Apartado de la Parte 3 para unir a `INFORME.md`. Todo se hizo con Gemma 4 E4B sin entrenar
 (`google/gemma-4-E4B-it`, revisión `4ecc2ba63bcac23ba4a767fc87025b1450f84c9c`), servido con vLLM 0.33.0 en una
-A100 de 40 GB de Modal. Los números que todavía no se corrieron dicen PENDIENTE.
+A100 de 40 GB de Modal.
 
 ## Qué se optimiza
 
@@ -24,7 +24,7 @@ medida para la penalización por largo; si no puede cargar el tokenizer, usa car
 |---|---:|---:|
 | `prompt_base.txt` | 615 | 2.232 |
 | `prompt_corto.txt` | 467 | 1.634 |
-| `prompt_optimizado.txt` | PENDIENTE | PENDIENTE |
+| `prompt_optimizado.txt` | 693 | 2.429 |
 
 ## Prompt corto, a mano
 
@@ -129,6 +129,9 @@ uv run modal volume get --force tp-corridas /corridas/gepa/gepa1 corridas/gepa
 cp corridas/gepa/gepa1/prompt_optimizado.txt corridas/gepa/gepa1/config_optimizado.yaml .
 ```
 
+En `gepa1` la salida de GEPA fue el prompt inicial, así que `prompt_optimizado.txt` se tomó del candidato 9 de
+`log.jsonl` (ver Resultados) y `config_optimizado.yaml` es la de la corrida con otro comentario en la primera línea.
+
 Evaluación de cada prompt sobre los 50 casos de práctica con las normas original, b y c:
 
 ```bash
@@ -150,8 +153,8 @@ Casos resueltos sobre los 50 de práctica, con el modelo sin entrenar. Fuente: `
 |---|---:|---:|---:|---:|---|
 | Referencia de la cátedra (sin entrenar) | | 12 | 15 | 12 | `mission.md` |
 | `prompt_base.txt` | 615 | 11 | 8 | 9 | `corridas/base/` |
-| `prompt_corto.txt` | 467 | PENDIENTE | PENDIENTE | PENDIENTE | `corridas/prompt_corto/` |
-| `prompt_optimizado.txt` | PENDIENTE | PENDIENTE | PENDIENTE | PENDIENTE | `corridas/prompt_optimizado/` |
+| `prompt_corto.txt` | 467 | 6 | 5 | 3 | `corridas/prompt_corto/` |
+| `prompt_optimizado.txt` | 693 | 8 | 10 | 10 | `corridas/prompt_optimizado/` |
 
 La línea de base (`corridas/base/`, commit `d222a92`, 50 casos, búsquedas 1,3 por caso) queda por debajo de la
 referencia de la cátedra en las tres versiones, sobre todo en b (8 contra 15). Los controles que más fallan son
@@ -161,9 +164,44 @@ el lote en GPU puede mover algún caso entre corridas (ver Auditabilidad en `mis
 
 Optimización con GEPA (`corridas/gepa/gepa1/resumen.json` y `log.jsonl`):
 
-| | Tokens | Controles aprobados medios (validación) | Resueltos (validación) |
-|---|---:|---:|---:|
-| Prompt inicial | 615 | PENDIENTE | PENDIENTE |
-| Mejor candidato | PENDIENTE | PENDIENTE | PENDIENTE |
+| | Tokens | Puntaje | Controles aprobados medios (validación) | Resueltos (validación, de 45) |
+|---|---:|---:|---:|---:|
+| Prompt inicial (candidato 0) | 615 | 0,8348 | 0,8471 | 8 |
+| Candidato 9 (`prompt_optimizado.txt`) | 693 | 0,8307 | 0,8446 | 15 |
+| Otros 22 candidatos | 571 a 767 | 0,7156 a 0,7984 | 0,7286 a 0,8125 | 4 a 12 |
 
-Candidatos explorados, casos jugados y tiempo: PENDIENTE.
+24 candidatos, tope de 3.000 casos jugados alcanzado en 3.347 s (56 minutos de optimización, más la carga del
+modelo), reflexión con la misma Gemma, semilla 0, penalización 0,02. La corrida se lanzó desde el commit `44c8299`;
+`resumen.json` lo marca "con cambios sin commitear" solo por los logs locales de lanzamiento, que ahora están en
+`.gitignore`.
+
+**GEPA no encontró un candidato con mejor puntaje que el inicial**, así que su salida
+(`corridas/gepa/gepa1/prompt_optimizado.txt`) es `prompt_base.txt` tal cual. La métrica de GEPA es el promedio de
+controles aprobados, y la del TP son los casos resueltos (los 9 controles a la vez). En validación el candidato 9
+resolvió casi el doble de casos que el inicial (15 contra 8) con un promedio de controles casi igual. Por eso
+`prompt_optimizado.txt` es el candidato 9 (`texto` de la línea `"candidato": 9` de `log.jsonl`), no la salida
+directa de GEPA. Elegirlo mirando la validación entre 24 candidatos puede premiar el azar; la evaluación sobre los
+50 casos de práctica, que no se usaron en la optimización, es la que dice si la mejora es real.
+
+Qué cambia el candidato 9 respecto del base: ordena el trabajo en un protocolo de cinco pasos (leer triage,
+preguntar cobertura, verificar afiliación, buscar normativa, registrar), pide buscar en las normas antes de registrar,
+con ejemplos de consultas, y prohíbe usar valores numéricos fijos de las normas. Conserva las cinco herramientas, los
+argumentos y el formato JSON. Es 13 % más largo (693 tokens).
+
+### Lectura de los resultados
+
+- **El prompt corto empeora en las tres versiones** (6, 5 y 3 contra 11, 8 y 9). Casi toda la caída está en
+  `box_antes_del_registro`, que baja de 60 a 62 % de aciertos a 36 a 42 %, y en `plazo_circuito_min` (de 90 a 92 %
+  a 78 a 80 %). Al sacar la redacción larga de los argumentos se perdió contexto que la Gemma sin entrenar usaba para
+  esos campos, aunque las reglas sigan escritas. Ahorra 148 tokens de prompt y unos 3.700 caracteres de contexto por
+  caso, que no compensan.
+- **El prompt optimizado mejora en las normas b y c** (10 y 10 contra 8 y 9) y queda por debajo en las originales (8
+  contra 11): 28 casos resueltos en total, igual que la base. Busca más en las normas (1,9 búsquedas por caso contra
+  1,3), lo que sube `registro` (72 a 84 % contra 68 a 74 %), `circuito` (100 %) y `plazo_circuito_min`; con las
+  normas cambiadas eso es lo que más importa. A cambio, el contexto por caso crece de unos 19.000 a unos 25.500
+  caracteres.
+- **Ninguno llega a la referencia de la cátedra sin entrenar** (12, 15 y 12). Los controles que siguen fallando en
+  los tres prompts son `box_antes_del_registro`, `cobertura`, `aviso_al_voluntariado` y la verificación. Son reglas
+  que dependen de combinar varios datos del caso, y el ajuste fino de la Parte 4 apunta a ellas.
+- La mejora de 8 a 15 en validación no se sostuvo con la misma fuerza en la práctica: con 45 casos y 24 candidatos,
+  parte de esa diferencia era azar.
