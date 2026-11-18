@@ -452,7 +452,12 @@ conjunto de datos los hace variar (ver abajo).
   (solo su `chat_template.jinja`, sin bajar el modelo), la máscara fue exacta
   en las 150 conversaciones de val. En las 16 conversaciones de la prueba
   (variante `datos/sin_prompt/`), 4.766 de 47.179 tokens entran en la
-  pérdida (10,1%, con el tokenizador del modelo diminuto).
+  pérdida (10,1%, con el tokenizador del modelo diminuto). La prueba deja sus
+  archivos en `corridas/prueba-*/`, que no se versiona; el número se
+  reproduce con `uv run python entrenar.py --prueba --corrida prueba-mac
+  --datos datos/sin_prompt/train.jsonl --val datos/sin_prompt/val.jsonl`
+  (`tokens` y `tokens_en_perdida` de train en la salida). Sin `--datos`
+  (variante `datos/`) da 4.766 de 48.427.
 - **Compatible con vLLM.** `entrega.py` carga el adaptador con el soporte LoRA
   de vLLM 0.34.0. Según su código (`vllm/model_executor/models/gemma4.py`,
   `gemma4_mm.py` y `vllm/config/lora.py`), para Gemma 4 acepta LoRA en
@@ -606,20 +611,30 @@ Las épocas salen de la prueba chica en la A100 (`corridas/prueba-gpu-02/`,
 
 | Medida | Valor |
 |---|---|
-| Segundos por paso | 27,5 (pasos 5 a 20); 29,1 de promedio con el arranque |
+| Segundos por paso | PENDIENTE: se usó 27,5 (pasos 5 a 20) y 29,1 de promedio con el arranque, leídos en W&B `2r5rmemo`, pero ningún archivo del repo los respalda. `resumen.json` solo tiene 643,6 s para los 20 pasos, con la evaluación incluida |
 | Pasos por época | 178 (2.850 conversaciones / 16) |
 | VRAM máxima | 20,75 GB de 40, sin errores de memoria |
-| Pérdida de train | 0,4416 en el paso 10 y 0,1433 en el paso 20 (media de la corrida: 0,2924) |
+| Pérdida de train | media de la corrida: 0,2924. Pasos 10 y 20: PENDIENTE (W&B `2r5rmemo`, sin archivo en el repo) |
 | Pérdida de val (paso 20) | 0,1273 (precisión por token 0,968) |
 | Evaluación sobre val | 49 s |
-| Puntos de control en HF | `prueba-gpu-02-paso-20` (`6d13f85`) y `prueba-gpu-02-final` (`427aae9`); compatibles con vLLM (rank 32, 7 módulos) |
+| Puntos de control en HF | `Juanlu1/gemma-admision`: `prueba-gpu-02-paso-20` (`6d13f855fe77e8b22577adf67d4aae1a769e305d`) y `prueba-gpu-02-final` (`427aae909639f0b4c261ce71c1cc6daff61eb8f3`); compatibles con vLLM (rank 32, 7 módulos) |
 
-Con 27,5 s por paso, 3 épocas (534 pasos) tardarían unas 4,1 horas y 2
-épocas (356 pasos) unas 2,85, demasiado cerca del tope de 3 horas para una
-medida de 20 pasos. Con 1,75 épocas (unos 312 pasos) son unas 2,4 horas de
-entrenamiento más la carga del modelo, 4 evaluaciones y las subidas: unas
-2,5 horas. Es una estimación a partir de esos 20 pasos; el tiempo real queda
-en `corridas/<corrida>/resumen.json`.
+Salvo lo marcado PENDIENTE, todo sale de `corridas/prueba-gpu-02/resumen.json`
+y `datos.json`. Comando: `uv run modal run --detach modal_entrenar.py
+--corrida prueba-gpu-02 --max-pasos 20` (datos `datos/train.jsonl`, prompt
+`prompt_optimizado.txt`, semilla 20261117; la configuración exacta, todavía
+con 3 épocas que `--max-pasos` corta, está en
+`corridas/prueba-gpu-02/config_usada.yaml`. El commit de código no quedó
+registrado en los archivos de la corrida).
+
+Las épocas se eligieron con los segundos por paso medidos en esa prueba
+(PENDIENTE de respaldar, ver arriba). Con esa medida, 3 épocas (534 pasos)
+tardaban demasiado y 2 épocas (356 pasos) quedaban demasiado cerca del tope
+de 3 horas para una medida de 20 pasos; se eligieron 1,75 épocas (unos 312
+pasos). Las horas que se estimaron para cada opción dependen del número
+PENDIENTE y se sacaron de acá. El tiempo real de las corridas completas sí
+está respaldado: `segundos` de `corridas/<corrida>/resumen.json` (tabla de
+abajo).
 
 Dependencias: una sola pila para entrenar y para evaluar, con versión exacta
 en `pyproject.toml` y `uv.lock`: vllm 0.34.0 (solo en Linux), torch 2.14.0,
@@ -689,6 +704,30 @@ mensaje de sistema de `admision/ejemplo.py` tal cual.
 | Solo entrenamiento | `sft-ejemplo-v2-paso-300` (`67deca8`) | `admision/ejemplo.py` | 21 | 22 | 22 |
 | Prompt + entrenamiento | `sft-prompt-v1-r1-final` (`a5af001`) | `prompt_optimizado.txt` | 26 | 25 | 28 |
 
+De dónde sale cada fila. Modelo base `google/gemma-4-E4B-it`, revisión
+`4ecc2ba63bcac23ba4a767fc87025b1450f84c9c`, vLLM 0.34.0, 50 casos de
+`practica/casos.jsonl`. Los comandos son `uv run modal run --detach
+modal_app.py::evaluar` con lo que dice la columna (sección 5 y 14 de
+[`MODAL.md`](MODAL.md)); los números, de `corridas/<etiqueta>/<version>/resumen.json`
+(y `corridas/tabla.md`, `uv run python tabla.py`). El punto de control y su
+revisión salen de `corridas/<etiqueta>/corrida.json` (`adaptador_lora` y
+`adaptador_revision`). La evaluación no registra en W&B; la columna W&B es la
+del entrenamiento que produjo el punto de control.
+
+| Fila | Argumentos de `evaluar` | Punto de control (repo de HF @ revisión) | Prompt | Commit evaluado | W&B del entrenamiento |
+|---|---|---|---|---|---|
+| Sin entrenar | `--etiqueta base_v034 --config config_base.yaml` | ninguno | `prompt_base.txt` | `22acf20` | no aplica |
+| Solo prompt | `--etiqueta prompt_optimizado_v034 --config config_optimizado.yaml` | ninguno | `prompt_optimizado.txt` | `22acf20` | no aplica |
+| Solo entrenamiento | `--etiqueta sft --config config_sft_base.yaml` | `Juanlu1/gemma-admision` @ `67deca83dd206515f99683fa46bb1b3db3eb8f1d` (`sft-ejemplo-v2-paso-300`) | `prompt_base.txt` | `a726121` | `g69gw15q` (`sft-ejemplo-v2`) |
+| Prompt + entrenamiento | `--etiqueta sft_prompt --config config.yaml` | `Juanlu1/gemma-admision` @ `a5af001800f7da670f72d2a9461ec3a2d805f4f6` (`sft-prompt-v1-r1-final`) | `prompt_optimizado.txt` | `979e4d2` | `68qllkha` (`sft-prompt-v1` y `sft-prompt-v1-r1`) |
+
+Los links completos de W&B están en `corridas/sft-ejemplo-v2/resumen.json` y
+`corridas/sft-prompt-v1-r1/resumen.json` (proyecto
+`juanlu1-austral/tp-admision-guardia`). Las dos filas de referencia son de
+`mission.md` ("Cómo se corrige"). Las dos filas sin entrenar se corrieron en
+`22acf20` con `--config config.yaml` y `--config config_optimizado.yaml`;
+`config_base.yaml` es la `config.yaml` de ese commit (Parte 3, Comandos).
+
 "Prompt + entrenamiento" es `corridas/sft_prompt/`, con `config.yaml` (la
 entrega final). Supera a la referencia SFT de la cátedra en las tres
 versiones (26, 25 y 28 contra 25, 24 y 25) y casi triplica la fila sin
@@ -711,26 +750,32 @@ indicios, no mediciones finas (Parte 3).
 |---|---|---|
 | Datos | `datos/` (sha256 `63139319...`) | `datos/sin_prompt/` (sha256 `16830998...`) |
 | Pasos | 314 (1,76 épocas): 1 a 100 en `sft-prompt-v1`, 101 a 314 en `sft-prompt-v1-r1` | 314 (1,76 épocas), sin cortes |
-| Tiempo | 42 min hasta el paso 100 más 5.406 s (1,50 h) de la continuación: unas 2,2 h | 7.778 s (2,16 h) |
-| Pérdida de train | 0,00745 de media en los pasos 101 a 314; 0,00258 en el último registro (paso 310) | 0,0380 de media en los 314 pasos (incluye el arranque); 0,00347 en el último registro (paso 310) |
-| Pérdida de val | 0,01494 (paso 100), 0,00557 (200), 0,00405 (300), 0,00402 (314) | 0,01685 (paso 100), 0,00695 (200), 0,00529 (300), 0,00530 (314) |
-| Precisión por token en val | 0,9986 (paso 314) | 0,9981 (pasos 300 y 314) |
+| Tiempo | 5.406 s (1,50 h) de la continuación (pasos 101 a 314). Pasos 1 a 100: PENDIENTE (se informaron 42 min, sin archivo que los respalde), así que el total también queda PENDIENTE | 7.778 s (2,16 h) |
+| Pérdida de train | 0,00745 de media en los pasos 101 a 314. Último registro (paso 310): PENDIENTE | 0,0380 de media en los 314 pasos (incluye el arranque). Último registro (paso 310): PENDIENTE |
+| Pérdida de val | 0,00402 (paso 314). Pasos 100, 200 y 300: PENDIENTE | 0,00530 (paso 314). Pasos 100, 200 y 300: PENDIENTE |
+| Precisión por token en val | 0,9986 (paso 314) | 0,9981 (paso 314); paso 300: PENDIENTE |
 | VRAM máxima | 20,81 GB | 20,72 GB |
+| Comando | `modal_entrenar.py --corrida sft-prompt-v1`, retomada con `--corrida sft-prompt-v1-r1 --retomar hf:sft-prompt-v1-paso-100` (Comandos) | `modal_entrenar.py --corrida sft-ejemplo-v2 --datos datos/sin_prompt/train.jsonl --val datos/sin_prompt/val.jsonl` |
+| Puntos de control (`Juanlu1/gemma-admision`) | `sft-prompt-v1-paso-100` (revisión PENDIENTE: la corrida cortada no dejó archivos), `-r1-paso-200` `69815ca`, `-r1-paso-300` `2735306`, `-r1-paso-314` `c559132`, `-r1-final` `a5af001` | `sft-ejemplo-v2-paso-100` `d003d71`, `-paso-200` `e841460`, `-paso-300` `67deca8`, `-paso-314` `53d6d35`, `-final` `858d416` |
 | W&B | `68qllkha` (la continuación sigue el mismo run) | `g69gw15q` |
 
-Los números salen de `corridas/<corrida>/resumen.json` y del log de la corrida.
+Los números con valor salen de `corridas/<corrida>/resumen.json` (`segundos`,
+`train_loss`, `eval`, `vram_max_gb`, `wandb`) y las revisiones completas, de
+`revisiones.json`. Los marcados PENDIENTE se leyeron en W&B o en el log de
+Modal de la corrida, pero no quedaron en ningún archivo del repositorio:
+falta exportar el historial de W&B (por ejemplo, `run.history()` de cada run)
+a `corridas/<corrida>/`.
 
-**Punto de control elegido.** Para cada corrida se usa el de menor pérdida de
-validación. En `sft-prompt-v1-r1` es el final (paso 314, 0,00402), apenas por
-debajo del paso 300 (0,00405): la pérdida bajó en todas las evaluaciones, sin
-señales de sobreajuste. `config.yaml` fija el commit `a5af001800f7...` de la
-etiqueta `sft-prompt-v1-r1-final` y no la etiqueta móvil `final`, que pisa cada
+**Punto de control elegido.** El criterio es usar, en cada corrida, el de
+menor pérdida de validación. En `sft-prompt-v1-r1` se eligió el final (paso
+314, 0,00402). En `sft-ejemplo-v2` se eligió el del paso 300, y
+`config_sft_base.yaml` fija su commit `67deca83dd20...`
+(`sft-ejemplo-v2-paso-300`). Las pérdidas de validación de los pasos 100, 200
+y 300 que respaldan esas elecciones están PENDIENTES de exportar (ver arriba);
+con lo que hay en el repositorio solo se puede comprobar la del paso 314.
+`config.yaml` fija el commit `a5af001800f7...` de la etiqueta
+`sft-prompt-v1-r1-final` y no la etiqueta móvil `final`, que pisa cada
 corrida completa. La configuración sin entrenar queda en `config_base.yaml`.
-En `sft-ejemplo-v2` la menor es la del paso 300 (0,00529 contra 0,00530 del
-paso 314), así que `config_sft_base.yaml` fija el commit `67deca83dd20...` de
-`sft-ejemplo-v2-paso-300`. La diferencia es mínima: en los últimos 14 pasos la
-tasa de aprendizaje ya era casi cero (coseno) y la pérdida de validación quedó
-plana; se respetó el criterio en vez de elegir el final.
 
 ### Pasadas del desarrollo
 
