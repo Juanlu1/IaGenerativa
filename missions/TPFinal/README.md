@@ -24,6 +24,15 @@ uv sync                      # el kit, el agente, el entrenamiento y sus depende
 cp .env.example .env         # completar HF_TOKEN, WANDB_API_KEY y HF_REPO
 ```
 
+El adaptador está en el repo de modelo `Juanlu1/gemma-admision` de Hugging
+Face, que es **privado** y se comparte con la cátedra (como pide
+`mission.md`, "Modelo y corridas"): sin un `HF_TOKEN` con permiso de lectura
+sobre ese repo, la carga del adaptador falla con 401. `config.yaml` lo fija
+por commit (`a5af001800f7da670f72d2a9461ec3a2d805f4f6`), así que no hace falta
+entrenar ni saber qué etiqueta es la última. Las corridas de entrenamiento
+están en el proyecto de W&B `juanlu1-austral/tp-admision-guardia`, también
+compartido.
+
 Para lo que corre en Modal hace falta una cuenta con `uv run modal token new` hecho y
 el secret `tp-secrets` con las mismas tres variables:
 
@@ -98,7 +107,7 @@ resultados a `corridas/` está en [`MODAL.md`](MODAL.md).
 | `datos/train.jsonl`, `datos/val.jsonl`, `datos/resumen.json` (prompt + entrenamiento) | `uv run python armar_dataset.py --prompt prompt_optimizado.txt` | semilla 20261117; historial correcto, `entrenamiento/trazas.jsonl` y sintéticas |
 | `datos/sin_prompt/` (solo entrenamiento, prompt de `admision/ejemplo.py`) | `uv run python armar_dataset.py --salida datos/sin_prompt` | lo mismo |
 | `prompt_optimizado.txt`, `config_optimizado.yaml` | candidato 9 de `optimizar_prompt.py` (GEPA, `corridas/gepa/gepa1/log.jsonl`) | ver `INFORME.md`, Parte 3, y `MODAL.md`, sección 7 |
-| `corridas/<etiqueta>/`, `corridas/tabla.md` (evaluaciones de la Parte 3) | `modal_app.py::evaluar` y `uv run python tabla.py` | el yaml de `--config` (`config_base.yaml`, `config_corto.yaml`, `config_optimizado.yaml`, `config.yaml`) |
+| `corridas/<etiqueta>/`, `corridas/tabla.md` (evaluaciones de las Partes 3 y 4) | `modal_app.py::evaluar` (o `./evaluar_todo.sh <etiqueta>` en una máquina con GPU) y `uv run python tabla.py` | el yaml de `--config` (`config_base.yaml`, `config_corto.yaml`, `config_optimizado.yaml`, `config_sft_base.yaml`, `config.yaml`); qué etiqueta usó cada uno está en `corridas/<etiqueta>/corrida.json` |
 | Cada entrenamiento: adaptador en `HF_REPO` (etiquetas `<corrida>-paso-<N>`, `<corrida>-final` y `final`), corrida en W&B y `corridas/<corrida>/` | `uv run modal run --detach modal_entrenar.py --corrida <corrida>` (corre `entrenar.py`) | `entrenar.yaml` (semilla 20261117) y el archivo de datos, cuyo sha256 queda en W&B y en `corrida.json` del repo de HF |
 | `corridas/<version>/` (trazas, resultados y resumen de la evaluación) | `admision.correr` (sección 4) | `entrega.py` con `config.yaml` (o el yaml de `CONFIG`): prompt, adaptador y su revisión |
 | `revision_parte1.md` (cifras) | `uv run python revisar_parte1.py` | `historial/`, `curado/auditoria.csv` |
