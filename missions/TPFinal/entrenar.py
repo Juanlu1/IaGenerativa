@@ -16,7 +16,7 @@ Cada corrida:
     cortó con --max-pasos, `final`;
   - verifica que el adaptador sea cargable por el soporte LoRA de vLLM.
 
-Uso (en GPU corre dentro de Modal, ver modal_entrenar.py y modal_entrenamiento.md):
+Uso (en GPU corre dentro de Modal, ver modal_entrenar.py y MODAL.md):
     python entrenar.py --config entrenar.yaml
     python entrenar.py --config entrenar.yaml --max-pasos 20
     python entrenar.py --config entrenar.yaml --retomar hf:<corrida>-paso-200

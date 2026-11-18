@@ -4,7 +4,7 @@ kit_tp_admision.egg-info/
 corridas/*.log
 
 # Salidas pesadas del entrenamiento: los adaptadores y el estado para retomar
-# están en HF_REPO y las métricas en W&B (ver modal_entrenamiento.md).
+# están en HF_REPO y las métricas en W&B (ver MODAL.md).
 corridas/*/checkpoints/
 corridas/*/subida/
 corridas/*/retomado/

@@ -1,16 +1,16 @@
 """Entrenamiento de la Parte 4 en Modal: entrenar.py en una A100 de 40 GB.
 
-    modal run --detach modal_entrenar.py --corrida sft-v1
-    modal run --detach modal_entrenar.py --corrida prueba-gpu --max-pasos 20
-    modal run --detach modal_entrenar.py --corrida sft-v1b --retomar hf:sft-v1-paso-200
-    modal run modal_entrenar.py::bajar_modelo        # opcional: llena la caché sin GPU
+    uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1
+    uv run modal run --detach modal_entrenar.py --corrida prueba-gpu-01 --max-pasos 20
+    uv run modal run --detach modal_entrenar.py --corrida sft-prompt-v1-r1 --retomar hf:sft-prompt-v1-paso-300
+    uv run modal run --detach modal_entrenar.py::bajar_modelo   # opcional: llena la caché sin GPU
 
 Volúmenes:
   tp-hf-cache   caché de Hugging Face (HF_HOME): Gemma se baja una sola vez.
   tp-corridas   una carpeta por corrida, igual que corridas/<corrida> en local.
 
 El secret de Modal `tp-secrets` trae HF_TOKEN, WANDB_API_KEY y HF_REPO. Los
-comandos para ver los logs y bajar los resultados están en modal_entrenamiento.md.
+comandos para ver los logs y bajar los resultados están en MODAL.md (secciones 8 a 13).
 """
 
 from __future__ import annotations

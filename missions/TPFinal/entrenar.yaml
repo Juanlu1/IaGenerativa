@@ -1,7 +1,7 @@
 # Configuración del SFT con LoRA de la Parte 4 (la lee entrenar.py).
 # Pensada para una A100 de 40 GB y de 2 a 4 horas de entrenamiento. La duración
 # es una estimación a confirmar: la prueba chica en Modal (--max-pasos 20, ver
-# modal_entrenamiento.md) mide segundos por paso y VRAM máxima, y con eso se
+# MODAL.md, sección 10) mide segundos por paso y VRAM máxima, y con eso se
 # ajustan las épocas antes de la corrida completa.
 
 # Semilla de todo: orden de los datos, inicialización de LoRA y dropout.
