@@ -55,9 +55,8 @@ def _log(mensaje: str) -> None:
 
 
 def evaluar(etiqueta: str, cantidad: int | None = None, corridas: Path = RAIZ / "corridas",
-            commit: str | None = None, al_cargar=None, al_terminar_version=None) -> int:
-    """Corre las tres versiones y devuelve cuántas fallaron. `al_cargar` y `al_terminar_version` son ganchos sin
-    argumentos (modal_app.py los usa para guardar los Volumes)."""
+            commit: str | None = None) -> int:
+    """Corre las tres versiones y devuelve cuántas fallaron."""
     if not ETIQUETA_VALIDA.match(etiqueta):
         raise ValueError("la etiqueta solo puede tener letras, números, punto, guion y guion bajo")
     if cantidad is not None and cantidad < 1:
@@ -98,8 +97,6 @@ def evaluar(etiqueta: str, cantidad: int | None = None, corridas: Path = RAIZ / 
     meta["construir_agente_segundos"] = round(time.perf_counter() - inicio, 3)
     guardar_meta()
     _log(f"agente cargado en {meta['construir_agente_segundos']} s")
-    if al_cargar:
-        al_cargar()
 
     # El kit llama a construir_agente en cada corrida; este módulo le devuelve siempre el agente ya cargado.
     con_agente_cargado = SimpleNamespace(construir_buscador=entrega.construir_buscador,
@@ -123,8 +120,6 @@ def evaluar(etiqueta: str, cantidad: int | None = None, corridas: Path = RAIZ / 
             (salida / "error.txt").write_text(traceback.format_exc(), encoding="utf-8")
             _log(f"{etiqueta} / {version}: falló ({type(e).__name__}: {e})")
         guardar_meta()
-        if al_terminar_version:
-            al_terminar_version()
     return fallas
 
 
@@ -134,7 +129,9 @@ def main() -> int:
     ap.add_argument("cantidad_casos", nargs="?", type=int)
     a = ap.parse_args()
     try:
-        return 1 if evaluar(a.etiqueta, a.cantidad_casos) else 0
+        # En Modal no hay .git ni corridas/ escribible: modal_app.py pasa CORRIDAS (el Volume) y COMMIT_EVALUADO.
+        corridas = Path(os.environ.get("CORRIDAS") or RAIZ / "corridas")
+        return 1 if evaluar(a.etiqueta, a.cantidad_casos, corridas, os.environ.get("COMMIT_EVALUADO")) else 0
     except ValueError as e:
         ap.error(str(e))
 
