@@ -824,3 +824,34 @@ registrado: PENDIENTE que lo complete el equipo.
    `sft-ejemplo-v1` iba por el paso 73, sin ningún punto de control, así que
    se relanzó de cero como `sft-ejemplo-v2`. Desde entonces cada lanzamiento
    corre bajo `caffeinate -is`, que impide que la Mac se suspenda.
+
+## Parte 5: Recursos y producción
+
+PENDIENTE: lo escribe otra integrante del grupo.
+
+Lo que pide `mission.md` (Parte 5 y "El informe"): tiempo de entrenamiento,
+VRAM usada, costo y tiempo por caso en la A100 de 40 GB, casos que se
+procesan a la vez al entrenar y al evaluar, cuántos casos simultáneos tolera
+en producción, la proyección de consumo, cómo escalaría y los trabajos
+futuros. Como en el resto del informe, cada número tiene que citar el
+comando, el punto de control y el prompt que lo producen.
+
+De dónde sacar los datos (todo está en el repositorio salvo W&B):
+
+| Dato | Archivo |
+|---|---|
+| Tiempo de juego por versión y por caso (`jugar_lote`, `jugar_lote_por_caso`) | `corridas/*/*/tiempos.json` (21 archivos: 7 etiquetas x original, b y c) |
+| Casos resueltos, búsquedas por caso, caracteres de contexto por caso, llamadas por caso | `corridas/*/*/resumen.json` (y el detalle caso por caso en `resultados.jsonl`) |
+| Carga del modelo (`construir_agente_segundos`), commit, config, prompt, adaptador y revisión de cada evaluación | `corridas/<etiqueta>/corrida.json` |
+| Tabla con todo lo anterior junto | `corridas/tabla.md` (`uv run python tabla.py`) |
+| Concurrencia de vLLM (tamaño de la caché KV en tokens y "Maximum concurrency" para 16.384 tokens por pedido) | `corridas/<etiqueta>/modal.log` y `corridas/gepa/gepa1/modal.log` |
+| Parámetros de servicio (`max_model_len`, `gpu_memory_utilization`, `max_lora_rank`) | `config.yaml` (entrega final) y las demás `config_*.yaml` |
+| Tiempo de entrenamiento (`segundos`), VRAM máxima (`vram_max_gb`), pérdidas finales | `corridas/sft-prompt-v1-r1/resumen.json`, `corridas/sft-ejemplo-v2/resumen.json`, `corridas/prueba-gpu-02/resumen.json` |
+| Tokens reales de train y val, tokens en la pérdida | `corridas/<corrida>/datos.json` |
+| Batch, acumulación, largo máximo y épocas usadas | `corridas/<corrida>/config_usada.yaml` y `entrenar.yaml` |
+| Tiempo de la optimización de prompt (`segundos`, casos jugados) | `corridas/gepa/gepa1/resumen.json` |
+| Métricas de sistema por paso (GPU, memoria, segundos por paso) | W&B, proyecto `juanlu1-austral/tp-admision-guardia`: runs `68qllkha` (`sft-prompt-v1` + `-r1`), `g69gw15q` (`sft-ejemplo-v2`) y `2r5rmemo` (`prueba-gpu-02`); links en el campo `wandb` de cada `resumen.json` |
+
+Ojo: los tiempos de los pasos 1 a 100 de `sft-prompt-v1` y los segundos por
+paso de `prueba-gpu-02` no están en ningún archivo (Parte 4, PENDIENTE); si
+se usan, hay que exportarlos de W&B a `corridas/` antes de citarlos.
