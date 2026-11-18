@@ -25,6 +25,13 @@ SALIDA_AUDITORIA = ROOT / "curado" / "auditoria.csv"
 SALIDA_CONVERSACIONES = ROOT / "curado" / "conversaciones_reales.jsonl"
 SALIDA_RESUMEN = ROOT / "curado" / "resumen.json"
 
+# Costumbre del voluntariado: aviso para pacientes de esta edad o más que llegan sin acompañante.
+# El historial muestra el corte en 75: los 11 pacientes de 75 años sin acompañante tienen el aviso
+# (ver revision_parte1.md). La primera pasada usaba 76.
+EDAD_VOLUNTARIADO = 75
+# Operadores que deciden el aviso sin seguir la costumbre (revision_parte1.md): sus desvíos son ruido.
+OPERADORES_SIN_COSTUMBRE = ("OP-04", "OP-11", "OP-17")
+
 
 def normalizar(valor: Any) -> str:
     texto = unicodedata.normalize("NFD", str(valor or "").strip().lower())
@@ -177,10 +184,10 @@ def verificar_fila(
     if not mismo(fila["entidad_a_notificar"], entidad_esperada):
         errores.append("NOR-COB-02/03/04: entidad de notificación incorrecta")
 
-    # Costumbre documentada: voluntariado para pacientes de 76 años o más que llegan sin acompañante.
-    costumbre_voluntariado = edad >= 76 and vacio(fila["acompanante"])
+    # Costumbre documentada: voluntariado para pacientes de EDAD_VOLUNTARIADO o más sin acompañante.
+    costumbre_voluntariado = edad >= EDAD_VOLUNTARIADO and vacio(fila["acompanante"])
     if verdadero(fila["aviso_al_voluntariado"]) != costumbre_voluntariado:
-        desvios.append("Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante")
+        desvios.append(f"Costumbre de voluntariado: aviso esperado solo para paciente de {EDAD_VOLUNTARIADO}+ sin acompañante")
 
     credenciales = lista_credenciales(fila["credenciales"])
     trabajo = normalizar(fila["lesion_trabajo"]) != "no"
@@ -302,7 +309,7 @@ def generar_costumbres(filas: list[dict[str, str]], trazas: dict[str, dict[str, 
     excepciones_prepaga: list[str] = []
     for fila in filas:
         edad = numero(fila["edad"])
-        aviso_esperado = edad >= 76 and vacio(fila["acompanante"])
+        aviso_esperado = edad >= EDAD_VOLUNTARIADO and vacio(fila["acompanante"])
         if aviso_esperado and verdadero(fila["aviso_al_voluntariado"]):
             evidencia_voluntariado.append(fila["id"])
         elif aviso_esperado:
@@ -319,6 +326,24 @@ def generar_costumbres(filas: list[dict[str, str]], trazas: dict[str, dict[str, 
             elif elegida and elegida[1] == "obra_social":
                 excepciones_prepaga.append(fila["id"])
 
+    def miles(n: int) -> str:
+        return f"{n:,}".replace(",", ".")
+
+    def porcentaje(parte: int, total: int) -> str:
+        return f"{round(100 * parte / total)}%"
+
+    operadores = ", ".join(OPERADORES_SIN_COSTUMBRE[:-1]) + " y " + OPERADORES_SIN_COSTUMBRE[-1]
+    de_75 = [f["id"] for f in filas if numero(f["edad"]) == EDAD_VOLUNTARIADO and vacio(f["acompanante"])]
+    situacion = len(evidencia_voluntariado) + len(excepciones_voluntariado)
+    fuera = sum(1 for f in filas if not (numero(f["edad"]) >= EDAD_VOLUNTARIADO and vacio(f["acompanante"])))
+    de_ops = [f for f in filas if f["operador"] in OPERADORES_SIN_COSTUMBRE]
+    otros = [f for f in filas if f["operador"] not in OPERADORES_SIN_COSTUMBRE]
+    en_situacion = lambda f: numero(f["edad"]) >= EDAD_VOLUNTARIADO and vacio(f["acompanante"])
+    fuera_ops = sum(1 for f in de_ops if not en_situacion(f) and verdadero(f["aviso_al_voluntariado"]))
+    total_fuera_ops = sum(1 for f in de_ops if not en_situacion(f))
+    situacion_otros = sum(1 for f in otros if en_situacion(f))
+    costumbre_otros = sum(1 for f in otros if en_situacion(f) and verdadero(f["aviso_al_voluntariado"]))
+
     def ids(items: list[str]) -> str:
         codigos = [f"`{identificador}`" for identificador in items]
         return ",\n".join(", ".join(codigos[i:i + 12]) for i in range(0, len(codigos), 12))
@@ -330,7 +355,9 @@ Los IDs enumerados se pueden reproducir con `python curar.py` a partir de `histo
 
 ## Aviso al voluntariado para pacientes mayores sin acompañante
 
-En el historial, el aviso al voluntariado se asocia a pacientes de 76 años o más que llegan sin acompañante: se observa en {len(evidencia_voluntariado)} de {len(evidencia_voluntariado) + len(excepciones_voluntariado)} filas de esa situación (91%). Fuera de esa situación hubo {len(avisos_fuera_del_patron)} avisos en 1.785 filas (8%). El patrón aparece entre operadores distintos. El corte observado es 76 años; no se deriva del parámetro de edad de box (P-ADM-2), que es una regla independiente.
+En el historial, el aviso al voluntariado se asocia a pacientes de {EDAD_VOLUNTARIADO} años o más que llegan sin acompañante: se observa en {len(evidencia_voluntariado)} de {situacion} filas de esa situación ({porcentaje(len(evidencia_voluntariado), situacion)}). Fuera de esa situación hubo {len(avisos_fuera_del_patron)} avisos en {miles(fuera)} filas ({porcentaje(len(avisos_fuera_del_patron), fuera)}). El corte observado es {EDAD_VOLUNTARIADO} años: los {len(de_75)} pacientes de {EDAD_VOLUNTARIADO} años sin acompañante tienen todos el aviso ({ids(de_75)}) y, salvo los tres operadores de abajo, no hay avisos de 74 años para abajo. No se deriva del parámetro de edad de box (P-ADM-2), que es una regla independiente.
+
+Las excepciones y los avisos fuera de la situación son todos de {operadores}, que deciden el aviso sin seguir la costumbre ni ninguna otra regla visible (avisan en {fuera_ops} de {total_fuera_ops} filas fuera de la situación). Entre los otros operadores la costumbre se cumple en {costumbre_otros} de {situacion_otros} filas y no hay avisos fuera de ella. Por eso no se describe una tercera costumbre: esos desvíos son ruido de operador.
 
 Filas que respaldan la costumbre ({len(evidencia_voluntariado)}): {ids(evidencia_voluntariado)}.
 
@@ -340,11 +367,11 @@ Avisos fuera de la situación habitual, también candidatos a ruido ({len(avisos
 
 ## Priorizar la prepaga cuando se presentan ambas coberturas
 
-Cuando la persona presenta una obra social y una prepaga, los operadores suelen verificar la prepaga: ocurrió en {len(evidencia_prepaga)} de {len(evidencia_prepaga) + len(excepciones_prepaga)} casos comparables (95%). La norma no establece una prioridad para elegir entre ambas. La excepción se clasifica como ruido solo si se eligió una cobertura presentada válida; una entidad ajena a las credenciales se evalúa como error normativo.
+Cuando la persona presenta una obra social y una prepaga, los operadores suelen verificar la prepaga: ocurrió en {len(evidencia_prepaga)} de {len(evidencia_prepaga) + len(excepciones_prepaga)} casos comparables ({porcentaje(len(evidencia_prepaga), len(evidencia_prepaga) + len(excepciones_prepaga))}). Cuando la prepaga resulta inactiva, se registra sin cobertura y no se verifica la obra social. La norma no establece una prioridad para elegir entre ambas. La excepción se clasifica como ruido solo si se eligió una cobertura presentada válida; una entidad ajena a las credenciales se evalúa como error normativo.
 
 Filas que respaldan la costumbre ({len(evidencia_prepaga)}): {ids(evidencia_prepaga)}.
 
-Excepciones que eligieron la obra social presentada ({len(excepciones_prepaga)}): {ids(excepciones_prepaga)}.
+Excepciones que eligieron la obra social presentada ({len(excepciones_prepaga)}), todas de {operadores}: {ids(excepciones_prepaga)}.
 """
     return documento, {
         "voluntariado": evidencia_voluntariado,
@@ -386,11 +413,11 @@ def main() -> None:
         auditoria.append(fila_auditoria)
 
     with SALIDA_CLASIFICACION.open("w", encoding="utf-8", newline="") as archivo:
-        writer = csv.DictWriter(archivo, fieldnames=["id", "tipo"])
+        writer = csv.DictWriter(archivo, fieldnames=["id", "tipo"], lineterminator="\n")
         writer.writeheader()
         writer.writerows(clasificaciones)
     with SALIDA_AUDITORIA.open("w", encoding="utf-8", newline="") as archivo:
-        writer = csv.DictWriter(archivo, fieldnames=["id", "tipo", "reglas_violadas", "costumbres_desviadas"])
+        writer = csv.DictWriter(archivo, fieldnames=["id", "tipo", "reglas_violadas", "costumbres_desviadas"], lineterminator="\n")
         writer.writeheader()
         writer.writerows(auditoria)
     with SALIDA_CONVERSACIONES.open("w", encoding="utf-8", newline="") as archivo:
@@ -409,7 +436,7 @@ def main() -> None:
         "sin_documento": sum(vacio(f["documento_numero"]) for f in correctas),
         "accidente_laboral_o_trayecto": sum(normalizar(f["lesion_trabajo"]) != "no" for f in correctas),
         "dos_credenciales": sum(len(lista_credenciales(f["credenciales"])) > 1 for f in correctas),
-        "mayor_sin_acompanante": sum(numero(f["edad"]) >= 76 and vacio(f["acompanante"]) for f in correctas),
+        "mayor_sin_acompanante": sum(numero(f["edad"]) >= EDAD_VOLUNTARIADO and vacio(f["acompanante"]) for f in correctas),
     }
     resultado = {
         "filas_historial": len(filas),

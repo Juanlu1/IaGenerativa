@@ -1,6 +1,6 @@
-# Informe — TP Final: agente de admisión de guardia
+# Informe: TP Final: agente de admisión de guardia
 
-## Parte 1 — Curado e ingeniería de datos
+## Parte 1: Curado e ingeniería de datos
 
 ### Método
 
@@ -11,13 +11,16 @@ Una violación escrita clasifica la fila como `error`; si no la hay, una
 desviación de las costumbres documentadas clasifica como `ruido`; las demás
 filas quedan `correcta`. Los motivos por fila quedan en `curado/auditoria.csv`.
 
-La primera ejecución cubrió las 2.000 filas y sus 2.000 trazas:
+La clasificación cubre las 2.000 filas y sus 2.000 trazas. La primera pasada
+usaba el corte de 76 años para la costumbre del voluntariado; la segunda, el
+de 75 que muestra el historial (ver más abajo), y pasó 10 filas de `ruido` a
+`correcta`:
 
-| Tipo | Filas |
-|---|---:|
-| Correcta | 1.590 |
-| Error | 240 |
-| Ruido | 170 |
+| Tipo | Primera pasada (corte 76) | Actual (corte 75) |
+|---|---:|---:|
+| Correcta | 1.590 | 1.600 |
+| Error | 240 | 240 |
+| Ruido | 170 | 160 |
 
 La clasificación es una primera pasada automatizada. Antes de usarla como
 resultado final, el equipo debe revisar las filas de `curado/auditoria.csv`, en
@@ -25,26 +28,41 @@ particular las que tienen más de un motivo o una elección interpretativa.
 
 ### Costumbres identificadas
 
-1. **Aviso al voluntariado para una persona de 76 años o más sin acompañante.**
-   Aparece en 196 de 215 filas comparables (91%). Fuera de ese grupo, hay 143
-   avisos en 1.785 filas (8%). La señal se ve en distintos operadores y no se
+1. **Aviso al voluntariado para una persona de 75 años o más sin acompañante.**
+   Aparece en 207 de 226 filas comparables (92%). Fuera de ese grupo, hay 132
+   avisos en 1.774 filas (7%), y todos, como las 19 excepciones, son de OP-04,
+   OP-11 y OP-17, que deciden el aviso sin seguir ninguna regla visible: entre
+   los otros 17 operadores la costumbre se cumple 185 de 185 veces. No se
    deduce de la edad de box definida por P-ADM-2. La lista de evidencia y las
    excepciones está en `costumbres.md`.
+   La primera pasada usaba 76 años (196 de 215 filas, 143 avisos fuera). La
+   revisión de [`revision_parte1.md`](revision_parte1.md) mostró que los 11
+   pacientes de 75 años sin acompañante tienen el aviso y que la práctica lo
+   espera (`pev-006`); con el corte en 75, 10 filas pasaron de `ruido` a
+   `correcta` (`H-0045`, `H-0576`, `H-0943`, `H-1269`, `H-1348`, `H-1592`,
+   `H-1613`, `H-1677`, `H-1786` y `H-1884`; `H-1593` sigue como error por el
+   plazo de su circuito).
 2. **Prioridad de la prepaga cuando se presentan una obra social y una prepaga.**
    Se verificó la prepaga en 184 de 193 casos comparables (95%). Las normas no
-   fijan una prioridad entre ambas; las 9 excepciones y la evidencia están en
-   `costumbres.md`.
+   fijan una prioridad entre ambas; las 9 excepciones, también de OP-04, OP-11
+   y OP-17, y la evidencia están en `costumbres.md`. Si la prepaga resulta
+   inactiva, se registra sin cobertura sin verificar la obra social.
 
 ### Conversaciones de entrenamiento
 
-- `curado/conversaciones_reales.jsonl`: 1.590 conversaciones construidas desde
+- `curado/conversaciones_reales.jsonl`: 1.600 conversaciones construidas desde
   las trazas clasificadas como correctas, con el mensaje de sistema y el formato
   de herramientas de `admision/ejemplo.py`.
-- `curado/conversaciones_sinteticas.jsonl`: 500 conversaciones generadas por
+- `curado/conversaciones_sinteticas.jsonl`: 600 conversaciones generadas por
   `admision.generador` y resueltas por una política determinista que usa las
-  normas y costumbres anteriores. La generación reparte las versiones
-  `original`, `b` y `c`, con sus parámetros correspondientes. La semilla es
-  `20261108`; la configuración está en `curado/sinteticas_config.json`.
+  normas y costumbres anteriores, con el buscador del grupo y las consultas de
+  las trazas de la cátedra. La generación reparte las versiones `original`,
+  `b` y `c` (200 cada una), con sus parámetros correspondientes. La semilla es
+  `20261108`; la configuración está en `curado/sinteticas_config.json`. La
+  política resuelve 50/50 casos de práctica en las tres versiones
+  (`validar_politica.py`; la primera pasada, con 500 conversaciones, un
+  buscador de palabras clave y el corte del voluntariado en 76 años, daba
+  49/50).
 - Las 800 trazas de referencia de la cátedra permanecen separadas en
   `entrenamiento/trazas.jsonl`.
 
@@ -67,7 +85,7 @@ uv run python generar_sinteticas.py
 `curado/resumen.json`. `generar_sinteticas.py` genera las conversaciones
 sintéticas y sus archivos de configuración y resumen.
 
-## Parte 2 — Buscador propio (RAG)
+## Parte 2: Buscador propio (RAG)
 
 ### Método
 
@@ -110,3 +128,8 @@ sirve para detectar regresiones, no para puntuar al agente.
 **Pendiente:** conectar `construir_buscador` con el `entrega.py` del grupo y
 medir casos resueltos, contexto, costo y tiempo con un agente ejecutable.
 El 60/60 corresponde al set de desarrollo del RAG; no estima el test secreto.
+
+## Parte 4: Entrenamiento
+
+El apartado completo (estrategia, conjunto de datos, configuración, comandos
+y la tabla de casos resueltos) está en [`informe_parte4.md`](informe_parte4.md).

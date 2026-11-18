@@ -2,54 +2,54 @@
   "filas_historial": 2000,
   "trazas_historial": 2000,
   "clasificacion": {
-    "correcta": 1590,
-    "ruido": 170,
+    "correcta": 1600,
+    "ruido": 160,
     "error": 240
   },
-  "conversaciones_reales": 1590,
-  "sinteticas": 500,
+  "conversaciones_reales": 1600,
+  "sinteticas": 600,
   "evidencia_costumbres": {
-    "voluntariado": 196,
+    "voluntariado": 207,
     "voluntariado_excepciones": 19,
-    "avisos_fuera_del_patron": 143,
+    "avisos_fuera_del_patron": 132,
     "prepaga_preferida": 184,
     "prepaga_excepciones": 9
   },
   "distribucion_conversaciones_reales": {
     "motivo": {
-      "sospecha de sepsis": 509,
-      "dolor abdominal": 48,
-      "dolor torácico": 340,
+      "sospecha de sepsis": 511,
+      "dolor abdominal": 49,
+      "dolor torácico": 342,
       "fiebre y tos": 38,
-      "signos neurológicos focales de inicio súbito": 247,
-      "traumatismo de miembro": 168,
-      "herida cortante": 150,
+      "signos neurológicos focales de inicio súbito": 248,
+      "traumatismo de miembro": 169,
+      "herida cortante": 152,
       "cefalea": 41,
-      "palpitaciones": 49
+      "palpitaciones": 50
     },
     "documento_tipo": {
-      "DNI": 587,
-      "cédula": 186,
-      "(vacío)": 646,
-      "pasaporte": 171
+      "DNI": 589,
+      "cédula": 187,
+      "(vacío)": 652,
+      "pasaporte": 172
     },
     "circuito": {
-      "codigo_sepsis": 509,
-      "ninguno": 494,
-      "ecg": 340,
-      "codigo_acv": 247
+      "codigo_sepsis": 511,
+      "ninguno": 499,
+      "ecg": 342,
+      "codigo_acv": 248
     },
     "cobertura": {
-      "sin_cobertura": 756,
+      "sin_cobertura": 761,
       "prepaga": 311,
-      "obra_social": 217,
-      "art": 306
+      "obra_social": 218,
+      "art": 310
     },
     "situaciones": {
-      "sin_documento": 646,
-      "accidente_laboral_o_trayecto": 306,
+      "sin_documento": 652,
+      "accidente_laboral_o_trayecto": 310,
       "dos_credenciales": 154,
-      "mayor_sin_acompanante": 157
+      "mayor_sin_acompanante": 167
     }
   },
   "fuentes": [

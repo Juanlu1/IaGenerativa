@@ -3,11 +3,11 @@ H-0001,correcta,,
 H-0002,correcta,,
 H-0003,correcta,,
 H-0004,correcta,,
-H-0005,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-0006,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0005,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-0006,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0007,correcta,,
 H-0008,correcta,,
-H-0009,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0009,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0010,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0011,correcta,,
 H-0012,correcta,,
@@ -43,7 +43,7 @@ H-0041,correcta,,
 H-0042,correcta,,
 H-0043,correcta,,
 H-0044,correcta,,
-H-0045,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0045,correcta,,
 H-0046,correcta,,
 H-0047,correcta,,
 H-0048,correcta,,
@@ -51,10 +51,10 @@ H-0049,correcta,,
 H-0050,correcta,,
 H-0051,correcta,,
 H-0052,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
-H-0053,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0053,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0054,correcta,,
 H-0055,correcta,,
-H-0056,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0056,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0057,correcta,,
 H-0058,correcta,,
 H-0059,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
@@ -65,7 +65,7 @@ H-0063,correcta,,
 H-0064,correcta,,
 H-0065,correcta,,
 H-0066,correcta,,
-H-0067,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0067,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0068,correcta,,
 H-0069,correcta,,
 H-0070,correcta,,
@@ -75,7 +75,7 @@ H-0073,correcta,,
 H-0074,correcta,,
 H-0075,correcta,,
 H-0076,correcta,,
-H-0077,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0077,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0078,correcta,,
 H-0079,correcta,,
 H-0080,correcta,,
@@ -91,7 +91,7 @@ H-0089,correcta,,
 H-0090,correcta,,
 H-0091,correcta,,
 H-0092,correcta,,
-H-0093,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0093,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0094,correcta,,
 H-0095,correcta,,
 H-0096,correcta,,
@@ -106,9 +106,9 @@ H-0104,correcta,,
 H-0105,correcta,,
 H-0106,correcta,,
 H-0107,correcta,,
-H-0108,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0108,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0109,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
-H-0110,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0110,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0111,correcta,,
 H-0112,correcta,,
 H-0113,correcta,,
@@ -125,7 +125,7 @@ H-0123,correcta,,
 H-0124,correcta,,
 H-0125,correcta,,
 H-0126,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
-H-0127,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0127,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0128,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0129,correcta,,
 H-0130,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
@@ -138,9 +138,9 @@ H-0136,correcta,,
 H-0137,correcta,,
 H-0138,correcta,,
 H-0139,correcta,,
-H-0140,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0140,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0141,correcta,,
-H-0142,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0142,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0143,correcta,,
 H-0144,correcta,,
 H-0145,correcta,,
@@ -148,7 +148,7 @@ H-0146,correcta,,
 H-0147,correcta,,
 H-0148,correcta,,
 H-0149,correcta,,
-H-0150,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0150,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0151,correcta,,
 H-0152,correcta,,
 H-0153,correcta,,
@@ -161,7 +161,7 @@ H-0159,correcta,,
 H-0160,correcta,,
 H-0161,correcta,,
 H-0162,correcta,,
-H-0163,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0163,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0164,correcta,,
 H-0165,correcta,,
 H-0166,correcta,,
@@ -180,13 +180,13 @@ H-0178,correcta,,
 H-0179,correcta,,
 H-0180,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0181,correcta,,
-H-0182,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0182,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0183,correcta,,
 H-0184,correcta,,
 H-0185,correcta,,
 H-0186,correcta,,
 H-0187,correcta,,
-H-0188,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0188,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0189,correcta,,
 H-0190,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0191,correcta,,
@@ -194,7 +194,7 @@ H-0192,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage
 H-0193,correcta,,
 H-0194,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0195,correcta,,
-H-0196,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0196,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0197,correcta,,
 H-0198,correcta,,
 H-0199,correcta,,
@@ -229,7 +229,7 @@ H-0227,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y lleg
 H-0228,correcta,,
 H-0229,correcta,,
 H-0230,correcta,,
-H-0231,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0231,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0232,correcta,,
 H-0233,correcta,,
 H-0234,correcta,,
@@ -239,11 +239,11 @@ H-0237,correcta,,
 H-0238,correcta,,
 H-0239,correcta,,
 H-0240,correcta,,
-H-0241,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0241,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0242,correcta,,
 H-0243,correcta,,
 H-0244,correcta,,
-H-0245,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0245,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0246,correcta,,
 H-0247,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0248,correcta,,
@@ -253,7 +253,7 @@ H-0251,correcta,,
 H-0252,correcta,,
 H-0253,correcta,,
 H-0254,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
-H-0255,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0255,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0256,correcta,,
 H-0257,correcta,,
 H-0258,correcta,,
@@ -263,7 +263,7 @@ H-0261,correcta,,
 H-0262,correcta,,
 H-0263,correcta,,
 H-0264,correcta,,
-H-0265,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0265,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0266,correcta,,
 H-0267,correcta,,
 H-0268,correcta,,
@@ -286,7 +286,7 @@ H-0284,correcta,,
 H-0285,correcta,,
 H-0286,correcta,,
 H-0287,correcta,,
-H-0288,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0288,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0289,correcta,,
 H-0290,correcta,,
 H-0291,correcta,,
@@ -304,7 +304,7 @@ H-0302,correcta,,
 H-0303,correcta,,
 H-0304,correcta,,
 H-0305,correcta,,
-H-0306,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0306,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0307,correcta,,
 H-0308,correcta,,
 H-0309,correcta,,
@@ -320,7 +320,7 @@ H-0318,correcta,,
 H-0319,correcta,,
 H-0320,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0321,correcta,,
-H-0322,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0322,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0323,correcta,,
 H-0324,correcta,,
 H-0325,correcta,,
@@ -338,7 +338,7 @@ H-0336,correcta,,
 H-0337,correcta,,
 H-0338,correcta,,
 H-0339,correcta,,
-H-0340,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0340,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0341,correcta,,
 H-0342,correcta,,
 H-0343,correcta,,
@@ -351,11 +351,11 @@ H-0349,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y lleg
 H-0350,correcta,,
 H-0351,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0352,correcta,,
-H-0353,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0353,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0354,correcta,,
 H-0355,correcta,,
 H-0356,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
-H-0357,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0357,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0358,correcta,,
 H-0359,correcta,,
 H-0360,correcta,,
@@ -384,7 +384,7 @@ H-0382,correcta,,
 H-0383,correcta,,
 H-0384,correcta,,
 H-0385,correcta,,
-H-0386,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0386,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0387,correcta,,
 H-0388,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0389,correcta,,
@@ -396,8 +396,8 @@ H-0394,correcta,,
 H-0395,correcta,,
 H-0396,correcta,,
 H-0397,correcta,,
-H-0398,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-0399,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0398,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-0399,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0400,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0401,correcta,,
 H-0402,correcta,,
@@ -414,7 +414,7 @@ H-0412,correcta,,
 H-0413,correcta,,
 H-0414,correcta,,
 H-0415,correcta,,
-H-0416,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0416,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0417,correcta,,
 H-0418,correcta,,
 H-0419,correcta,,
@@ -441,14 +441,14 @@ H-0439,correcta,,
 H-0440,correcta,,
 H-0441,correcta,,
 H-0442,correcta,,
-H-0443,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-0444,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-0445,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0443,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-0444,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-0445,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0446,correcta,,
 H-0447,correcta,,
 H-0448,correcta,,
-H-0449,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-0450,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0449,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-0450,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0451,correcta,,
 H-0452,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0453,correcta,,
@@ -461,7 +461,7 @@ H-0459,correcta,,
 H-0460,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0461,correcta,,
 H-0462,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
-H-0463,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0463,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0464,correcta,,
 H-0465,correcta,,
 H-0466,correcta,,
@@ -487,7 +487,7 @@ H-0485,correcta,,
 H-0486,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0487,correcta,,
 H-0488,correcta,,
-H-0489,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0489,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0490,correcta,,
 H-0491,correcta,,
 H-0492,correcta,,
@@ -495,7 +495,7 @@ H-0493,correcta,,
 H-0494,correcta,,
 H-0495,correcta,,
 H-0496,correcta,,
-H-0497,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0497,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0498,correcta,,
 H-0499,correcta,,
 H-0500,correcta,,
@@ -513,7 +513,7 @@ H-0511,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y lleg
 H-0512,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0513,correcta,,
 H-0514,correcta,,
-H-0515,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0515,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0516,correcta,,
 H-0517,correcta,,
 H-0518,correcta,,
@@ -523,7 +523,7 @@ H-0521,correcta,,
 H-0522,error,NOR-COB-02/03/04: entidad de notificación incorrecta,
 H-0523,correcta,,
 H-0524,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
-H-0525,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0525,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0526,correcta,,
 H-0527,correcta,,
 H-0528,correcta,,
@@ -535,12 +535,12 @@ H-0533,correcta,,
 H-0534,correcta,,
 H-0535,correcta,,
 H-0536,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
-H-0537,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0537,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0538,correcta,,
 H-0539,correcta,,
 H-0540,correcta,,
 H-0541,correcta,,
-H-0542,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0542,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0543,correcta,,
 H-0544,correcta,,
 H-0545,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
@@ -560,7 +560,7 @@ H-0558,correcta,,
 H-0559,correcta,,
 H-0560,correcta,,
 H-0561,correcta,,
-H-0562,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0562,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0563,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0564,correcta,,
 H-0565,correcta,,
@@ -573,8 +573,8 @@ H-0571,correcta,,
 H-0572,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0573,correcta,,
 H-0574,correcta,,
-H-0575,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-0576,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0575,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-0576,correcta,,
 H-0577,correcta,,
 H-0578,correcta,,
 H-0579,correcta,,
@@ -595,7 +595,7 @@ H-0593,correcta,,
 H-0594,correcta,,
 H-0595,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0596,correcta,,
-H-0597,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0597,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0598,correcta,,
 H-0599,correcta,,
 H-0600,correcta,,
@@ -605,30 +605,30 @@ H-0603,correcta,,
 H-0604,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0605,correcta,,
 H-0606,correcta,,
-H-0607,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0607,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0608,correcta,,
 H-0609,correcta,,
-H-0610,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0610,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0611,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
-H-0612,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0612,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0613,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0614,correcta,,
 H-0615,correcta,,
 H-0616,correcta,,
-H-0617,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0617,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0618,correcta,,
-H-0619,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0619,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0620,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0621,correcta,,
-H-0622,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0622,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0623,correcta,,
 H-0624,correcta,,
 H-0625,correcta,,
-H-0626,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-0627,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0626,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-0627,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0628,correcta,,
 H-0629,correcta,,
-H-0630,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0630,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0631,correcta,,
 H-0632,correcta,,
 H-0633,correcta,,
@@ -642,7 +642,7 @@ H-0640,correcta,,
 H-0641,correcta,,
 H-0642,correcta,,
 H-0643,correcta,,
-H-0644,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0644,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0645,correcta,,
 H-0646,correcta,,
 H-0647,correcta,,
@@ -650,8 +650,8 @@ H-0648,correcta,,
 H-0649,correcta,,
 H-0650,correcta,,
 H-0651,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
-H-0652,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-0653,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0652,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-0653,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0654,correcta,,
 H-0655,correcta,,
 H-0656,correcta,,
@@ -708,14 +708,14 @@ H-0706,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage
 H-0707,correcta,,
 H-0708,correcta,,
 H-0709,correcta,,
-H-0710,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0710,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0711,correcta,,
 H-0712,correcta,,
 H-0713,correcta,,
 H-0714,correcta,,
 H-0715,correcta,,
 H-0716,correcta,,
-H-0717,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0717,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0718,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0719,correcta,,
 H-0720,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
@@ -739,27 +739,27 @@ H-0737,correcta,,
 H-0738,correcta,,
 H-0739,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0740,correcta,,
-H-0741,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0741,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0742,correcta,,
 H-0743,correcta,,
 H-0744,correcta,,
 H-0745,correcta,,
 H-0746,correcta,,
 H-0747,correcta,,
-H-0748,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-0749,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0748,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-0749,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0750,correcta,,
 H-0751,correcta,,
 H-0752,correcta,,
 H-0753,correcta,,
 H-0754,correcta,,
 H-0755,correcta,,
-H-0756,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0756,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0757,correcta,,
 H-0758,correcta,,
 H-0759,correcta,,
 H-0760,correcta,,
-H-0761,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0761,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0762,correcta,,
 H-0763,correcta,,
 H-0764,correcta,,
@@ -768,7 +768,7 @@ H-0766,correcta,,
 H-0767,correcta,,
 H-0768,correcta,,
 H-0769,correcta,,
-H-0770,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0770,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0771,correcta,,
 H-0772,correcta,,
 H-0773,correcta,,
@@ -776,7 +776,7 @@ H-0774,correcta,,
 H-0775,correcta,,
 H-0776,correcta,,
 H-0777,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
-H-0778,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0778,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0779,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0780,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0781,correcta,,
@@ -784,7 +784,7 @@ H-0782,correcta,,
 H-0783,correcta,,
 H-0784,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0785,correcta,,
-H-0786,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0786,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0787,correcta,,
 H-0788,correcta,,
 H-0789,correcta,,
@@ -806,7 +806,7 @@ H-0804,correcta,,
 H-0805,correcta,,
 H-0806,correcta,,
 H-0807,correcta,,
-H-0808,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0808,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0809,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0810,correcta,,
 H-0811,correcta,,
@@ -825,7 +825,7 @@ H-0823,correcta,,
 H-0824,correcta,,
 H-0825,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0826,correcta,,
-H-0827,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0827,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0828,correcta,,
 H-0829,correcta,,
 H-0830,correcta,,
@@ -854,7 +854,7 @@ H-0852,correcta,,
 H-0853,correcta,,
 H-0854,correcta,,
 H-0855,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
-H-0856,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0856,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0857,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0858,correcta,,
 H-0859,correcta,,
@@ -873,7 +873,7 @@ H-0871,correcta,,
 H-0872,correcta,,
 H-0873,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0874,correcta,,
-H-0875,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0875,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0876,correcta,,
 H-0877,correcta,,
 H-0878,correcta,,
@@ -881,7 +881,7 @@ H-0879,correcta,,
 H-0880,correcta,,
 H-0881,ruido,,Costumbre de cobertura múltiple: se eligió obra social aunque también se presentó prepaga
 H-0882,correcta,,
-H-0883,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0883,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0884,correcta,,
 H-0885,correcta,,
 H-0886,correcta,,
@@ -896,16 +896,16 @@ H-0894,correcta,,
 H-0895,correcta,,
 H-0896,correcta,,
 H-0897,correcta,,
-H-0898,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0898,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0899,correcta,,
 H-0900,correcta,,
 H-0901,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0902,correcta,,
 H-0903,correcta,,
-H-0904,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0904,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0905,correcta,,
 H-0906,correcta,,
-H-0907,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0907,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0908,correcta,,
 H-0909,correcta,,
 H-0910,correcta,,
@@ -923,7 +923,7 @@ H-0921,correcta,,
 H-0922,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-0923,correcta,,
 H-0924,correcta,,
-H-0925,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0925,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0926,correcta,,
 H-0927,correcta,,
 H-0928,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
@@ -931,17 +931,17 @@ H-0929,error,NOR-COB-02/03/04: entidad de notificación incorrecta,
 H-0930,correcta,,
 H-0931,correcta,,
 H-0932,correcta,,
-H-0933,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0933,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0934,correcta,,
 H-0935,correcta,,
-H-0936,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0936,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0937,correcta,,
 H-0938,correcta,,
 H-0939,correcta,,
 H-0940,correcta,,
 H-0941,correcta,,
 H-0942,correcta,,
-H-0943,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0943,correcta,,
 H-0944,correcta,,
 H-0945,correcta,,
 H-0946,correcta,,
@@ -952,11 +952,11 @@ H-0950,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0951,correcta,,
 H-0952,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0953,correcta,,
-H-0954,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0954,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0955,correcta,,
 H-0956,correcta,,
 H-0957,correcta,,
-H-0958,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0958,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0959,correcta,,
 H-0960,correcta,,
 H-0961,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
@@ -964,11 +964,11 @@ H-0962,correcta,,
 H-0963,correcta,,
 H-0964,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0965,correcta,,
-H-0966,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0966,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0967,correcta,,
 H-0968,correcta,,
 H-0969,correcta,,
-H-0970,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0970,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0971,correcta,,
 H-0972,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-0973,correcta,,
@@ -978,7 +978,7 @@ H-0976,correcta,,
 H-0977,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-0978,correcta,,
 H-0979,correcta,,
-H-0980,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-0980,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-0981,correcta,,
 H-0982,correcta,,
 H-0983,correcta,,
@@ -1018,7 +1018,7 @@ H-1016,correcta,,
 H-1017,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1018,correcta,,
 H-1019,correcta,,
-H-1020,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1020,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1021,correcta,,
 H-1022,correcta,,
 H-1023,correcta,,
@@ -1029,7 +1029,7 @@ H-1027,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y lleg
 H-1028,correcta,,
 H-1029,correcta,,
 H-1030,correcta,,
-H-1031,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1031,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1032,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-1033,correcta,,
 H-1034,correcta,,
@@ -1038,19 +1038,19 @@ H-1036,correcta,,
 H-1037,correcta,,
 H-1038,correcta,,
 H-1039,correcta,,
-H-1040,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1040,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1041,correcta,,
 H-1042,correcta,,
 H-1043,correcta,,
 H-1044,correcta,,
 H-1045,correcta,,
-H-1046,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1046,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1047,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-1048,correcta,,
 H-1049,correcta,,
 H-1050,correcta,,
 H-1051,correcta,,
-H-1052,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1052,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1053,correcta,,
 H-1054,correcta,,
 H-1055,correcta,,
@@ -1086,12 +1086,12 @@ H-1084,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y lleg
 H-1085,correcta,,
 H-1086,correcta,,
 H-1087,correcta,,
-H-1088,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1088,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1089,correcta,,
 H-1090,correcta,,
-H-1091,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1091,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1092,correcta,,
-H-1093,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1093,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1094,correcta,,
 H-1095,correcta,,
 H-1096,correcta,,
@@ -1100,7 +1100,7 @@ H-1098,correcta,,
 H-1099,correcta,,
 H-1100,correcta,,
 H-1101,correcta,,
-H-1102,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1102,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1103,correcta,,
 H-1104,correcta,,
 H-1105,correcta,,
@@ -1114,7 +1114,7 @@ H-1112,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y lleg
 H-1113,correcta,,
 H-1114,correcta,,
 H-1115,correcta,,
-H-1116,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1116,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1117,correcta,,
 H-1118,correcta,,
 H-1119,correcta,,
@@ -1124,7 +1124,7 @@ H-1122,correcta,,
 H-1123,correcta,,
 H-1124,correcta,,
 H-1125,correcta,,
-H-1126,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1126,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1127,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-1128,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-1129,correcta,,
@@ -1141,7 +1141,7 @@ H-1139,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y lleg
 H-1140,correcta,,
 H-1141,correcta,,
 H-1142,correcta,,
-H-1143,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1143,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1144,correcta,,
 H-1145,correcta,,
 H-1146,correcta,,
@@ -1171,7 +1171,7 @@ H-1169,correcta,,
 H-1170,correcta,,
 H-1171,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1172,correcta,,
-H-1173,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1173,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1174,correcta,,
 H-1175,correcta,,
 H-1176,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
@@ -1232,7 +1232,7 @@ H-1230,correcta,,
 H-1231,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-1232,correcta,,
 H-1233,correcta,,
-H-1234,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1234,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1235,correcta,,
 H-1236,correcta,,
 H-1237,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
@@ -1255,8 +1255,8 @@ H-1253,correcta,,
 H-1254,correcta,,
 H-1255,correcta,,
 H-1256,correcta,,
-H-1257,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-1258,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1257,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-1258,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1259,correcta,,
 H-1260,correcta,,
 H-1261,correcta,,
@@ -1267,21 +1267,21 @@ H-1265,correcta,,
 H-1266,correcta,,
 H-1267,correcta,,
 H-1268,correcta,,
-H-1269,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1269,correcta,,
 H-1270,correcta,,
 H-1271,correcta,,
 H-1272,correcta,,
 H-1273,correcta,,
 H-1274,correcta,,
 H-1275,correcta,,
-H-1276,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1276,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1277,correcta,,
 H-1278,correcta,,
 H-1279,correcta,,
 H-1280,correcta,,
 H-1281,correcta,,
 H-1282,correcta,,
-H-1283,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1283,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1284,correcta,,
 H-1285,correcta,,
 H-1286,correcta,,
@@ -1293,7 +1293,7 @@ H-1291,correcta,,
 H-1292,correcta,,
 H-1293,correcta,,
 H-1294,correcta,,
-H-1295,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1295,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1296,correcta,,
 H-1297,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-1298,correcta,,
@@ -1311,7 +1311,7 @@ H-1309,correcta,,
 H-1310,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1311,error,"NOR-COB-02/03/04: cobertura de la ficha no corresponde a credencial, consulta y verificación",
 H-1312,correcta,,
-H-1313,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1313,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1314,correcta,,
 H-1315,correcta,,
 H-1316,correcta,,
@@ -1346,7 +1346,7 @@ H-1344,correcta,,
 H-1345,correcta,,
 H-1346,correcta,,
 H-1347,correcta,,
-H-1348,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1348,correcta,,
 H-1349,correcta,,
 H-1350,correcta,,
 H-1351,correcta,,
@@ -1380,7 +1380,7 @@ H-1378,correcta,,
 H-1379,correcta,,
 H-1380,correcta,,
 H-1381,correcta,,
-H-1382,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1382,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1383,correcta,,
 H-1384,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1385,correcta,,
@@ -1389,7 +1389,7 @@ H-1387,correcta,,
 H-1388,correcta,,
 H-1389,correcta,,
 H-1390,correcta,,
-H-1391,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1391,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1392,correcta,,
 H-1393,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-1394,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
@@ -1414,7 +1414,7 @@ H-1412,correcta,,
 H-1413,correcta,,
 H-1414,correcta,,
 H-1415,correcta,,
-H-1416,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1416,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1417,correcta,,
 H-1418,correcta,,
 H-1419,correcta,,
@@ -1425,14 +1425,14 @@ H-1423,correcta,,
 H-1424,correcta,,
 H-1425,correcta,,
 H-1426,correcta,,
-H-1427,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-1428,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1427,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-1428,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1429,correcta,,
 H-1430,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1431,correcta,,
 H-1432,correcta,,
 H-1433,correcta,,
-H-1434,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1434,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1435,correcta,,
 H-1436,correcta,,
 H-1437,correcta,,
@@ -1441,7 +1441,7 @@ H-1439,correcta,,
 H-1440,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1441,correcta,,
 H-1442,correcta,,
-H-1443,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1443,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1444,correcta,,
 H-1445,correcta,,
 H-1446,correcta,,
@@ -1450,7 +1450,7 @@ H-1448,correcta,,
 H-1449,correcta,,
 H-1450,correcta,,
 H-1451,correcta,,
-H-1452,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1452,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1453,correcta,,
 H-1454,correcta,,
 H-1455,correcta,,
@@ -1464,7 +1464,7 @@ H-1462,correcta,,
 H-1463,correcta,,
 H-1464,correcta,,
 H-1465,error,"NOR-COB-02/03/04: cobertura de la ficha no corresponde a credencial, consulta y verificación",
-H-1466,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1466,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1467,ruido,,Costumbre de cobertura múltiple: se eligió obra social aunque también se presentó prepaga
 H-1468,correcta,,
 H-1469,correcta,,
@@ -1494,7 +1494,7 @@ H-1492,correcta,,
 H-1493,correcta,,
 H-1494,correcta,,
 H-1495,correcta,,
-H-1496,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1496,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1497,correcta,,
 H-1498,correcta,,
 H-1499,correcta,,
@@ -1547,12 +1547,12 @@ H-1545,correcta,,
 H-1546,correcta,,
 H-1547,correcta,,
 H-1548,correcta,,
-H-1549,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1549,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1550,correcta,,
 H-1551,correcta,,
 H-1552,correcta,,
 H-1553,correcta,,
-H-1554,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1554,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1555,correcta,,
 H-1556,correcta,,
 H-1557,correcta,,
@@ -1562,11 +1562,11 @@ H-1560,correcta,,
 H-1561,correcta,,
 H-1562,correcta,,
 H-1563,correcta,,
-H-1564,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1564,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1565,correcta,,
 H-1566,correcta,,
 H-1567,correcta,,
-H-1568,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1568,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1569,correcta,,
 H-1570,correcta,,
 H-1571,correcta,,
@@ -1580,9 +1580,9 @@ H-1578,correcta,,
 H-1579,correcta,,
 H-1580,correcta,,
 H-1581,correcta,,
-H-1582,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1582,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1583,correcta,,
-H-1584,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1584,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1585,correcta,,
 H-1586,correcta,,
 H-1587,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
@@ -1590,8 +1590,8 @@ H-1588,correcta,,
 H-1589,correcta,,
 H-1590,correcta,,
 H-1591,correcta,,
-H-1592,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-1593,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1592,correcta,,
+H-1593,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1594,correcta,,
 H-1595,correcta,,
 H-1596,correcta,,
@@ -1611,7 +1611,7 @@ H-1609,correcta,,
 H-1610,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1611,correcta,,
 H-1612,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
-H-1613,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1613,correcta,,
 H-1614,correcta,,
 H-1615,correcta,,
 H-1616,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
@@ -1639,10 +1639,10 @@ H-1637,correcta,,
 H-1638,correcta,,
 H-1639,correcta,,
 H-1640,correcta,,
-H-1641,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1641,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1642,correcta,,
 H-1643,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
-H-1644,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1644,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1645,correcta,,
 H-1646,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-1647,correcta,,
@@ -1663,11 +1663,11 @@ H-1661,correcta,,
 H-1662,correcta,,
 H-1663,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-1664,correcta,,
-H-1665,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-1666,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1665,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-1666,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1667,correcta,,
 H-1668,correcta,,
-H-1669,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1669,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1670,correcta,,
 H-1671,correcta,,
 H-1672,correcta,,
@@ -1675,12 +1675,12 @@ H-1673,correcta,,
 H-1674,correcta,,
 H-1675,correcta,,
 H-1676,correcta,,
-H-1677,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1677,correcta,,
 H-1678,error,NOR-COB-02/03/04: entidad de notificación incorrecta,
 H-1679,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-1680,correcta,,
 H-1681,correcta,,
-H-1682,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1682,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1683,correcta,,
 H-1684,correcta,,
 H-1685,correcta,,
@@ -1700,14 +1700,14 @@ H-1698,correcta,,
 H-1699,correcta,,
 H-1700,correcta,,
 H-1701,correcta,,
-H-1702,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1702,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1703,correcta,,
 H-1704,correcta,,
 H-1705,correcta,,
 H-1706,correcta,,
 H-1707,correcta,,
-H-1708,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
-H-1709,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1708,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
+H-1709,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1710,correcta,,
 H-1711,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
 H-1712,correcta,,
@@ -1720,9 +1720,9 @@ H-1718,correcta,,
 H-1719,correcta,,
 H-1720,correcta,,
 H-1721,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
-H-1722,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1722,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1723,correcta,,
-H-1724,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1724,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1725,correcta,,
 H-1726,correcta,,
 H-1727,correcta,,
@@ -1740,7 +1740,7 @@ H-1738,correcta,,
 H-1739,correcta,,
 H-1740,correcta,,
 H-1741,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
-H-1742,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1742,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1743,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1744,correcta,,
 H-1745,correcta,,
@@ -1750,13 +1750,13 @@ H-1748,correcta,,
 H-1749,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1750,correcta,,
 H-1751,correcta,,
-H-1752,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1752,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1753,correcta,,
 H-1754,correcta,,
 H-1755,correcta,,
 H-1756,correcta,,
 H-1757,correcta,,
-H-1758,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1758,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1759,correcta,,
 H-1760,correcta,,
 H-1761,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
@@ -1776,7 +1776,7 @@ H-1774,correcta,,
 H-1775,correcta,,
 H-1776,correcta,,
 H-1777,correcta,,
-H-1778,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1778,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1779,correcta,,
 H-1780,correcta,,
 H-1781,correcta,,
@@ -1784,7 +1784,7 @@ H-1782,correcta,,
 H-1783,correcta,,
 H-1784,correcta,,
 H-1785,correcta,,
-H-1786,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1786,correcta,,
 H-1787,correcta,,
 H-1788,correcta,,
 H-1789,correcta,,
@@ -1792,13 +1792,13 @@ H-1790,correcta,,
 H-1791,correcta,,
 H-1792,correcta,,
 H-1793,correcta,,
-H-1794,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1794,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1795,correcta,,
 H-1796,correcta,,
 H-1797,correcta,,
 H-1798,correcta,,
 H-1799,correcta,,
-H-1800,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1800,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1801,correcta,,
 H-1802,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1803,correcta,,
@@ -1810,7 +1810,7 @@ H-1808,correcta,,
 H-1809,correcta,,
 H-1810,correcta,,
 H-1811,correcta,,
-H-1812,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1812,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1813,correcta,,
 H-1814,correcta,,
 H-1815,correcta,,
@@ -1819,7 +1819,7 @@ H-1817,correcta,,
 H-1818,correcta,,
 H-1819,correcta,,
 H-1820,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
-H-1821,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1821,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1822,correcta,,
 H-1823,correcta,,
 H-1824,correcta,,
@@ -1829,10 +1829,10 @@ H-1827,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y lleg
 H-1828,correcta,,
 H-1829,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1830,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
-H-1831,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1831,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1832,correcta,,
 H-1833,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
-H-1834,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1834,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1835,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
 H-1836,correcta,,
 H-1837,correcta,,
@@ -1841,7 +1841,7 @@ H-1839,correcta,,
 H-1840,correcta,,
 H-1841,correcta,,
 H-1842,correcta,,
-H-1843,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1843,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1844,correcta,,
 H-1845,correcta,,
 H-1846,error,NOR-ADM-01/02: faltó ubicar en el box antes del registro,
@@ -1854,11 +1854,11 @@ H-1852,error,"NOR-COB-02/03/04: cobertura de la ficha no corresponde a credencia
 H-1853,correcta,,
 H-1854,error,NOR-TDE-01/02/03/04: circuito o plazo no coincide con triage y llegada,
 H-1855,correcta,,
-H-1856,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1856,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1857,correcta,,
 H-1858,correcta,,
 H-1859,correcta,,
-H-1860,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1860,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1861,correcta,,
 H-1862,correcta,,
 H-1863,correcta,,
@@ -1882,7 +1882,7 @@ H-1880,correcta,,
 H-1881,correcta,,
 H-1882,correcta,,
 H-1883,correcta,,
-H-1884,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1884,correcta,,
 H-1885,correcta,,
 H-1886,correcta,,
 H-1887,correcta,,
@@ -1903,11 +1903,11 @@ H-1901,correcta,,
 H-1902,correcta,,
 H-1903,correcta,,
 H-1904,correcta,,
-H-1905,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1905,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1906,correcta,,
 H-1907,correcta,,
 H-1908,error,NOR-ADM-01/03: tipo de registro incompatible con documento y triage,
-H-1909,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1909,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1910,correcta,,
 H-1911,correcta,,
 H-1912,correcta,,
@@ -1945,7 +1945,7 @@ H-1943,correcta,,
 H-1944,correcta,,
 H-1945,correcta,,
 H-1946,correcta,,
-H-1947,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1947,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1948,correcta,,
 H-1949,correcta,,
 H-1950,correcta,,
@@ -1971,10 +1971,10 @@ H-1969,correcta,,
 H-1970,correcta,,
 H-1971,correcta,,
 H-1972,correcta,,
-H-1973,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1973,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1974,correcta,,
 H-1975,correcta,,
-H-1976,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 76+ sin acompañante
+H-1976,ruido,,Costumbre de voluntariado: aviso esperado solo para paciente de 75+ sin acompañante
 H-1977,correcta,,
 H-1978,correcta,,
 H-1979,correcta,,

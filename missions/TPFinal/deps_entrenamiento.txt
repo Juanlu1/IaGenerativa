@@ -1,0 +1,16 @@
+# Dependencias del entrenamiento (Parte 4), con versión exacta.
+# No están en pyproject.toml/uv.lock (los mantiene la rama del agente); se instalan con:
+#   uv run --with-requirements deps_entrenamiento.txt python entrenar.py ...
+# torch y transformers quedan en las versiones que acepta vllm==0.34.0
+# (torch==2.14.0, transformers<5.23.0), para que el adaptador se entrene con la
+# misma pila que lo sirve entrega.py.
+torch==2.14.0
+transformers==5.22.2
+trl==1.17.1
+peft==0.21.2
+accelerate==1.15.0
+datasets==5.1.0
+huggingface_hub==2.4.0
+wandb==0.31.0
+pyyaml==6.0.3
+modal==1.6.4
